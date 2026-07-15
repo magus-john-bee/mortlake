@@ -236,9 +236,26 @@ Phase 9 (docs) — after everything else
 
 ## Follow-up TODOs
 
-- [ ] Exa API raw-access skill (curl/TS patterns for `/find`, `/contents`, `/answer`, `/get`)
+### Learning
+
+- [ ] **Pi** — learn the full feature set: hooks system, TypeScript extensions, `~/.pi/agent/models.json` custom providers, `/login` and `/model` workflows, session management, how it differs from Codex/Hermes
+- [ ] **Herdr** — learn workspace/tab/pane management, agent state model (idle/working/blocked), session restore, `herdr agent start/stop`, integration install mechanics, per-pane output watching
+- [ ] **Zellij** — flesh out config beyond defaults: custom layouts (dev.kdl, default.kdl), floating panes, tab naming, plugin config, keybinding tweaks, integration with herdr panes
+- [ ] **GBrain** — learn `gbrain think` (synthesis), `gbrain autopilot` (background enrichment), `gbrain sync --watch` (live repo sync), skillpack system, remote brain topology (`gbrain serve --http` on uriel)
+- [ ] **OpenShell** — policy YAML format, sandbox lifecycle, how to configure Pi-in-sandbox for raphael/jehoel, network proxy rules
+
+### Config improvements
+
+- [ ] **Wrapped intellishell** — the current `intellishell.nix` deploys a raw `/etc/intellishell/config.toml` and installs the package directly. Wrap it with `wrapper-modules.lib.wrapPackage` like atuin/helix/ghostty so the config is injected via constructFiles and `nix run .#intelli-shell` works standalone.
+- [ ] **Exa API raw-access skill** — curl/TS patterns for `/find`, `/contents`, `/answer`, `/get` with filter options (`category`, `text`, `includeDomains`, `excludeDomains`, `startPublishedDate`, `numResults`, `subpages`, `subpageTarget`)
+
+### Skills
+
+- [ ] **Intellishell usage skill** — document the CLI workflow: `intelli-shell add`, `intelli-shell search`, `intelli-shell exec`, inline mode, gist sync, TUI keyboard enhancements. Show how it integrates with zsh (the `@intelli_shell@` init in zshrc). Cover common patterns (tagging commands, searching by tag, fuzzy search modes).
+
+### Deferred
+
 - [ ] Declarative Nyxt config expansion (keybindings, search engines, commands, theme)
-- [ ] GBrain remote brain topology (`gbrain serve --http` on uriel, thin-client elsewhere)
 - [ ] Evaluate agentmemory removal once gbrain is proven
 - [ ] Add titania host when ready
 - [ ] Flatpak/appimage/printing modules — decide whether to include for jehoel/raphael
