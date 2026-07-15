@@ -1,0 +1,48 @@
+# profiles/raziel.yaml — GrapheneOS Pixel (de-Googled, privacy-focused)
+
+profile:
+  name: "Raziel"
+  device: ""  # fill in serial if you have multiple devices connected
+
+system:
+  dark_mode: true
+  disable_analytics: true
+
+obtainium:
+  - id: dev.imranr.obtainium
+    url: https://github.com/ImranR98/Obtainium
+    name: Obtainium
+    bootstrap: true
+
+  # Privacy-focused apps sourced directly from developers
+  - id: org.thoughtcrime.securesms
+    url: https://github.com/signalapp/Signal-Android
+    name: Signal
+  - id: com.zaneschepke.wireguardroid
+    url: https://github.com/wireguard/wireguard-android
+    name: WireGuard
+  - id: io.github.subhamtyagi.lastlauncher
+    url: https://github.com/WorldTwo/Last-Launcher
+    name: Last Launcher
+
+fdroid:
+  - id: com.termux
+    name: Termux
+  - id: org.fdroid.fdroid
+    name: F-Droid
+  - id: net.mullvad.mullvadvpn
+    name: Mullvad VPN
+  - id: org.kde.kdeconnect_tp
+    name: KDE Connect
+  - id: com.github.catpuppyapp.pstree
+    name: Pstree
+  - id: com.junkfood.seal
+    name: Seal
+
+# Aurora Store works on GrapheneOS without Play Services for many apps.
+# Apps requiring Play Services will fail — check compatibility.
+aurora:
+
+nix-on-droid:
+  enabled: true
+  flake_url: "github:jbotwell/mortlake#raziel"
