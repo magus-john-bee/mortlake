@@ -2,7 +2,7 @@
 #:schema https://developers.openai.com/codex/config-schema.json
 
 model = "glm-5.2"
-model_provider = "zai-proxy"
+model_provider = "zai"
 approval_policy = "on-request"
 sandbox_mode = "read-only"
 
@@ -23,9 +23,9 @@ enabled = false
 
 # ── Providers ──────────────────────────────────────────────
 
-[model_providers.zai-proxy]
-name = "Z.AI via Local Proxy"
-base_url = "http://127.0.0.1:4891/v1"
+[model_providers.zai]
+name = "Z.AI"
+base_url = "https://api.z.ai/api/coding/paas/v4"
 env_key = "GLM_API_KEY"
 wire_api = "responses"
 requires_openai_auth = false
