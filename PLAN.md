@@ -255,7 +255,7 @@ Phase 9 (docs) — after everything else
 
 ### Deferred
 
+- [ ] **Distributed builds** — Create `remote-builder-client.nix` module so uriel and raphael delegate builds to jehoel via `nix.buildMachines`. Requires SSH key trust between machines. Titania migration plan (corpus `.hermes/plans/2026-07-06_135930-titania-migration.md`) has full task breakdown — adapt host names (titania→jehoel, thoth→uriel, puck→raphael).
 - [ ] Declarative Nyxt config expansion (keybindings, search engines, commands, theme)
 - [ ] Evaluate agentmemory removal once gbrain is proven
-- [ ] Add titania host when ready
 - [ ] Flatpak/appimage/printing modules — decide whether to include for jehoel/raphael

@@ -21,8 +21,23 @@
         enable = true;
         autoStart = true;
         capSysAdmin = true; # needed for Wayland capture
-        openFirewall = true; # ports 47984-48010 TCP/UDP
+        openFirewall = true; # TCP ports 47984-48010
       };
+
+      # Sunshine also uses dynamic UDP ports for video/audio/control
+      networking.firewall.allowedUDPPorts = [
+        47998
+        47999
+        48000
+        48002
+        48010
+      ];
+
+      # Ensure john is in groups needed for input/KMS access
+      users.users.john.extraGroups = [
+        "video"
+        "input"
+      ];
 
       # Persistence for Sunshine config/credentials
       preservation.preserveAt."/persistent".users.john.directories = [

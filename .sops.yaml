@@ -1,27 +1,26 @@
 keys:
-  # Decommissioned — kept for reference until jehoel replaces mab
+  # Decommissioned — kept for reference
   - &mab age1qu9d09aaf6gwhql7y2yhvzpu6k4vmearetjkwulryxza8cp9e5aszslp7g
-  - &puck age10uytscks5w3kxew8d83a68eylfa92lmkg4x0gq7efvgpzmxmeuwq8nat96
-  - &thoth age1eljuw0nsq77tjg2vgmknvqu7pvl6t9qfucuyhtg5wf33s67nl92qxc4uug
-  - &titania age1dr067v7rkfs5vf3cy2cs42w2l8jffy4gm8fhtg9u9lglchf42q9q4p7j0s
+  - &raphael age10uytscks5w3kxew8d83a68eylfa92lmkg4x0gq7efvgpzmxmeuwq8nat96
+  - &uriel age1eljuw0nsq77tjg2vgmknvqu7pvl6t9qfucuyhtg5wf33s67nl92qxc4uug
+  - &jehoel age1dr067v7rkfs5vf3cy2cs42w2l8jffy4gm8fhtg9u9lglchf42q9q4p7j0s
   - &caliban age1yc0zta2lenw96ll7t2fze97agp330xmf4tcphr4rguvtelz8854q49pt30
 
 creation_rules:
   - path_regex: ^modules/features/supersecrets\.yaml$
     key_groups:
       - age:
-          - *titania
-          - *puck
+          - *jehoel
+          - *raphael
   - path_regex: ^modules/features/secrets\.yaml$
     key_groups:
       - age:
-          - *thoth
-          - *titania
-          - *mab
-          - *puck
+          - *uriel
+          - *jehoel
+          - *raphael
   - path_regex: ^modules/features/nix-serve-key\.yaml$
     key_groups:
       - age:
-          - *thoth
-          - *mab
-          - *puck
+          - *uriel
+          - *jehoel
+          - *raphael
