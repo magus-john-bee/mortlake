@@ -81,7 +81,7 @@
 
           fallback_model = {
             provider = "openrouter";
-            model = "tencent/hy3:free";
+            model = "deepseek/deepseek-v4-flash";
           };
 
           stt = {
