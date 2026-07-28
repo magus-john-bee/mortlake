@@ -1,0 +1,5 @@
+# Mortlake TODO
+
+- [ ] Try Logseq 2 (DB version) via [Bad3r/nix-logseq-git-flake](https://github.com/Bad3r/nix-logseq-git-flake) — side-by-side with OG on a throwaway test graph. Two-way markdown sync still draft (PR #12593), so don't point at real vault. Watch nixpkgs PR #516682 for `logseq_2` to eventually drop the flake.
+- [ ] **Cognee + Postgres for Pi memory** — [plan](./docs/cognee-setup-plan.md). Single Postgres (relational + pgvector + graph tables), fastembed local embeddings, GLM via Z.AI for entity extraction. systemd user service on Uriel, REST API on :8000, Pi calls via curl.
+- [ ] **VFIO SteamOS VM on Jehoel** — [plan](./docs/vfio-steamos-plan.md). Pass through the 5700 XT eGPU + a USB controller to a SteamOS KVM guest via VFIO. Solves the NixOS async reprojection / CAP_SYS_NICE blocker for SteamVR. Primary use case: Steam Frame VR streaming when the headset ships. Hardware is ideal (780M iGPU for host, UM780 XTX has clean IOMMU groups). Not blocked until Steam Frame launches — can validate with SteamVR + a tethered headset or Remote Play first.
