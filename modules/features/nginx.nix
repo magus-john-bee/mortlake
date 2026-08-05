@@ -16,7 +16,7 @@ _: {
     security.acme = {
       acceptTerms = true;
       defaults = {
-        email = "john.otwell@proton.me";
+        email = "johnbee@otwell.dev";
         group = "nginx";
       };
     };
