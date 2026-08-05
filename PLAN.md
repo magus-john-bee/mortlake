@@ -116,6 +116,7 @@ Write these before host configs that import them.
 - [ ] **`sunshine.nix`** — game streaming server (jehoel only). Vulkan/VAAPI packages, firewall ports (47984-48010), persist `~/.config/sunshine`.
 - [ ] **`the-aether.nix`** — NetworkManager WiFi profile with sops secret. Needed on raphael (laptop). **Co-located:** references `supersecrets.yaml` for `the-aether-pw`. Reference: corpus.
 - [ ] **AMD GPU config** — in jehoel `hardware.nix`. `amdgpu` kernel module, `hardware.graphics.enable`, RADV. Set `opencl = false` for 5700 XT (RDNA1). Flip to `true` when 7900 XTX goes in.
+- [ ] **`herald.nix`** — TUI email client ([herald-mail.app](https://herald-mail.app)). **Not in nixpkgs, no upstream flake — requires a local `buildGoModule` derivation.** Chosen over himalaya because Herald handles Proton Bridge's non-standard TLS cert (CA-as-end-entity) without issue, while himalaya's rustls stack hard-rejects it (unreleased fix as of mid-2026). Build requires Go 1.25+ and CGO (SQLite). Config at `~/.herald/conf.yaml` (IMAP/SMTP creds → sops, `chmod 600`). Persist `~/.herald/` (SQLite cache + config). Optional: Ollama integration for semantic search/classification. MCP server via `herald mcp`. First-run wizard handles Gmail OAuth or IMAP presets (Proton Bridge, Fastmail, iCloud, Outlook). Target: raphael (daily driver), optionally jehoel.
 
 ## Phase 5: Service modules (jehoel server role)
 
