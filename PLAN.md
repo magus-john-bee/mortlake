@@ -66,7 +66,7 @@ Write these first — everything else depends on them. Each `.nix` is a self-con
 ### Packages & tooling
 
 - [ ] **`packages.nix`** — merge common/config/dev-packages into one module. Core (curl, wget, vim, ghostty.terminfo), Nix tooling (age, sops, direnv, nh, check-jsonschema, ssh-to-age, nickel), Dev (bat, bun, fd, fzf, git, jujutsu, just, nodejs, pandoc, python313, uv, tre-command).
-- [ ] **`nix-qol.nix`** — nix gc, auto-optimise, flake registry. **Must keep:** `programs.nix-ld` (critical — MCP servers and codex tools use `LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib"`) and `services.envfs.enable` (provides `/usr/bin/env`). Keep `cache.otwell.dev` substituter if nix-serve is deployed (it is — Phase 6). Reference: `corpus/modules/features/nix-qol.nix`
+- [ ] **`nix-qol.nix`** — nix gc, auto-optimise, flake registry. **Must keep:** `programs.nix-ld` (critical — MCP servers and Pi tools use `LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib"`) and `services.envfs.enable` (provides `/usr/bin/env`). Keep `cache.otwell.dev` substituter if nix-serve is deployed (it is — Phase 6). Reference: `corpus/modules/features/nix-qol.nix`
 - [ ] **`dev-dirs.nix`** — tmpfiles rules for `~/src`, `~/vault`, `~/vault/logbook`, `~/vault/book-of-thoth`, `~/reference-repos`. Preservation + restic paths. Note: `book-of-thoth` path is referenced by hermes.nix (`skills.config.wiki.path`) — keep consistent. Sets `mortlake.restic.paths`. Reference: `corpus/modules/features/dev-dirs.nix`
 - [ ] **`git.nix`** — git config with direnv. Reference: corpus.
 - [ ] **`gh.nix`** — wrapped gh with sops auth (`gh-oauth-token` template → `/etc/gh/hosts.yml`). Reference: corpus (good pattern).
@@ -89,15 +89,14 @@ Write these first — everything else depends on them. Each `.nix` is a self-con
 
 Write these before host configs that import them.
 
-- [ ] **`herdr.nix`** — install on all NixOS hosts. Persist `~/.config/herdr`, `~/.local/share/herdr`. Per-user integration install happens after first boot (`herdr integration install pi`, `herdr integration install hermes`, `herdr integration install codex`). Check nixpkgs availability — may need flake input or manual install.
-- [ ] **`pi.nix`** — Pi agent. Persist `~/.pi`. Needs API keys via sops template (`pi-env`: GLM_API_KEY, OPENROUTER_API_KEY, EXA_API_KEY). Check whether `pi` is in nixpkgs or needs installer script. Include `codebase-memory-mcp` in systemPackages here (moved from codex-safe so it's available regardless of Codex).
+- [ ] **`herdr.nix`** — install on all NixOS hosts. Persist `~/.config/herdr`, `~/.local/share/herdr`. Per-user integration install happens after first boot (`herdr integration install pi`, `herdr integration install hermes`). Check nixpkgs availability — may need flake input or manual install.
+- [ ] **`pi.nix`** — Pi agent. Persist `~/.pi`. Needs API keys via sops template (`pi-env`: GLM_API_KEY, OPENROUTER_API_KEY, EXA_API_KEY). Check whether `pi` is in nixpkgs or needs installer script. Include `codebase-memory-mcp` in systemPackages.
 - [ ] **`gbrain.nix`** — memory layer. Needs `bun` (already in packages.nix). Persist `~/.gbrain`. Install: `bun install -g github:garrytan/gbrain`. TODO: evaluate `gbrain serve --http` on uriel as shared brain.
 - [ ] **`openshell.nix`** — sandboxed Pi runtime for raphael/jehoel. Needs podman or docker. Check nixpkgs availability.
-- [ ] **`hermes.nix`** — Hermes on uriel only. **Co-located file:** `hermes_soul.md`. **Trimmed MCP servers:** ouroboros, agentmemory (transitional), codebase-memory, context (neuledge), exa, nixos, gitmcp. **Remove:** mempalace, codegraph, procontext. **Must keep (non-MCP settings):** model config (provider/model/context_length=1048576), fallback_model, STT/TTS config, smart_model_routing, session_reset (discord idle 180min), provider_routing, compression, memory settings (char limits), skills config (`external_dirs = ["/etc/codex/skills"]`, `wiki.path = "/home/john/vault/book-of-thoth"`), `extraDependencyGroups = ["exa", "messaging", "tts-premium", "voice"]`, systemd service env (`LD_LIBRARY_PATH` with libopus + stdenv.cc.cc.lib, `CODEX_HOME=/etc/codex`), path entries (binutils, codex, nodejs). Reference: `corpus/modules/features/hermes.nix`
-- [ ] **`codex-safe.nix`** — skeleton. **Co-located files:** `codex-shared/config.toml`, `codex-shared/models.json`, `codex-shared/AGENTS.md`. **Must fix:** `codex-shared/config.toml` has `model_provider = "zai-proxy"` and `base_url = "http://127.0.0.1:4891/v1"` (the proxy port). Since codex-zai-proxy is being dropped, change to direct API: `base_url = "https://api.z.ai/api/coding/paas/v4"`. Minimal config, no MCP servers. `environment.etc."codex/skills".source` must point to `./../../skills` (not `agent-skills`). Reference: corpus but gut it.
-- [ ] **Drop:** `codex-free.nix` (role filled by Pi unconstrained), `codex-zai-proxy.nix` (unnecessary — see below), `opencode.nix` (superseded by Pi), `opencode/` directory.
+- [ ] **`hermes.nix`** — Hermes on uriel only. **Co-located file:** `hermes_soul.md`. **Trimmed MCP servers:** ouroboros, agentmemory (transitional), codebase-memory, context (neuledge), exa, nixos, gitmcp. **Remove:** mempalace, codegraph, procontext. **Must keep (non-MCP settings):** model config (provider/model/context_length=1048576), fallback_model, STT/TTS config, smart_model_routing, session_reset (discord idle 180min), provider_routing, compression, memory settings (char limits), skills config (`wiki.path = "/home/john/vault/book-of-thoth"`), `extraDependencyGroups = ["exa", "messaging", "tts-premium", "voice"]`, systemd service env (`LD_LIBRARY_PATH` with libopus + stdenv.cc.cc.lib), path entries (binutils, nodejs). Reference: `corpus/modules/features/hermes.nix`
+- [ ] **Drop:** `codex-free.nix`, `codex-zai-proxy.nix`, `codex-safe.nix`, `codex-shared/` (Codex dropped — Pi is primary coding agent), `opencode.nix` (superseded by Pi), `opencode/` directory.
 
-**Why codex-zai-proxy is dead:** The proxy translates Codex API calls to Z.AI's coding plan endpoint. Pi has native Z.AI support built in — the `zai` provider already uses `baseUrl: https://api.z.ai/api/coding/paas/v4` with correct compat flags (`thinkingFormat: "zai"`, `supportsDeveloperRole: false`). Just `/login zai` and `/model glm-5.2` in Pi. No proxy, no translation layer. **Note:** when using the codex-safe skeleton, `codex-shared/config.toml` currently has `model_provider = "zai-proxy"` and `base_url = "http://127.0.0.1:4891/v1"` — change to direct API access (`base_url = "https://api.z.ai/api/coding/paas/v4"`) since the proxy is gone.
+**Why Codex is dropped:** Pi is the primary coding agent with native Z.AI support built in — the `zai` provider already uses `baseUrl: https://api.z.ai/api/coding/paas/v4` with correct compat flags (`thinkingFormat: "zai"`, `supportsDeveloperRole: false`). Just `/login zai` and `/model glm-5.2` in Pi. No proxy, no translation layer, no separate Codex skeleton needed.
 
 **Z.AI policy awareness (Issue #4187):** Z.AI's coding plan is "strictly limited to officially supported tools." Pi is not on the supported list (Hermes/OpenClaw IS, best-effort tier). Wire traffic from Pi looks like stock OpenAI SDK, which Z.AI may flag. Most users report no issues, but be aware throttling/ban risk exists after 3 violations. Alternative: use general API endpoint (`/api/paas/v4`) via `czottmann/pi-zai-api` extension if on pay-as-you-go.
 - [ ] **`agentmemory.nix`** — keep temporarily with deprecation comment. **Co-located:** `agentmemory-plugin/` dir (`plugin.yaml`, `__init__.py`, `README.md`). **Rename nginx vhost:** `thoth-memory.otwell.dev` → `uriel-memory.otwell.dev`. Move basicAuth hash to sops. Remove once gbrain is proven.
@@ -140,7 +139,7 @@ Host configs import modules from Phases 2–5. Don't start until the needed modu
 
 - [ ] Copy `corpus/modules/hosts/thoth/` as starting point, rename module names (`thothHardware`→`urielHardware`, etc.)
 - [ ] **Resource limits:** `max-jobs = 1; cores = 1; max-substitution-jobs = 3` (Hetzner VPS constraints)
-- [ ] Imports: hermes, podman, nginx, restic, codex-safe (skeleton), pi (unconstrained), herdr, gbrain
+- [ ] Imports: hermes, podman, nginx, restic, pi (unconstrained), herdr, gbrain
 - [ ] Update `.sops.yaml`: rename `&thoth` → `&uriel` (same age key — SSH host key doesn't change on rename)
 - [ ] `sops updatekeys modules/features/secrets.yaml` + `supersecrets.yaml`
 
@@ -188,7 +187,7 @@ Before flipping repo to public:
 - [ ] Move agentmemory basicAuth hash to sops (or remove vhost)
 - [ ] Consider moving password hashes to sops (`hashedPasswordFile`) — optional, they're salted
 - [ ] Grep sweep: no `$6$`, `$2y$`, `password =`, `apiKey`, unencrypted IPs in `.nix` files
-- [ ] Audit `secrets.yaml` for stale entries: remove `codex-ws-token`, `forge-openrouter-api-key`, `forge-services-api-key` if unused
+- [ ] Audit `secrets.yaml` for stale entries: remove `codex-ws-token` (if it still exists), `forge-openrouter-api-key`, `forge-services-api-key` if unused
 - [ ] Investigate `&caliban` age key — what is it? Remove if unused, or document.
 - [ ] Make repo public: `gh repo edit jbotwell/mortlake --visibility public`
 
@@ -238,7 +237,7 @@ Phase 9 (docs) — after everything else
 
 ### Learning
 
-- [ ] **Pi** — learn the full feature set: hooks system, TypeScript extensions, `~/.pi/agent/models.json` custom providers, `/login` and `/model` workflows, session management, how it differs from Codex/Hermes
+- [ ] **Pi** — learn the full feature set: hooks system, TypeScript extensions, `~/.pi/agent/models.json` custom providers, `/login` and `/model` workflows, session management, how it differs from Hermes
 - [ ] **Herdr** — learn workspace/tab/pane management, agent state model (idle/working/blocked), session restore, `herdr agent start/stop`, integration install mechanics, per-pane output watching
 - [ ] **Zellij** — flesh out config beyond defaults: custom layouts (dev.kdl, default.kdl), floating panes, tab naming, plugin config, keybinding tweaks, integration with herdr panes
 - [ ] **GBrain** — learn `gbrain think` (synthesis), `gbrain autopilot` (background enrichment), `gbrain sync --watch` (live repo sync), skillpack system, remote brain topology (`gbrain serve --http` on uriel)

@@ -21,7 +21,6 @@
         self.nixosModules.zellij
         self.nixosModules.dev-dirs
         self.nixosModules.restic
-        self.nixosModules.codexSafe
         self.nixosModules.nerd-fonts
 
         # Server role

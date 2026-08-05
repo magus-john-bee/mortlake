@@ -143,7 +143,7 @@
 
           skills = {
             config.wiki.path = "/home/john/vault/book-of-thoth";
-            external_dirs = [ "/etc/codex/skills" ];
+            external_dirs = [ "/home/john/src/mortlake/skills" ];
           };
 
           documents."SOUL.md" = builtins.readFile ./hermes_soul.md;
@@ -205,11 +205,9 @@
       systemd.services.hermes-agent = {
         environment = {
           LD_LIBRARY_PATH = "${pkgs.libopus.outPath}/lib:${pkgs.stdenv.cc.cc.lib}/lib";
-          CODEX_HOME = "/etc/codex";
         };
         path = [
           pkgs.binutils
-          pkgs.codex
           pkgs.nodejs
         ];
         serviceConfig = {
