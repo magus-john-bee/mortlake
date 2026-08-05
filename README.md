@@ -63,22 +63,3 @@ just lint-fix            # Auto-fix linting issues
 nix run nixpkgs#nixos-anywhere -- --flake .#<host> --target-host john@<ip> --phases kexec,disko,install,reboot
 ```
 
-## Restic Backups
-
-Each host has a restic backup job configured in `restic.nix`. Service modules contribute their own backup paths via the `mortlake.restic` option:
-
-```nix
-mortlake.restic = {
-  paths = [ "/var/lib/my-service" ];
-  exclude = [ "/var/lib/my-service/cache" ];
-};
-```
-
-## Design Principles
-
-**Single-user by design.** These machines have one human user (john). Unless there is a compelling reason otherwise, all services run as `john:users` and all data directories are owned by `john:users`.
-
-## What This Repo Does Not Contain
-
-- **Knowledge base** — Markdown notes live in `~/vault/logbook` (separate repo)
-- **Public projects** — career-ops and other release-intended projects stay separate
