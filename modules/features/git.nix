@@ -25,7 +25,7 @@ _:
             alias.lg = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
             user = {
               name = "John Otwell";
-              email = "john.otwell@proton.me";
+              email = "johnbee@otwell.dev";
             };
           }
         ];

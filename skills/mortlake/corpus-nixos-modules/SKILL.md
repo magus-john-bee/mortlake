@@ -183,7 +183,7 @@ Setting `enableACME = true` on an nginx virtualHost is necessary but **not suffi
 ```nix
 security.acme = {
   acceptTerms = true;
-  defaults.email = "john.otwell@proton.me";
+  defaults.email = "johnbee@otwell.dev";
 };
 ```
 
