@@ -14,7 +14,7 @@
       # replaceVars substitutes @var@ placeholders in zshrc.zsh with nix store paths.
       # Any @name@ in the .zsh file must have a matching entry here, or the build fails.
       # Keep the .zsh file as a real file so treesitter/LSP can work with it.
-      zshrc = pkgs.replaceVars ./zshrc.zsh {
+      zshrc = pkgs.replaceVars ./zsh/zshrc.zsh {
         atuin = lib.getExe pkgs.atuin;
         starship = lib.getExe pkgs.starship;
         zoxide = lib.getExe pkgs.zoxide;

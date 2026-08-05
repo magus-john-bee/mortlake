@@ -144,7 +144,7 @@
             external_dirs = [ "/home/john/src/mortlake/skills" ];
           };
 
-          documents."SOUL.md" = builtins.readFile ./hermes_soul.md;
+          documents."SOUL.md" = builtins.readFile ./hermes/SOUL.md;
         };
 
         # Trimmed MCP servers — removed mempalace, codegraph, procontext
