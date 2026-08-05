@@ -93,14 +93,14 @@ Write these before host configs that import them.
 - [ ] **`pi.nix`** — Pi agent. Persist `~/.pi`. Needs API keys via sops template (`pi-env`: GLM_API_KEY, OPENROUTER_API_KEY, EXA_API_KEY). Check whether `pi` is in nixpkgs or needs installer script. Include `codebase-memory-mcp` in systemPackages.
 - [ ] **`gbrain.nix`** — memory layer. Needs `bun` (already in packages.nix). Persist `~/.gbrain`. Install: `bun install -g github:garrytan/gbrain`. TODO: evaluate `gbrain serve --http` on uriel as shared brain.
 - [ ] **`openshell.nix`** — sandboxed Pi runtime for raphael/jehoel. Needs podman or docker. Check nixpkgs availability.
-- [ ] **`hermes.nix`** — Hermes on uriel only. **Co-located file:** `hermes_soul.md`. **Trimmed MCP servers:** ouroboros, agentmemory (transitional), codebase-memory, context (neuledge), exa, nixos, gitmcp. **Remove:** mempalace, codegraph, procontext. **Must keep (non-MCP settings):** model config (provider/model/context_length=1048576), fallback_model, STT/TTS config, smart_model_routing, session_reset (discord idle 180min), provider_routing, compression, memory settings (char limits), skills config (`wiki.path = "/home/john/vault/book-of-thoth"`), `extraDependencyGroups = ["exa", "messaging", "tts-premium", "voice"]`, systemd service env (`LD_LIBRARY_PATH` with libopus + stdenv.cc.cc.lib), path entries (binutils, nodejs). Reference: `corpus/modules/features/hermes.nix`
+- [ ] **`hermes.nix`** — Hermes on uriel only. **Co-located file:** `hermes/SOUL.md`. **Trimmed MCP servers:** agentmemory (transitional), codebase-memory, context (neuledge), exa, nixos, gitmcp. **Remove:** mempalace, codegraph, procontext, ouroboros. **Must keep (non-MCP settings):** model config (provider/model/context_length=1048576), fallback_model, STT/TTS config, smart_model_routing, session_reset (discord idle 180min), provider_routing, compression, memory settings (char limits), skills config (`wiki.path = "/home/john/vault/book-of-thoth"`), `extraDependencyGroups = ["exa", "messaging", "tts-premium", "voice"]`, systemd service env (`LD_LIBRARY_PATH` with libopus + stdenv.cc.cc.lib), path entries (binutils, nodejs). Reference: `corpus/modules/features/hermes.nix`
 - [ ] **Drop:** `codex-free.nix`, `codex-zai-proxy.nix`, `codex-safe.nix`, `codex-shared/` (Codex dropped — Pi is primary coding agent), `opencode.nix` (superseded by Pi), `opencode/` directory.
 
 **Why Codex is dropped:** Pi is the primary coding agent with native Z.AI support built in — the `zai` provider already uses `baseUrl: https://api.z.ai/api/coding/paas/v4` with correct compat flags (`thinkingFormat: "zai"`, `supportsDeveloperRole: false`). Just `/login zai` and `/model glm-5.2` in Pi. No proxy, no translation layer, no separate Codex skeleton needed.
 
 **Z.AI policy awareness (Issue #4187):** Z.AI's coding plan is "strictly limited to officially supported tools." Pi is not on the supported list (Hermes/OpenClaw IS, best-effort tier). Wire traffic from Pi looks like stock OpenAI SDK, which Z.AI may flag. Most users report no issues, but be aware throttling/ban risk exists after 3 violations. Alternative: use general API endpoint (`/api/paas/v4`) via `czottmann/pi-zai-api` extension if on pay-as-you-go.
 - [ ] **`agentmemory.nix`** — keep temporarily with deprecation comment. **Co-located:** `agentmemory-plugin/` dir (`plugin.yaml`, `__init__.py`, `README.md`). **Rename nginx vhost:** `thoth-memory.otwell.dev` → `uriel-memory.otwell.dev`. Move basicAuth hash to sops. Remove once gbrain is proven.
-- [ ] **`ouroboros.nix`** — config deployment only (invoked via `uvx`). **Co-located:** `ouroboros/config.yaml`. Reference: corpus.
+- [ ] **`ouroboros.nix`** — **DROPPED.** Replaced by OpenSpec. Novel concepts to reify as skills (see TODO).
 
 ## Phase 4: Desktop modules
 
@@ -198,7 +198,7 @@ Before flipping repo to public:
 - [ ] **Absorb dev-resume** — rsync `~/src/dev-resume/` into `sites/dev-resume/`. Drop unused theme submodules (keep gruvbox). Add Hugo/node build artifacts to `.gitignore` (already in `.gitignore`).
 - [ ] **Copy skills** — rsync `corpus/agent-skills/` into `skills/`. Rename `skills/corpus/` → `skills/mortlake/`. Update internal references in skill files that mention corpus paths (`corpus-nixos-modules`, `corpus-ssh-key-management`, etc.).
 - [ ] **Copy Android scripts** — rsync `corpus/android/` scripts and `lib/`. Update `android/nix-on-droid/README.md` references from corpus→mortlake. Create raziel/haniel profiles from `pixel-9.yaml` template.
-- [ ] **justfile** — already written. Verify `sync-ouroboros-skills` and `sync-feynman-skills` targets use `skills/` path.
+- [ ] **`justfile`** — already written. Verify `sync-feynman-skills` target uses `skills/` path. Remove `sync-ouroboros-skills` target (dropped).
 - [ ] **Deprecate corpus + dev-resume** — add deprecation notice to both repos, optionally archive on GitHub.
 
 ## Phase 9: Documentation

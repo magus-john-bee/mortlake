@@ -84,19 +84,6 @@ lint-fix:
 
 # ── Agent skills ───────────────────────────────────────────
 
-sync-ouroboros-skills:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    target="skills/ouroboros"
-    tmpdir=$(mktemp -d)
-    trap 'rm -rf "$tmpdir"' EXIT
-    export _OUROBOROS_DST="$tmpdir/ouroboros"
-    uvx --with ouroboros-ai python -c 'import ouroboros, shutil, os; src=os.path.join(os.path.dirname(ouroboros.__file__),"skills"); dst=os.environ["_OUROBOROS_DST"]; os.makedirs(dst); [shutil.copytree(os.path.join(src,d),os.path.join(dst,d)) for d in sorted(os.listdir(src)) if os.path.isdir(os.path.join(src,d)) and not d.startswith("_") and d!="__pycache__"]'
-    rm -rf "$target"
-    mv "$tmpdir/ouroboros" "$target"
-    count=$(find "$target" -name 'SKILL.md' | wc -l)
-    echo "Synced $count ouroboros skills to $target"
-
 sync-feynman-skills:
     #!/usr/bin/env bash
     set -euo pipefail

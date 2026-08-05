@@ -28,7 +28,6 @@
         self.nixosModules.pi
         self.nixosModules.herdr
         self.nixosModules.gbrain
-        self.nixosModules.ouroboros
         self.nixosModules.nginx
         self.nixosModules.agentmemory
       ];

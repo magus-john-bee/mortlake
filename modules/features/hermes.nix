@@ -149,19 +149,8 @@
           documents."SOUL.md" = builtins.readFile ./hermes/SOUL.md;
         };
 
-        # Trimmed MCP servers — removed mempalace, codegraph, procontext
+        # Trimmed MCP servers — removed mempalace, codegraph, procontext, ouroboros
         mcpServers = {
-          ouroboros = {
-            command = "uvx";
-            args = [
-              "--from"
-              "ouroboros-ai[mcp]"
-              "ouroboros"
-              "mcp"
-              "serve"
-            ];
-            enabled = true;
-          };
           # agentmemory — transitional, remove once gbrain is proven
           agentmemory = {
             command = "npx";
