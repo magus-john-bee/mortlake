@@ -21,7 +21,7 @@
         nixPath = pkgs.lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
       };
 
-      # nix-ld: critical for running pre-built binaries (MCP servers, codex tools)
+      # nix-ld: critical for running pre-built binaries (MCP servers, Pi tools)
       programs.nix-ld = {
         enable = true;
         libraries = with pkgs; [
