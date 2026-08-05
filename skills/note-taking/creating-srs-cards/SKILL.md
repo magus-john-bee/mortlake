@@ -21,18 +21,59 @@ cognitive science (see `references/cognitive-science-foundation.md` for full the
 
 When asked to create flashcards from source material:
 
+### Phase 0: Understand Before You Card (Wozniak Rule 1-2)
+
+**Do not card what you cannot explain in your own words.** If you cannot
+restate a concept without quoting the source, you do not understand it well
+enough to ankify. Carding misunderstood material creates cards you will fail
+forever — they become leeches, and leeches are a card-design problem, not a
+memory problem.
+
+Before extracting facts:
+1. Read/scan the material sufficiently to build a mental model of the whole
+2. Identify the ~200 domain vocabulary words that make the material tractable
+   (Nielsen's "200 words problem" — without these, nothing will stick)
+3. Card the foundational terms first, then return to complex material
+
+This phase is not optional. Skipping it is the single most common cause of
+bad card batches.
+
+### Phase 1: Extract and Card
+
 1. **Identify input**: accept raw text, file path, URL, or Logseq page reference
 2. **Extract learnable facts**: scan for definitions, relationships, procedures,
    claims, and conceptual distinctions
-3. **Apply card-type decision tree** (Rule 4) to each fact
-4. **Write Logseq-formatted blocks** following syntax rules below
-5. **Quick quality gate** each card: atomic? self-sufficient? no interference?
-6. **Group by topic** with appropriate tags and deck assignments
+3. **Apply the per-card loop** (below) to each fact
+4. **Group by topic** with appropriate tags and deck assignments
 
 If the input is a paper or book, apply the reading workflow (shallow or deep)
 before card creation. For PDFs/epubs, convert to markdown first (see `pandoc` skill).
 
 Minimum 5 cards per topic, or skip entirely (orphan clusters are worse than zero cards).
+
+### The Per-Card Loop (MANDATORY — run for every card)
+
+For each extracted fact, walk this checklist before writing the card:
+
+1. **Can I explain this in my own words?** → If no, stop. Go understand it.
+2. **Is this ONE fact?** → If the answer would need "and", "or", or 2+ bullets,
+   split into separate cards. One fact = one card. No exceptions.
+3. **Paraphrase, don't copy.** → Rewrite the fact in your own words. Copy-pasting
+   source text bypasses elaborative encoding — the act of rephrasing IS the learning.
+4. **Card type?** → Run the decision tree (Rule 4): cloze for facts/syntax/exact
+   wording; Q&A for reasoning; comparison for confusables; swift arrow for
+   multi-attribute lookups.
+5. **Write the card** in Logseq-anki-sync syntax.
+6. **Post-write gate** — check the answer:
+   - More than 1 bullet? → Split. Each bullet is its own card.
+   - Missing domain scope ("In X...")? → Add it.
+   - Recurring domain term not `[[linked]]`? → Link it.
+   - A confusable concept exists? → Create a comparison card too.
+7. **Tag it**: hierarchical (`Domain::Subdomain::Topic`) + facet (`type::X`).
+
+This loop prevents the most common failure mode: writing a knowledge-dump of
+multi-fact Q&A cards that violate atomicity, skip clozes, omit tags, and have
+no inter-card links.
 
 ## The 5 Golden Rules
 
@@ -41,6 +82,8 @@ Minimum 5 cards per topic, or skip entirely (orphan clusters are worse than zero
 Each card tests exactly ONE discrete fact.
 
 **Test**: If the answer contains "and", "or", or a list of 3+ items, it likely violates atomicity. Lists of 2-3 related items may use Q&A or `#incremental`; lists of 4+ should be split into separate cards.
+
+**The bullet test**: If you write a Q&A answer and it has 2+ bullets, each bullet is almost certainly its own fact that deserves its own card. This is the most common atomicity violation. When you see bullets, split.
 
 **Exception** — when "and" unifies a single concept:
 ```markdown
@@ -352,6 +395,46 @@ Linking satisfies the Connection Quality checklist item: "Does this card connect
 - **Cloze inside code blocks**: Braces conflict; use Q&A.
 - **Shortcut hints**: "Large organ that filters blood *and* produces bile" → split.
 - **Ambiguous terms without domain**: "What is the nucleus?" → "In Cell Biology..."
+- **Multi-bullet Q&A that should be separate cards**: The most common failure mode.
+  A Q&A card whose answer has 2-3 bullets is almost always testing multiple facts.
+  Each bullet is its own card. If you find yourself writing bullets, stop and split.
+- **Copy-paste cards**: Transcribing source text verbatim into the answer bypasses
+  elaborative encoding. Rephrase in your own words — the act of rewording is the learning.
+- **Missing links**: Recurring domain terms that appear across multiple cards but
+  are never `[[linked]]`. The connection-quality principle (Wozniak's knowledge
+  network, Rule 17-18) is enforced through `[[page]]` and `((block-ref))` syntax.
+
+### Worked Example: Bad → Good
+
+**Bad** (one Q&A, four facts, no cloze, flat tags, no links):
+```markdown
+What is the `nothing` object in the propagator model? #card
+deck:: Propagators
+tags:: propagators
+	- The Scheme object representing the complete absence of information
+	- Merge of anything with nothing is the anything (merge identity)
+	- Strict propagators output nothing if any input is nothing
+```
+
+**Good** (split into atomic cards, clozes where appropriate, hierarchical+facet tags, links):
+```markdown
+In the [[propagator-model]], {{c1::nothing}} is the Scheme object representing
+the complete absence of information.
+tags:: cs::ai::propagators::partial-information, type::concept
+
+In the [[propagator-model]], merging anything with {{c1::nothing}} yields the
+anything (nothing is the {{c2::merge identity}}).
+tags:: cs::ai::propagators::partial-information, type::fact
+
+In the [[propagator-model]], strict propagators output {{c1::nothing}} if any
+input is nothing.
+tags:: cs::ai::propagators::partial-information, type::fact
+```
+
+Three cards instead of one. Each tests a single fact. Cloze deletion for
+atomic recall. Hierarchical tags locate the card in a knowledge tree. Links
+build the network. The "bad" version would be a leech — you'd fail one part,
+pass another, and get ambiguous feedback every time.
 
 ### Workflow-Level
 
