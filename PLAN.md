@@ -90,10 +90,10 @@ Write these first — everything else depends on them. Each `.nix` is a self-con
 Write these before host configs that import them.
 
 - [ ] **`herdr.nix`** — install on all NixOS hosts. Persist `~/.config/herdr`, `~/.local/share/herdr`. Per-user integration install happens after first boot (`herdr integration install pi`, `herdr integration install hermes`, `herdr integration install codex`). Check nixpkgs availability — may need flake input or manual install.
-- [ ] **`pi.nix`** — Pi agent. Persist `~/.pi`. Needs API keys via sops template (`pi-env`: GLM_API_KEY, OPENROUTER_API_KEY, EXA_API_KEY). Check whether `pi` is in nixpkgs or needs installer script. Include `codebase-memory-mcp` in systemPackages here (moved from codex-safe so it's available regardless of Codex).
-- [ ] **`gbrain.nix`** — memory layer. Needs `bun` (already in packages.nix). Persist `~/.gbrain`. Install: `bun install -g github:garrytan/gbrain`. TODO: evaluate `gbrain serve --http` on uriel as shared brain.
+- [ ] **`pi.nix`** — Pi agent. Persist `~/.pi`. Needs API keys via sops template (`pi-env`: GLM_API_KEY, OPENROUTER_API_KEY, EXA_API_KEY). Check whether `pi` is in nixpkgs or needs installer script. Include `codebase-memory-mcp` in systemPackages here (moved from codex-safe so it's available regardless of Codex). **Skills/extensions:** all Pi settings, skills, and extensions live in `~/src/mortlake/` — `.pi/skills/` and `.pi/prompts/` are project-local in the repo. **Shared skills:** Pi and Hermes both read from `~/src/mortlake/skills/` as canonical source. **Cognee endpoint:** set `COGNEE_API_URL` environment variable pointing at the Cognee service (host-configurable).
+- [ ] **`cognee.nix`** — shared memory layer for ALL agents (Hermes + Pi on all hosts). Postgres 17 + pgvector backend. Cognee API on `:8000` (systemd user service). fastembed local embeddings, GLM via Z.AI for entity extraction. See [agent architecture](./docs/agent-architecture.md) and [cognee setup plan](./docs/cognee-setup-plan.md). **Host:** configurable via module option (Uriel or Jehoel). Endpoint passed to all agent configs via sops template.
 - [ ] **`openshell.nix`** — sandboxed Pi runtime for raphael/jehoel. Needs podman or docker. Check nixpkgs availability.
-- [ ] **`hermes.nix`** — Hermes on uriel only. **Co-located file:** `hermes_soul.md`. **Trimmed MCP servers:** ouroboros, codebase-memory, context (neuledge), exa, nixos, gitmcp. **Remove:** mempalace, codegraph, procontext. **Must keep (non-MCP settings):** model config (provider/model/context_length=1048576), fallback_model, STT/TTS config, smart_model_routing, session_reset (discord idle 180min), provider_routing, compression, memory settings (char limits), skills config (`external_dirs = ["/etc/codex/skills"]`, `wiki.path = "/home/john/vault/book-of-thoth"`), `extraDependencyGroups = ["exa", "messaging", "tts-premium", "voice"]`, systemd service env (`LD_LIBRARY_PATH` with libopus + stdenv.cc.cc.lib, `CODEX_HOME=/etc/codex`), path entries (binutils, codex, nodejs). Reference: `corpus/modules/features/hermes.nix`
+- [ ] **`hermes.nix`** — Hermes on uriel only. **Co-located file:** `hermes_soul.md`. **Trimmed MCP servers:** ouroboros, codebase-memory, context (neuledge), exa, nixos, gitmcp. **Remove:** mempalace, codegraph, procontext, agentmemory. **Must keep (non-MCP settings):** model config (provider/model/context_length=1048576), fallback_model, STT/TTS config, smart_model_routing, session_reset (discord idle 180min), provider_routing, compression, memory settings (char limits), skills config (`external_dirs = ["/etc/codex/skills", "~/src/mortlake/skills"]`, `wiki.path = "/home/john/vault/book-of-thoth"`), `extraDependencyGroups = ["exa", "messaging", "tts-premium", "voice"]`, systemd service env (`LD_LIBRARY_PATH` with libopus + stdenv.cc.cc.lib, `CODEX_HOME=/etc/codex`), path entries (binutils, codex, nodejs). **Cognee:** add HTTP client for shared memory (curl-based, not MCP). Reference: `corpus/modules/features/hermes.nix`
 - [ ] **`codex-safe.nix`** — skeleton. **Co-located files:** `codex-shared/config.toml`, `codex-shared/models.json`, `codex-shared/AGENTS.md`. **Must fix:** `codex-shared/config.toml` has `model_provider = "zai-proxy"` and `base_url = "http://127.0.0.1:4891/v1"` (the proxy port). Since codex-zai-proxy is being dropped, change to direct API: `base_url = "https://api.z.ai/api/coding/paas/v4"`. Minimal config, no MCP servers. `environment.etc."codex/skills".source` must point to `./../../skills` (not `agent-skills`). Reference: corpus but gut it.
 - [ ] **Drop:** `codex-free.nix` (role filled by Pi unconstrained), `codex-zai-proxy.nix` (unnecessary — see below), `opencode.nix` (superseded by Pi), `opencode/` directory.
 
@@ -139,7 +139,7 @@ Host configs import modules from Phases 2–5. Don't start until the needed modu
 
 - [ ] Copy `corpus/modules/hosts/thoth/` as starting point, rename module names (`thothHardware`→`urielHardware`, etc.)
 - [ ] **Resource limits:** `max-jobs = 1; cores = 1; max-substitution-jobs = 3` (Hetzner VPS constraints)
-- [ ] Imports: hermes, podman, nginx, restic, codex-safe (skeleton), pi (unconstrained), herdr, gbrain
+- [ ] Imports: hermes, podman, nginx, restic, codex-safe (skeleton), pi (unconstrained), herdr, cognee
 - [ ] Update `.sops.yaml`: rename `&thoth` → `&uriel` (same age key — SSH host key doesn't change on rename)
 - [ ] `sops updatekeys modules/features/secrets.yaml` + `supersecrets.yaml`
 
@@ -184,6 +184,7 @@ Before flipping repo to public:
 - [ ] Move tracker pattern to sops (transmission done script)
 - [ ] Move Syncthing device IDs to sops
 - [ ] Move Syncthing GUI password hash to sops
+- [ ] Consider moving password hashes to sops (`hashedPasswordFile`) — optional, they're salted
 - [ ] Grep sweep: no `$6$`, `$2y$`, `password =`, `apiKey`, unencrypted IPs in `.nix` files
 - [ ] Audit `secrets.yaml` for stale entries: remove `codex-ws-token`, `forge-openrouter-api-key`, `forge-services-api-key` if unused
 - [ ] Investigate `&caliban` age key — what is it? Remove if unused, or document.
@@ -238,7 +239,7 @@ Phase 9 (docs) — after everything else
 - [ ] **Pi** — learn the full feature set: hooks system, TypeScript extensions, `~/.pi/agent/models.json` custom providers, `/login` and `/model` workflows, session management, how it differs from Codex/Hermes
 - [ ] **Herdr** — learn workspace/tab/pane management, agent state model (idle/working/blocked), session restore, `herdr agent start/stop`, integration install mechanics, per-pane output watching
 - [ ] **Zellij** — flesh out config beyond defaults: custom layouts (dev.kdl, default.kdl), floating panes, tab naming, plugin config, keybinding tweaks, integration with herdr panes
-- [ ] **GBrain** — learn `gbrain think` (synthesis), `gbrain autopilot` (background enrichment), `gbrain sync --watch` (live repo sync), skillpack system, remote brain topology (`gbrain serve --http` on uriel)
+- [ ] **Cognee** — learn the API: cognify pipeline, add_data, search, graph queries. How to structure data for best retrieval. How Hermes and Pi make REST calls. See [setup plan](./docs/cognee-setup-plan.md).
 - [ ] **OpenShell** — policy YAML format, sandbox lifecycle, how to configure Pi-in-sandbox for raphael/jehoel, network proxy rules
 
 ### Config improvements
