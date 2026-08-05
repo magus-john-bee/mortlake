@@ -1,0 +1,37 @@
+# profiles/remiel.yaml — GrapheneOS Pixel Tablet (de-Googled, privacy-focused)
+
+profile:
+  name: "Ramiel"
+  device: ""  # fill in serial if you have multiple devices connected
+
+system:
+  dark_mode: true
+  disable_analytics: true
+
+obtainium:
+  - id: dev.imranr.obtainium
+    url: https://github.com/ImranR98/Obtainium
+    name: Obtainium
+    bootstrap: true
+
+  # Privacy-focused apps sourced directly from developers
+  - id: org.thoughtcrime.securesms
+    url: https://github.com/signalapp/Signal-Android
+    name: Signal
+  - id: com.zaneschepke.wireguardroid
+    url: https://github.com/wireguard/wireguard-android
+    name: WireGuard
+
+fdroid:
+  - id: com.termux
+    name: Termux
+
+  # TODO: fill in tablet-specific apps
+
+aurora:
+  # Aurora Store not needed on de-Googled GrapheneOS tablet unless
+  # specific Play-only apps are required. Obtainium + F-Droid cover most needs.
+
+nix-on-droid:
+  enabled: true
+  flake_url: "github:jbotwell/mortlake#remiel"

@@ -1,0 +1,299 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jsonresume/resume-schema/v1.0.0/schema.json",
+  "basics": {
+    "name": "John Otwell",
+    "label": "Software Engineer",
+    "image": "/img/headshot.jpg",
+    "email": "john.otwell@proton.me",
+    "phone": "+14703324450",
+    "url": "https://johnotwell.com",
+    "summary": "A generalist software engineer who works comfortably at any layer of abstraction, from hardware-specific data-oriented design to highly distributed systems. My study and experience span biology, education, finance, cryptocurrency, and AI orchestration—I see connections across domains that specialists often miss, and I use that breadth to frame the right problems so solutions follow naturally. I build tools for truly seeing what is happening in a system end to end, communicate what I am assuming and the models my work encodes, and leverage AI tooling to move faster and reason more clearly about complex systems.",
+    "location": {
+      "city": "Spartanburg",
+      "countryCode": "US",
+      "region": "South Carolina"
+    },
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "john-otwell-b555a6241",
+        "url": "https://www.linkedin.com/in/john-otwell-b555a6241"
+      },
+      {
+        "network": "GitHub",
+        "username": "jbotwell",
+        "url": "https://github.com/jbotwell"
+      }
+    ]
+  },
+  "work": [
+    {
+      "name": "S&P Global",
+      "description": "Financial data and analytics",
+      "position": "Software Engineer",
+      "location": "(REMOTE) New York, New York, United States",
+      "url": "https://www.spglobal.com",
+      "startDate": "2023-10-01",
+      "summary": "Software Engineer building AI orchestration systems at a leading financial services company with 10,001+ employees.",
+      "highlights": [
+        "Designed and built AI Assistant specializing in communicating analytics data for capital markets",
+        "Orchestrated multiple agents involving different sets of tools, prompts, RAG resources, security models, and capabilities to present a competent AI to end users",
+        "Designed and built MCP server uniting backend services to allow internal users and AI applications to discover and manage market data",
+        "Implemented assessment and improvement pipeline coordinating models, prompts, tools, and goals"
+      ]
+    },
+    {
+      "name": "Efficiency Aggregators LLC",
+      "description": "Electrical services and generator installation",
+      "position": "Head of Technology",
+      "location": "(REMOTE) Houston, Texas, United States",
+      "startDate": "2020-08-01",
+      "endDate": "2023-04-01",
+      "summary": "Led technology initiatives and built custom software solutions. Continued part-time while at Chipper Cash.",
+      "highlights": [
+        "Built and customized ERP system using Python, Odoo14, PostgreSQL, JavaScript, and Digital Ocean tools to administer ~$500k in revenue per quarter",
+        "Developed greenfield application using JavaScript, Node.js, and SQLite to administer electrical load-balancing with residential standby generator customers",
+        "Built static site using Jekyll and Ruby that consistently scores above 90 in relevant Google Lighthouse metrics",
+        "Administered all vendor accounts including Google Workspace, Housecall Pro, Digital Ocean, Gitlab, and JustHost"
+      ]
+    },
+    {
+      "name": "Chipper Cash",
+      "description": "Cross-border payments and cryptocurrency",
+      "position": "Software Engineer",
+      "location": "(REMOTE) San Francisco, California, United States",
+      "url": "https://chippercash.com",
+      "startDate": "2022-06-01",
+      "endDate": "2023-03-01",
+      "summary": "Built backend cryptocurrency systems for a financial services company.",
+      "highlights": [
+        "Built and administered backend cryptocurrency system serving ~90k active users",
+        "Used TypeScript, Koa, PostgreSQL, TypeORM, and Retool to deliver backend services across ~200 endpoints with 33 endpoints directly administered",
+        "Led design and integration of CBDC technologies into Chipper's offering",
+        "Used TypeScript, React, and React Native front-end technologies to coordinate with and support front-end team in delivering good end-to-end UX",
+        "Led effort to integrate OpenAPI 3.0 spec into backend workflow; directly used OAS to document and test 33 endpoints"
+      ]
+    },
+    {
+      "name": "Instructure",
+      "description": "Educational technology (Canvas LMS)",
+      "position": "Software Engineer",
+      "location": "Salt Lake City Metropolitan Area",
+      "url": "https://www.instructure.com",
+      "startDate": "2020-02-01",
+      "endDate": "2020-08-01",
+      "summary": "Software Engineer building custom applications at an educational technology company.",
+      "highlights": [
+        "Developed and maintained custom applications for 8 clients delivering student progress tracking, content delivery, assessments management, and scheduling",
+        "Built small applications with 10-30 controller methods using Ruby, Rails, JavaScript, React, and PostgreSQL to integrate with the Canvas Learning Management System",
+        "Collaborated remotely with a team of 10 software and test engineers"
+      ]
+    },
+    {
+      "name": "Galvanize Inc",
+      "description": "Coding bootcamp and technical education",
+      "position": "Software Engineer in Residence",
+      "location": "New York, New York, United States",
+      "url": "https://www.galvanize.com",
+      "startDate": "2019-12-01",
+      "endDate": "2020-03-01",
+      "summary": "Teacher and Tutor at an educational technology and coding bootcamp company.",
+      "highlights": [
+        "Taught ~35 students in two different cohorts for Hack Reactor Remote in fullstack software development",
+        "Answered questions and provided instruction in general programming and in technologies including JavaScript, React, Redux, Node, Express, MySQL, and PostgreSQL",
+        "Addressed ~3 help tickets per hour during instructional periods and scheduled virtual office hours 10 hours per week"
+      ]
+    },
+    {
+      "name": "High School for Construction Trades, Engineering & Architecture",
+      "description": "New York City public high school",
+      "position": "High School Teacher",
+      "location": "New York City Metropolitan Area",
+      "startDate": "2018-09-01",
+      "endDate": "2019-09-01",
+      "summary": "High School Teacher in New York City.",
+      "highlights": [
+        "Instructed over 100 students in grades 9-12 in AP Biology, AP Computer Science, Introductory Biology, and Introductory Computer Science"
+      ]
+    },
+    {
+      "name": "Peace Corps",
+      "description": "United States federal volunteer program",
+      "position": "English Teacher and Teacher Trainer",
+      "location": "Sukabumi, West Java, Indonesia",
+      "url": "https://www.peacecorps.gov",
+      "startDate": "2015-03-01",
+      "endDate": "2017-07-01",
+      "summary": "English Teacher and Teacher Trainer in Sukabumi, West Java, Indonesia.",
+      "highlights": [
+        "Instructed over 150 students in English and over 100 fellow volunteers and local teachers in English and pedagogy"
+      ]
+    }
+  ],
+  "volunteer": [],
+  "education": [
+    {
+      "institution": "University of Georgia",
+      "url": "https://uga.edu",
+      "area": "Cellular and Molecular Biology & Microbiology",
+      "studyType": "Bachelor of Science",
+      "startDate": "2007-08-15",
+      "endDate": "2012-05-15"
+    },
+    {
+      "institution": "University of Nicosia",
+      "url": "https://www.unic.ac.cy/",
+      "area": "Digital Currencies",
+      "studyType": "Master of Science",
+      "startDate": "2017-08-15",
+      "endDate": "2019-08-15"
+    },
+    {
+      "institution": "Hack Reactor",
+      "url": "https://hackreactor.com",
+      "area": "Software Engineering Intensive",
+      "studyType": "Bootcamp",
+      "startDate": "2019-08-28",
+      "endDate": "2019-11-28"
+    },
+    {
+      "institution": "Bradfield School of Computer Science",
+      "url": "https://bradfieldcs.com/",
+      "area": "Computer Science",
+      "studyType": "Continuing Education",
+      "startDate": "2022-08-15",
+      "endDate": "2023-08-15"
+    }
+  ],
+  "awards": [],
+  "certificates": [
+    {
+      "name": "Bradfield Computer Science Program",
+      "issuer": "Bradfield School of Computer Science",
+      "date": "2023-08-15"
+    },
+    {
+      "name": "Returned Peace Corps Volunteer (RPCV)",
+      "issuer": "United States Peace Corps",
+      "date": "2017-07-01"
+    }
+  ],
+  "publications": [],
+  "skills": [
+    {
+      "name": "Backend Development",
+      "level": "Advanced",
+      "keywords": [
+        "Python",
+        "Node.js",
+        "TypeScript",
+        "Koa",
+        "TypeORM",
+        "C#",
+        ".NET Core",
+        "ASP.NET",
+        "FastAPI",
+        "Express",
+        "Ruby",
+        "Ruby on Rails",
+        "GraphQL"
+      ]
+    },
+    {
+      "name": "Frontend & Web",
+      "level": "Intermediate",
+      "keywords": [
+        "JavaScript",
+        "React",
+        "React Native",
+        "Redux",
+        "AngularJS",
+        "Jekyll"
+      ]
+    },
+    {
+      "name": "AI & Machine Learning",
+      "level": "Advanced",
+      "keywords": [
+        "Azure OpenAI",
+        "LangGraph",
+        "LangChain",
+        "AWS Bedrock",
+        "Anthropic models",
+        "FastMCP"
+      ]
+    },
+    {
+      "name": "Databases",
+      "level": "Advanced",
+      "keywords": [
+        "PostgreSQL",
+        "SQLite",
+        "MySQL"
+      ]
+    },
+    {
+      "name": "Infrastructure & Tools",
+      "level": "Advanced",
+      "keywords": [
+        "Digital Ocean",
+        "GitLab",
+        "Google Workspace",
+        "Retool",
+        "AWS",
+        "OpenAPI"
+      ]
+    },
+    {
+      "name": "ERP Systems",
+      "level": "Intermediate",
+      "keywords": [
+        "Odoo14",
+        "OpenERP"
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "fluency": "Native"
+    },
+    {
+      "language": "Bahasa Indonesia",
+      "fluency": "Conversational"
+    }
+  ],
+  "interests": [
+    {
+      "name": "Semantic Web",
+      "keywords": []
+    },
+    {
+      "name": "Applied Ontology",
+      "keywords": []
+    },
+    {
+      "name": "Declarative Build Systems",
+      "keywords": []
+    },
+    {
+      "name": "Declarative Configuration",
+      "keywords": []
+    },
+    {
+      "name": "Pedagogy",
+      "keywords": []
+    },
+    {
+      "name": "Cognitive Science",
+      "keywords": []
+    }
+  ],
+  "references": [],
+  "projects": [],
+  "meta": {
+    "version": "1.0.0",
+    "lastModified": "2026-07-07T18:30:00Z",
+    "canonical": "https://github.com/jbotwell/career-ops/blob/main/data/resume.json"
+  }
+}

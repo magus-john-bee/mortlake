@@ -1,0 +1,20 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "zai-coding-plan": {
+      "options": {
+        "apiKey": "{file:/run/secrets/glm-api-key}"
+      }
+    },
+    "minimax-coding-plan": {
+      "options": {
+        "apiKey": "{file:/run/secrets/minimax-api-key}"
+      }
+    },
+    "openrouter": {
+      "options": {
+        "apiKey": "{file:/run/secrets/openrouter-api-key}"
+      }
+    }
+  }
+}
