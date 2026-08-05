@@ -25,7 +25,6 @@
         self.nixosModules.helix
         self.nixosModules.zellij
         self.nixosModules.nerd-fonts
-        self.nixosModules.codexSafe
         self.nixosModules.niri
         self.nixosModules.greetd
         self.nixosModules.ghostty

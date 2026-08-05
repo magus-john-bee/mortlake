@@ -141,25 +141,14 @@
 
           skills = {
             config.wiki.path = "/home/john/vault/book-of-thoth";
-            external_dirs = [ "/etc/codex/skills" ];
+            external_dirs = [ "/home/john/src/mortlake/skills" ];
           };
 
-          documents."SOUL.md" = builtins.readFile ./hermes_soul.md;
+          documents."SOUL.md" = builtins.readFile ./hermes/SOUL.md;
         };
 
-        # Trimmed MCP servers — removed mempalace, codegraph, procontext
+        # Trimmed MCP servers — removed mempalace, codegraph, procontext, ouroboros, agentmemory
         mcpServers = {
-          ouroboros = {
-            command = "uvx";
-            args = [
-              "--from"
-              "ouroboros-ai[mcp]"
-              "ouroboros"
-              "mcp"
-              "serve"
-            ];
-            enabled = true;
-          };
           codebase-memory = {
             command = "${pkgs.codebase-memory-mcp}/bin/codebase-memory-mcp";
             args = [ ];
@@ -194,11 +183,9 @@
       systemd.services.hermes-agent = {
         environment = {
           LD_LIBRARY_PATH = "${pkgs.libopus.outPath}/lib:${pkgs.stdenv.cc.cc.lib}/lib";
-          CODEX_HOME = "/etc/codex";
         };
         path = [
           pkgs.binutils
-          pkgs.codex
           pkgs.nodejs
         ];
         serviceConfig = {

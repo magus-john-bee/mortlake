@@ -1,11 +1,10 @@
 # Herdr — agent multiplexer (herdr.dev). "tmux for coding agents."
-# Manages panes for Pi, Codex, Hermes, etc. Tracks lifecycle state
+# Manages panes for Pi, Hermes, etc. Tracks lifecycle state
 # (idle/working/blocked) and provides session restore.
 #
 # Per-user integrations are installed after first boot:
 #   herdr integration install pi      (lifecycle hooks)
-#   herdr integration install hermes   (lifecycle hooks)
-#   herdr integration install codex    (session identity)
+#   herdr integration install hermes  (lifecycle hooks)
 { ... }:
 {
   flake.nixosModules.herdr =

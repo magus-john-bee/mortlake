@@ -25,11 +25,9 @@
       };
 
       # TODO: Check whether pi is in nixpkgs or needs installer script.
-      # Pi may ship its own installer (like codex does).
+      # Pi may ship its own installer script.
       environment.systemPackages = with pkgs; [
         pi
-        # codebase-memory-mcp available here too (moved from codex-safe
-        # so it works regardless of whether Codex is installed)
         codebase-memory-mcp
       ];
 

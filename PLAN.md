@@ -66,7 +66,7 @@ Write these first — everything else depends on them. Each `.nix` is a self-con
 ### Packages & tooling
 
 - [ ] **`packages.nix`** — merge common/config/dev-packages into one module. Core (curl, wget, vim, ghostty.terminfo), Nix tooling (age, sops, direnv, nh, check-jsonschema, ssh-to-age, nickel), Dev (bat, bun, fd, fzf, git, jujutsu, just, nodejs, pandoc, python313, uv, tre-command).
-- [ ] **`nix-qol.nix`** — nix gc, auto-optimise, flake registry. **Must keep:** `programs.nix-ld` (critical — MCP servers and codex tools use `LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib"`) and `services.envfs.enable` (provides `/usr/bin/env`). Keep `cache.otwell.dev` substituter if nix-serve is deployed (it is — Phase 6). Reference: `corpus/modules/features/nix-qol.nix`
+- [ ] **`nix-qol.nix`** — nix gc, auto-optimise, flake registry. **Must keep:** `programs.nix-ld` (critical — MCP servers and Pi tools use `LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib"`) and `services.envfs.enable` (provides `/usr/bin/env`). Keep `cache.otwell.dev` substituter if nix-serve is deployed (it is — Phase 6). Reference: `corpus/modules/features/nix-qol.nix`
 - [ ] **`dev-dirs.nix`** — tmpfiles rules for `~/src`, `~/vault`, `~/vault/logbook`, `~/vault/book-of-thoth`, `~/reference-repos`. Preservation + restic paths. Note: `book-of-thoth` path is referenced by hermes.nix (`skills.config.wiki.path`) — keep consistent. Sets `mortlake.restic.paths`. Reference: `corpus/modules/features/dev-dirs.nix`
 - [ ] **`git.nix`** — git config with direnv. Reference: corpus.
 - [ ] **`gh.nix`** — wrapped gh with sops auth (`gh-oauth-token` template → `/etc/gh/hosts.yml`). Reference: corpus (good pattern).
@@ -89,18 +89,17 @@ Write these first — everything else depends on them. Each `.nix` is a self-con
 
 Write these before host configs that import them.
 
-- [ ] **`herdr.nix`** — install on all NixOS hosts. Persist `~/.config/herdr`, `~/.local/share/herdr`. Per-user integration install happens after first boot (`herdr integration install pi`, `herdr integration install hermes`, `herdr integration install codex`). Check nixpkgs availability — may need flake input or manual install.
+- [ ] **`herdr.nix`** — install on all NixOS hosts. Persist `~/.config/herdr`, `~/.local/share/herdr`. Per-user integration install happens after first boot (`herdr integration install pi`, `herdr integration install hermes`). Check nixpkgs availability — may need flake input or manual install.
 - [ ] **`pi.nix`** — Pi agent. Persist `~/.pi`. Needs API keys via sops template (`pi-env`: GLM_API_KEY, OPENROUTER_API_KEY, EXA_API_KEY). Check whether `pi` is in nixpkgs or needs installer script. Include `codebase-memory-mcp` in systemPackages here (moved from codex-safe so it's available regardless of Codex). **Skills/extensions:** all Pi settings, skills, and extensions live in `~/src/mortlake/` — `.pi/skills/` and `.pi/prompts/` are project-local in the repo. **Shared skills:** Pi and Hermes both read from `~/src/mortlake/skills/` as canonical source. **Cognee endpoint:** set `COGNEE_API_URL` environment variable pointing at the Cognee service (host-configurable).
 - [ ] **`cognee.nix`** — shared memory layer for ALL agents (Hermes + Pi on all hosts). Postgres 17 + pgvector backend. Cognee API on `:8000` (systemd user service). fastembed local embeddings, GLM via Z.AI for entity extraction. See [agent architecture](./docs/agent-architecture.md) and [cognee setup plan](./docs/cognee-setup-plan.md). **Host:** configurable via module option (Uriel or Jehoel). Endpoint passed to all agent configs via sops template.
 - [ ] **`openshell.nix`** — sandboxed Pi runtime for raphael/jehoel. Needs podman or docker. Check nixpkgs availability.
-- [ ] **`hermes.nix`** — Hermes on uriel only. **Co-located file:** `hermes_soul.md`. **Trimmed MCP servers:** ouroboros, codebase-memory, context (neuledge), exa, nixos, gitmcp. **Remove:** mempalace, codegraph, procontext, agentmemory. **Must keep (non-MCP settings):** model config (provider/model/context_length=1048576), fallback_model, STT/TTS config, smart_model_routing, session_reset (discord idle 180min), provider_routing, compression, memory settings (char limits), skills config (`external_dirs = ["/etc/codex/skills", "~/src/mortlake/skills"]`, `wiki.path = "/home/john/vault/book-of-thoth"`), `extraDependencyGroups = ["exa", "messaging", "tts-premium", "voice"]`, systemd service env (`LD_LIBRARY_PATH` with libopus + stdenv.cc.cc.lib, `CODEX_HOME=/etc/codex`), path entries (binutils, codex, nodejs). **Cognee:** add HTTP client for shared memory (curl-based, not MCP). Reference: `corpus/modules/features/hermes.nix`
-- [ ] **`codex-safe.nix`** — skeleton. **Co-located files:** `codex-shared/config.toml`, `codex-shared/models.json`, `codex-shared/AGENTS.md`. **Must fix:** `codex-shared/config.toml` has `model_provider = "zai-proxy"` and `base_url = "http://127.0.0.1:4891/v1"` (the proxy port). Since codex-zai-proxy is being dropped, change to direct API: `base_url = "https://api.z.ai/api/coding/paas/v4"`. Minimal config, no MCP servers. `environment.etc."codex/skills".source` must point to `./../../skills` (not `agent-skills`). Reference: corpus but gut it.
-- [ ] **Drop:** `codex-free.nix` (role filled by Pi unconstrained), `codex-zai-proxy.nix` (unnecessary — see below), `opencode.nix` (superseded by Pi), `opencode/` directory.
+- [ ] **`hermes.nix`** — Hermes on uriel only. **Co-located file:** `hermes/SOUL.md`. **Trimmed MCP servers:** codebase-memory, context (neuledge), exa, nixos, gitmcp. **Remove:** mempalace, codegraph, procontext, agentmemory, ouroboros. **Must keep (non-MCP settings):** model config (provider/model/context_length=1048576), fallback_model, STT/TTS config, smart_model_routing, session_reset (discord idle 180min), provider_routing, compression, memory settings (char limits), skills config (`external_dirs = ["/etc/codex/skills", "~/src/mortlake/skills"]`, `wiki.path = "/home/john/vault/book-of-thoth"`), `extraDependencyGroups = ["exa", "messaging", "tts-premium", "voice"]`, systemd service env (`LD_LIBRARY_PATH` with libopus + stdenv.cc.cc.lib, `CODEX_HOME=/etc/codex`), path entries (binutils, codex, nodejs). **Cognee:** add HTTP client for shared memory (curl-based, not MCP). Reference: `corpus/modules/features/hermes.nix`
+- [ ] **Drop:** `codex-free.nix`, `codex-zai-proxy.nix`, `codex-safe.nix`, `codex-shared/` (Codex dropped — Pi is primary coding agent), `opencode.nix` (superseded by Pi), `opencode/` directory.
 
-**Why codex-zai-proxy is dead:** The proxy translates Codex API calls to Z.AI's coding plan endpoint. Pi has native Z.AI support built in — the `zai` provider already uses `baseUrl: https://api.z.ai/api/coding/paas/v4` with correct compat flags (`thinkingFormat: "zai"`, `supportsDeveloperRole: false`). Just `/login zai` and `/model glm-5.2` in Pi. No proxy, no translation layer. **Note:** when using the codex-safe skeleton, `codex-shared/config.toml` currently has `model_provider = "zai-proxy"` and `base_url = "http://127.0.0.1:4891/v1"` — change to direct API access (`base_url = "https://api.z.ai/api/coding/paas/v4"`) since the proxy is gone.
+**Why Codex is dropped:** Pi is the primary coding agent with native Z.AI support built in — the `zai` provider already uses `baseUrl: https://api.z.ai/api/coding/paas/v4` with correct compat flags (`thinkingFormat: "zai"`, `supportsDeveloperRole: false`). Just `/login zai` and `/model glm-5.2` in Pi. No proxy, no translation layer, no separate Codex skeleton needed.
 
 **Z.AI policy awareness (Issue #4187):** Z.AI's coding plan is "strictly limited to officially supported tools." Pi is not on the supported list (Hermes/OpenClaw IS, best-effort tier). Wire traffic from Pi looks like stock OpenAI SDK, which Z.AI may flag. Most users report no issues, but be aware throttling/ban risk exists after 3 violations. Alternative: use general API endpoint (`/api/paas/v4`) via `czottmann/pi-zai-api` extension if on pay-as-you-go.
-- [ ] **`ouroboros.nix`** — config deployment only (invoked via `uvx`). **Co-located:** `ouroboros/config.yaml`. Reference: corpus.
+- [ ] **`ouroboros.nix`** — **DROPPED.** Replaced by OpenSpec. Novel concepts to reify as skills (see TODO).
 
 ## Phase 4: Desktop modules
 
@@ -108,8 +107,10 @@ Write these before host configs that import them.
 - [ ] **`greetd.nix`** — niri-session auto-login + tuigreet fallback. Reference: corpus.
 - [ ] **`ghostty.nix`** — wrapped ghostty. **Co-located file:** `ghostty/config.ghostty`. Reference: corpus.
 - [ ] **`noctalia.nix`** — wrapped noctalia launcher. **Co-located files:** `noctalia.json` (709 lines), `schemas/noctalia.schema.json`. Reference: corpus.
-- [ ] **`browser.nix`** — nyxt + ungoogled-chromium + **persistence** (was missing in corpus). Persist `.config/chromium`, `.config/nyxt`, `.local/share/nyxt`, `.cache/nyxt`. `programs.chromium.extensions` for KeePassXC-Browser (`oboonakemofpalcgghocfoadofidjkkk`) + uBlock Origin (`cjpalhdlnbpafiamejdnhcphjbkeiagm`). Disable Chromium password manager (`PasswordManagerEnabled = false`). Register KeePassXC native messaging host for Chromium.
-- [ ] **`nyxt-config.lisp`** — declarative Nyxt config with built-in KeePassXC password interface (`password-keepassxc.lisp`). TODO: expand with keybindings, search engines, commands.
+- [ ] **Split `browser.nix` → `nyxt.nix` + `chromium.nix`** — separate the two browsers into independent modules so they can be enabled per-host independently. Currently both are bundled in `browser.nix`.
+  - **`chromium.nix`**: ungoogled-chromium, enterprise policy extensions (KeePassXC-Browser, uBlock Origin), `PasswordManagerEnabled = false`, KeePassXC native messaging host. Persist `.config/chromium`.
+  - **`nyxt.nix`**: Nyxt browser, `nyxt-config.lisp` declarative config (keybindings, search engines, KeePassXC password interface via `password-keepassxc.lisp`). Persist `.config/nyxt`, `.local/share/nyxt`, `.cache/nyxt`.
+- [ ] **Browser state persistence audit** — ensure preservation covers all directories that matter for browser QoL on tmpfs-root hosts. Currently persisted: `.config/chromium`, `.config/nyxt`, `.local/share/nyxt`, `.cache/nyxt`. **Add:** `.cache/chromium` (frequently visited site cache, service worker cache — without it every reboot re-fetches favicons and re-validates SW registrations). Consider: `.local/share/flatpak` if any browser-adjacent flatpaks (keepassxc) are used.
 - [ ] **`gui-packages.nix`** — anki, keepassxc (not proton-pass), librewolf, logseq, meld, okular, vlc. No zed-editor. No zed/garnix cache config. Note: may need `permittedInsecurePackages = [ "electron-39.8.10" ]` for logseq/anki.
 - [ ] **`sound.nix`** — pipewire, rtkit. Reference: corpus.
 - [ ] **`nerd-fonts.nix`** — fonts. Reference: corpus.
@@ -140,7 +141,7 @@ Host configs import modules from Phases 2–5. Don't start until the needed modu
 
 - [ ] Copy `corpus/modules/hosts/thoth/` as starting point, rename module names (`thothHardware`→`urielHardware`, etc.)
 - [ ] **Resource limits:** `max-jobs = 1; cores = 1; max-substitution-jobs = 3` (Hetzner VPS constraints)
-- [ ] Imports: hermes, podman, nginx, restic, codex-safe (skeleton), pi (unconstrained), herdr, cognee
+- [ ] Imports: hermes, podman, nginx, restic, pi (unconstrained), herdr, cognee
 - [ ] Update `.sops.yaml`: rename `&thoth` → `&uriel` (same age key — SSH host key doesn't change on rename)
 - [ ] `sops updatekeys modules/features/secrets.yaml` + `supersecrets.yaml`
 
@@ -187,7 +188,7 @@ Before flipping repo to public:
 - [ ] Move Syncthing GUI password hash to sops
 - [ ] Consider moving password hashes to sops (`hashedPasswordFile`) — optional, they're salted
 - [ ] Grep sweep: no `$6$`, `$2y$`, `password =`, `apiKey`, unencrypted IPs in `.nix` files
-- [ ] Audit `secrets.yaml` for stale entries: remove `codex-ws-token`, `forge-openrouter-api-key`, `forge-services-api-key` if unused
+- [ ] Audit `secrets.yaml` for stale entries: remove `codex-ws-token` (if it still exists), `forge-openrouter-api-key`, `forge-services-api-key` if unused
 - [ ] Investigate `&caliban` age key — what is it? Remove if unused, or document.
 - [ ] Make repo public: `gh repo edit jbotwell/mortlake --visibility public`
 
@@ -196,7 +197,7 @@ Before flipping repo to public:
 - [ ] **Absorb dev-resume** — rsync `~/src/dev-resume/` into `sites/dev-resume/`. Drop unused theme submodules (keep gruvbox). Add Hugo/node build artifacts to `.gitignore` (already in `.gitignore`).
 - [ ] **Copy skills** — rsync `corpus/agent-skills/` into `skills/`. Rename `skills/corpus/` → `skills/mortlake/`. Update internal references in skill files that mention corpus paths (`corpus-nixos-modules`, `corpus-ssh-key-management`, etc.).
 - [ ] **Copy Android scripts** — rsync `corpus/android/` scripts and `lib/`. Update `android/nix-on-droid/README.md` references from corpus→mortlake. Create raziel/haniel profiles from `pixel-9.yaml` template.
-- [ ] **justfile** — already written. Verify `sync-ouroboros-skills` and `sync-feynman-skills` targets use `skills/` path.
+- [ ] **`justfile`** — already written. Verify `sync-feynman-skills` target uses `skills/` path. Remove `sync-ouroboros-skills` target (dropped).
 - [ ] **Deprecate corpus + dev-resume** — add deprecation notice to both repos, optionally archive on GitHub.
 
 ## Phase 9: Documentation
@@ -237,7 +238,7 @@ Phase 9 (docs) — after everything else
 
 ### Learning
 
-- [ ] **Pi** — learn the full feature set: hooks system, TypeScript extensions, `~/.pi/agent/models.json` custom providers, `/login` and `/model` workflows, session management, how it differs from Codex/Hermes
+- [ ] **Pi** — learn the full feature set: hooks system, TypeScript extensions, `~/.pi/agent/models.json` custom providers, `/login` and `/model` workflows, session management, how it differs from Hermes
 - [ ] **Herdr** — learn workspace/tab/pane management, agent state model (idle/working/blocked), session restore, `herdr agent start/stop`, integration install mechanics, per-pane output watching
 - [ ] **Zellij** — flesh out config beyond defaults: custom layouts (dev.kdl, default.kdl), floating panes, tab naming, plugin config, keybinding tweaks, integration with herdr panes
 - [ ] **Cognee** — learn the API: cognify pipeline, add_data, search, graph queries. How to structure data for best retrieval. How Hermes and Pi make REST calls. See [setup plan](./docs/cognee-setup-plan.md).

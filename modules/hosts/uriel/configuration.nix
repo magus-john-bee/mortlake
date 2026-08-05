@@ -23,13 +23,11 @@
         self.nixosModules.zellij
         self.nixosModules.dev-dirs
         self.nixosModules.restic
-        self.nixosModules.codexSafe
         self.nixosModules.intellishell
         # AI tooling
         self.nixosModules.pi
         self.nixosModules.herdr
         self.nixosModules.gbrain
-        self.nixosModules.ouroboros
         self.nixosModules.nginx
       ];
 

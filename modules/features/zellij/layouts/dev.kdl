@@ -20,10 +20,6 @@ layout {
         		command "zsh"
         		close_on_exit false
         	}
-        	pane name="codex" {
-        		command "codex"
-        		close_on_exit false
-        	}
         }
         pane size=1 borderless=true {
             plugin location="status-bar"
