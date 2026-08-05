@@ -108,8 +108,10 @@ Write these before host configs that import them.
 - [ ] **`greetd.nix`** — niri-session auto-login + tuigreet fallback. Reference: corpus.
 - [ ] **`ghostty.nix`** — wrapped ghostty. **Co-located file:** `ghostty/config.ghostty`. Reference: corpus.
 - [ ] **`noctalia.nix`** — wrapped noctalia launcher. **Co-located files:** `noctalia.json` (709 lines), `schemas/noctalia.schema.json`. Reference: corpus.
-- [ ] **`browser.nix`** — nyxt + ungoogled-chromium + **persistence** (was missing in corpus). Persist `.config/chromium`, `.config/nyxt`, `.local/share/nyxt`, `.cache/nyxt`. `programs.chromium.extensions` for KeePassXC-Browser (`oboonakemofpalcgghocfoadofidjkkk`) + uBlock Origin (`cjpalhdlnbpafiamejdnhcphjbkeiagm`). Disable Chromium password manager (`PasswordManagerEnabled = false`). Register KeePassXC native messaging host for Chromium.
-- [ ] **`nyxt-config.lisp`** — declarative Nyxt config with built-in KeePassXC password interface (`password-keepassxc.lisp`). TODO: expand with keybindings, search engines, commands.
+- [ ] **Split `browser.nix` → `nyxt.nix` + `chromium.nix`** — separate the two browsers into independent modules so they can be enabled per-host independently. Currently both are bundled in `browser.nix`.
+  - **`chromium.nix`**: ungoogled-chromium, enterprise policy extensions (KeePassXC-Browser, uBlock Origin), `PasswordManagerEnabled = false`, KeePassXC native messaging host. Persist `.config/chromium`.
+  - **`nyxt.nix`**: Nyxt browser, `nyxt-config.lisp` declarative config (keybindings, search engines, KeePassXC password interface via `password-keepassxc.lisp`). Persist `.config/nyxt`, `.local/share/nyxt`, `.cache/nyxt`.
+- [ ] **Browser state persistence audit** — ensure preservation covers all directories that matter for browser QoL on tmpfs-root hosts. Currently persisted: `.config/chromium`, `.config/nyxt`, `.local/share/nyxt`, `.cache/nyxt`. **Add:** `.cache/chromium` (frequently visited site cache, service worker cache — without it every reboot re-fetches favicons and re-validates SW registrations). Consider: `.local/share/flatpak` if any browser-adjacent flatpaks (keepassxc) are used.
 - [ ] **`gui-packages.nix`** — anki, keepassxc (not proton-pass), librewolf, logseq, meld, okular, vlc. No zed-editor. No zed/garnix cache config. Note: may need `permittedInsecurePackages = [ "electron-39.8.10" ]` for logseq/anki.
 - [ ] **`sound.nix`** — pipewire, rtkit. Reference: corpus.
 - [ ] **`nerd-fonts.nix`** — fonts. Reference: corpus.
