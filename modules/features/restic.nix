@@ -1,3 +1,33 @@
+# TODO (jehoel restic) — remaining manual steps:
+#
+# 1. B2 Application Key — create a key restricted to the jehoel-restic bucket
+#    (S3 compatible). Need: keyID (005...) + applicationKey.
+#
+# 2. Restic repo password — generate or choose a strong passphrase:
+#      openssl rand -base64 32
+#    Store it somewhere safe; it goes into sops next.
+#
+# 3. Add secrets to supersecrets.yaml (on Jehoel or Raphael — has age key):
+#      cd ~/src/mortlake
+#      sops modules/features/supersecrets.yaml
+#    Add three keys:
+#      jehoel-restic-password: "<the passphrase from step 2>"
+#      jehoel-b2-access-key-id: "<keyID from step 1>"
+#      jehoel-b2-secret-access-key: "<applicationKey from step 1>"
+#
+# 4. Import this module in jehoel/configuration.nix (already present as
+#    self.nixosModules.restic in the imports list — confirm it's there).
+#
+# 5. Rebuild:
+#      sudo nixos-rebuild switch --flake .#jehoel
+#    The module sets initialize = true, so the repo will be created on
+#    first backup run. No manual restic init needed.
+#
+# 6. Verify first backup:
+#      systemctl status restic-backups-jehoel
+#      sudo restic-jehoel snapshots
+#    (wrapper sources the env file automatically)
+#
 _:
 {
   flake.nixosModules.restic =
@@ -25,13 +55,15 @@ _:
           exclude = [ "*.tmp" ];
         };
 
-        # Jehoel (replaces mab) — server + desktop
+        # Jehoel — server + desktop
+        # Service modules (jellyfin, transmission, mealie) self-register via
+        # mortlake.restic.paths, so they're not listed here.
         jehoel = {
           name = "jehoel";
-          repository = "s3:s3.us-east-005.backblazeb2.com/mab-restic";
+          repository = "s3:s3.us-east-005.backblazeb2.com/jehoel-restic";
           passwordSecret = "jehoel-restic-password";
           envTemplate = "jehoel-restic-b2-env";
-          paths = [ ];
+          paths = [ "/home/john/data" ];
           exclude = [ "*.tmp" ];
         };
 
