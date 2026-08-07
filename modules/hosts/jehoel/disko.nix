@@ -1,9 +1,11 @@
 # Jehoel disk layout — placeholder based on mab pattern.
 # tmpfs root (size=50%, mode=755), btrfs /persistent + /nix, swap.
 # Fill in actual partition layout during physical provisioning.
-{ ... }:
+{ inputs, ... }:
 {
   flake.nixosModules.jehoelDisko = {
+    imports = [ inputs.disko.nixosModules.disko ];
+
     disko.devices = {
       disk = {
         main = {
@@ -60,15 +62,13 @@
           "mode=755"
         ];
       };
-
-      swap = {
-        swapfile = {
-          path = "/swap/swapfile";
-          size = 8192;
-        };
-      };
     };
 
     fileSystems."/persistent".neededForBoot = true;
+
+    # Swapfile on the /swap btrfs subvolume
+    swapDevices = [
+      { device = "/swap/swapfile"; size = 8 * 1024; }
+    ];
   };
 }

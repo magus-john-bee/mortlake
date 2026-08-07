@@ -18,7 +18,7 @@
 
       # Symlink Nyxt config into ~/.config/nyxt/ for the john user
       # (Nyxt reads from $XDG_CONFIG_HOME/nyxt/config.lisp)
-      system.user.services.nyxt-config-link = {
+      systemd.user.services.nyxt-config-link = {
         script = ''
           mkdir -p /home/john/.config/nyxt
           ln -sf /etc/nyxt/config.lisp /home/john/.config/nyxt/config.lisp
