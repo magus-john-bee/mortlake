@@ -28,6 +28,7 @@
         self.nixosModules.pi
         self.nixosModules.herdr
         self.nixosModules.gbrain
+        self.nixosModules.taskdog
         self.nixosModules.nginx
       ];
 

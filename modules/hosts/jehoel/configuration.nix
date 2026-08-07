@@ -49,6 +49,7 @@
 
         # AI tooling
         self.nixosModules.herdr
+        self.nixosModules.taskdog
       ];
 
       networking = {
