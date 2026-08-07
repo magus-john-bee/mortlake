@@ -93,16 +93,7 @@ Secrets live in `modules/features/secrets.yaml` and `modules/features/supersecre
 
 ## Restic Backups
 
-Service modules contribute backup paths via the `mortlake.restic` option:
-
-```nix
-mortlake.restic = {
-  paths = [ "/var/lib/my-service" ];
-  exclude = [ "/var/lib/my-service/cache" ];
-};
-```
-
-The restic module merges all contributions into the host's single backup job.
+All backup paths and excludes are listed per-host in the `hostConfig` attrset in `restic.nix`. When adding a new service, add its data directory to the relevant host's `paths`/`exclude` lists there.
 
 ## Landing the Plane (Session Completion)
 

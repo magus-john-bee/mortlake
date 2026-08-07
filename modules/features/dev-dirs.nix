@@ -15,11 +15,5 @@ _:
       "vault"
     ];
 
-    # Back up via restic
-    mortlake.restic.paths = [
-      "/home/john/vault"
-      "/home/john/src"
-      "/home/john/.ssh"
-    ];
   };
 }

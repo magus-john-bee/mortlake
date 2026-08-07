@@ -4,8 +4,6 @@ let
 in
 _: {
   flake.nixosModules.mealie = { lib, ... }: {
-    mortlake.restic.paths = [ "/var/lib/mealie" ];
-
     services.mealie = {
       enable = true;
       port = mealiePort;

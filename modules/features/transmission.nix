@@ -65,9 +65,6 @@ _:
         owner = "john";
       };
 
-      mortlake.restic = {
-        paths = [ "/var/lib/transmission" ];
-      };
 
       services.transmission = {
         enable = true;
