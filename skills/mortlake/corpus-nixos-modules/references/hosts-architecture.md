@@ -18,7 +18,7 @@ Three NixOS hosts managed from the corpus flake at `~/src/corpus`.
 - **Mount**: `/persistent`
 - **Disko**: LUKS encryption, btrfs subvols `persistent` and `nix`, 4G swap partition, ESP + bios-boot
 - **sops**: `sops.nix` (age key at `/persistent/etc/ssh/...`)
-- **User dirs**: declared in `preservation.users.john.directories` (`.ssh`, `src`, `vault`, `reference-repos`)
+- **User dirs**: declared in `preservation.users.john.directories` (`.ssh`, `src`, `vault`)
 - **System dirs**: declared in `preservation.preserveAt."/persistent".directories` (`/tmp`, `/var/lib/nixos`, `/etc/ssh`, NetworkManager, bluetooth)
 - **Files**: `/etc/machine-id`
 
@@ -100,7 +100,7 @@ Goal: bring mab and thoth to parity with puck's architecture.
 - Syncthing config (`/persistent/var/lib/syncthing` — **exclude sync data**)
 - ACME certs (`/persistent/var/lib/acme`)
 - Nginx state (`/persistent/var/lib/nginx`)
-- Home subdirs (`.ssh`, `src`, `vault`, `reference-repos` — defined subdirs, NOT entire home)
+- Home subdirs (`.ssh`, `src`, `vault` — defined subdirs, NOT entire home)
 
 **Explicitly excluded from steady-state restic:** jellyfin media files, transmission downloaded torrents, syncthing synced data. These are replaceable or too large for routine offsite backup.
 

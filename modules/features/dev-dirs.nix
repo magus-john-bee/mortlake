@@ -7,21 +7,18 @@ _:
       "d /home/john/vault/logbook      0755 john users - -"
       "d /home/john/vault/book-of-thoth 0755 john users - -"
       "d /home/john/src                0755 john users - -"
-      "d /home/john/reference-repos    0755 john users - -"
     ];
 
     # Persist across reboots (tmpfs-root hosts)
     preservation.preserveAt."/persistent".users.john.directories = [
       "src"
       "vault"
-      "reference-repos"
     ];
 
     # Back up via restic
     mortlake.restic.paths = [
       "/home/john/vault"
       "/home/john/src"
-      "/home/john/reference-repos"
       "/home/john/.ssh"
     ];
   };

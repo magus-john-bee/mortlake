@@ -70,5 +70,5 @@ Post-migration: `impermanence.nix` deleted, `impermanence` flake input removed, 
 These are in `impermanence.nix` and apply to all hosts that import it:
 - `/var/log`
 - `/var/lib/nixos`
-- `/home/john/vault`, `/home/john/src`, `/home/john/reference-repos`
+- `/home/john/vault`, `/home/john/src`
 - SSH host keys, machine-id
