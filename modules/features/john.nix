@@ -35,6 +35,16 @@
         fi
       '';
 
+      # Default ACL: any file/dir created under /home/john — even by root
+      # via sudo — automatically gets rwx for john. Eliminates the chown
+      # dance when root writes into john's home (common with restic restores,
+      # sops, manual fixes, etc.). Applies to new files only (-d = default).
+      system.activationScripts.john-default-acls.text = lib.mkAfter ''
+        if [ -d /home/john ]; then
+          ${pkgs.acl}/bin/setfacl -R -d -m u:john:rwx /home/john
+        fi
+      '';
+
       users.mutableUsers = false;
       users.users.john = {
         isNormalUser = true;
