@@ -48,17 +48,37 @@
         hashedPassword = "$6$nhupSF2Neq$m61opyOxxlZAt10pdgSw/ORYlLOGa8efAF7dfKVRas8Wl4hVaSUI4d5poAk9VnMFY/xejKkZjst26INwMWrZZ.";
       };
 
-      security.sudo.extraRules = [
-        {
-          users = [ "john" ];
-          commands = [
-            {
-              command = "ALL";
-              options = [ "NOPASSWD" ];
-            }
-          ];
-        }
-      ];
+      security.sudo = {
+        # No password for john — single-user machine, sudo is a formality.
+        extraRules = [
+          {
+            users = [ "john" ];
+            commands = [
+              {
+                command = "ALL";
+                options = [ "NOPASSWD" ];
+              }
+            ];
+          }
+        ];
+        # Suppress the first-use lecture ("We trust you have received...").
+        extraConfig = ''
+          Defaults lecture = never
+        '';
+      };
+
+      # Polkit: allow wheel users to perform privileged actions without
+      # a password prompt. This is the *other* auth stack — even with
+      # NOPASSWD sudo, desktop prompts (mounting, networking, systemd
+      # service control via GUI) route through polkit and would still
+      # ask for a password. On a single-user machine this is pure friction.
+      security.polkit.extraConfig = ''
+        polkit.addRule(function(action, subject) {
+          if (subject.isInGroup("wheel")) {
+            return polkit.Result.YES;
+          }
+        });
+      '';
 
       nix.settings.trusted-users = [
         "root"
