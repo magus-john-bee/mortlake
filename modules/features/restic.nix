@@ -20,8 +20,10 @@
 #
 # 5. Rebuild:
 #      sudo nixos-rebuild switch --flake .#jehoel
-#    The module sets initialize = true, so the repo will be created on
-#    first backup run. No manual restic init needed.
+#    With initialize = false, the repo must already exist (restic 0.17.0+
+#    treats re-init as fatal). Create it manually if needed:
+#      source <(cat /run/secrets.d/jehoel-restic-b2-env)
+#      restic -r s3:s3.us-east-005.backblazeb2.com/jehoel-restic init
 #
 # 6. Verify first backup:
 #      systemctl status restic-backups-jehoel
@@ -156,8 +158,7 @@ _:
           paths = cfg.paths ++ config.mortlake.restic.paths;
           exclude = cfg.exclude ++ config.mortlake.restic.exclude;
 
-          initialize = true;
-          inhibitsSleep = true;
+          initialize = false;
 
           extraBackupArgs = [ "--verbose" ];
 
@@ -170,12 +171,13 @@ _:
           createWrapper = true;
         };
 
-        systemd.services."restic-backups-${cfg.name}" = {
-          serviceConfig = {
-            User = lib.mkForce "john";
-            Group = lib.mkForce "users";
-          };
-        };
+        # Run as root (the NixOS default). Root reads all backup paths,
+        # all sops secrets (bypasses file perms), and the cache directory
+        # without permission issues. The `restic-<host>` wrapper still works
+        # for manual use: `sudo restic-jehoel snapshots`.
+        # Previous User=john override caused: polkit access denied on
+        # systemd-inhibit, cache permission denied panics, and would fail
+        # on any root-owned backup path.
 
         environment.systemPackages = [ pkgs.restic ];
       };
