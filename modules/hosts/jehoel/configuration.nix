@@ -39,15 +39,8 @@
         self.nixosModules.browser
         self.nixosModules.sound
 
-        # GPU + game streaming
-        self.nixosModules.sunshine
-
-        # VFIO GPU passthrough (5700 XT → SteamOS VM for SteamVR).
-        # Enabled via "VFIO" specialisation — boot into that entry to
-        # reserve the GPU for the VM. Default boot leaves GPU on host.
-        self.nixosModules.vfio
-
         # AI tooling
+        self.nixosModules.pi
         self.nixosModules.herdr
         self.nixosModules.taskdog
       ];
@@ -55,16 +48,6 @@
       networking = {
         hostName = "jehoel";
         useDHCP = lib.mkDefault true;
-      };
-
-      # VFIO specialisation: boot into "VFIO" entry to reserve the 5700 XT
-      # for the SteamOS VM. Default boot keeps the GPU on the host for
-      # Sunshine / desktop use. Two distinct modes, no runtime conflict.
-      specialisation = {
-        "VFIO".configuration = {
-          system.nixos.tags = [ "VFIO" ];
-          vfio.enable = true;
-        };
       };
 
       networking.firewall.allowedTCPPorts = [
