@@ -1,6 +1,5 @@
 # Pi — primary AI coding agent (pi.dev). Uses TOML-based hooks and
-# TypeScript extensions (not MCP-native). Memory/intelligence stack runs
-# via CLI commands: gbrain, context, codebase-memory-mcp.
+# TypeScript extensions (not MCP-native).
 #
 # In nixpkgs as `pi-coding-agent` (buildNpmPackage). Binary is `pi`.
 # The nixpkgs package wraps pi with ripgrep and fd on PATH.
@@ -18,10 +17,19 @@
 # built on top of pi. Adds persistent IPython control environment and
 # Continual Harness state. Config: ~/.prime/agent/
 # Binary: prime-agent. Requires Node.js 22.8.0+ at runtime.
-#
 # Both pi and prime-agent are also in numtide/llm-agents.nix, but pi is
 # already in nixpkgs (pi-coding-agent) which is simpler to consume.
 # prime-agent comes from llm-agents.nix (not yet in nixpkgs).
+#
+# TODO: Context enrichment stack (deferred — add after first boot):
+#   1. codebase-memory-mcp — C11 MCP server, indexes codebases into a
+#      knowledge graph. In nixpkgs as pkgs.codebase-memory-mcp (v0.8.1).
+#      158 languages, sub-ms queries, SQLite-backed.
+#   2. neuledge/context — local-first library docs (.db files, SQLite FTS5).
+#      npm: @neuledge/context. Not in nixpkgs or llm-agents.nix.
+#   3. cognee — semantic memory + synthesis, backed by Postgres.
+#      Shared across all agents (Pi + Hermes). Python, needs Postgres.
+#      Not in nixpkgs. Host: Uriel or Jehoel (TBD).
 { inputs, ... }:
 {
   flake.nixosModules.pi =
