@@ -1,4 +1,5 @@
-# Syncthing lead node (jehoel). Device IDs from sops — not hardcoded.
+# Syncthing lead node (jehoel). Device IDs are public identifiers — not secrets.
+# GUI password set via environment file from sops.
 let
   baseDomain = "otwell.dev";
   syncthingPort = 8384;
@@ -6,25 +7,12 @@ in
 _:
 {
   flake.nixosModules.syncthing-lead =
-    { config, ... }:
-    let
-      p = config.sops.placeholder;
-    in
+    { config, lib, ... }:
     {
-      # Device IDs — encrypted, not in plaintext
-      sops.secrets = {
-        "syncthing-raphael-id" = {
-          owner = "john";
-          sopsFile = ./supersecrets.yaml;
-        };
-        "syncthing-raziel-id" = {
-          owner = "john";
-          sopsFile = ./supersecrets.yaml;
-        };
-        "syncthing-gui-password" = {
-          owner = "john";
-          sopsFile = ./supersecrets.yaml;
-        };
+      # GUI password — sops secret
+      sops.secrets."syncthing-gui-password" = {
+        owner = "john";
+        sopsFile = ./supersecrets.yaml;
       };
 
       mortlake.restic = {
@@ -52,25 +40,33 @@ _:
         openDefaultPorts = true;
         settings = {
           devices = {
-            # Device IDs read from sops files at runtime
-            "raphael".id = builtins.readFile config.sops.secrets."syncthing-raphael-id".path;
-            "raziel".id = builtins.readFile config.sops.secrets."syncthing-raziel-id".path;
+            # Device IDs are public keys — not secrets.
+            # TODO: fill in real device IDs for raphael and raziel.
+            # "raphael".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
+            # "raziel".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
           };
           folders = {
             "st" = {
               path = "/var/lib/syncthing/st";
-              devices = [
-                "raphael"
-                "raziel"
-              ];
+              # devices = [ "raphael" "raziel" ];
             };
           };
           gui = {
             user = "john.otwell";
-            password = builtins.readFile config.sops.secrets."syncthing-gui-password".path;
             insecureSkipHostcheck = true;
+            # Password set at runtime via activation script below.
           };
         };
+      };
+
+      # Syncthing GUI password: read sops secret at runtime, write to
+      # syncthing config via CLI. The secret doesn't exist at Nix eval time,
+      # so we can't use builtins.readFile.
+      systemd.services.syncthing = {
+        after = [ "sops-nix.service" ];
+        serviceConfig.ExecStartPost = [
+          "${lib.getExe config.services.syncthing.package} cli config gui set password \"$(cat ${config.sops.secrets."syncthing-gui-password".path})\""
+        ];
       };
     };
 }
