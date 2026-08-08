@@ -67,7 +67,7 @@ Write these first — everything else depends on them. Each `.nix` is a self-con
 
 - [ ] **`packages.nix`** — merge common/config/dev-packages into one module. Core (curl, wget, vim, ghostty.terminfo), Nix tooling (age, sops, direnv, nh, check-jsonschema, ssh-to-age, nickel), Dev (bat, bun, fd, fzf, git, jujutsu, just, nodejs, pandoc, python313, uv, tre-command).
 - [ ] **`nix-qol.nix`** — nix gc, auto-optimise, flake registry. **Must keep:** `programs.nix-ld` (critical — MCP servers and Pi tools use `LD_LIBRARY_PATH = "/run/current-system/sw/share/nix-ld/lib"`) and `services.envfs.enable` (provides `/usr/bin/env`). Keep `cache.otwell.dev` substituter if nix-serve is deployed (it is — Phase 6). Reference: `corpus/modules/features/nix-qol.nix`
-- [ ] **`dev-dirs.nix`** — tmpfiles rules for `~/src`, `~/vault`, `~/vault/logbook`, `~/vault/book-of-thoth`, `~/reference-repos`. Preservation + restic paths. Note: `book-of-thoth` path is referenced by hermes.nix (`skills.config.wiki.path`) — keep consistent. Sets `mortlake.restic.paths`. Reference: `corpus/modules/features/dev-dirs.nix`
+- [ ] **`dev-dirs.nix`** — tmpfiles rules for `~/src`, `~/vault`, `~/vault/logbook`, `~/vault/book-of-thoth`. Preservation + restic paths. Note: `book-of-thoth` path is referenced by hermes.nix (`skills.config.wiki.path`) — keep consistent. Sets `mortlake.restic.paths`. Reference: `corpus/modules/features/dev-dirs.nix`
 - [ ] **`git.nix`** — git config with direnv. Reference: corpus.
 - [ ] **`gh.nix`** — wrapped gh with sops auth (`gh-oauth-token` template → `/etc/gh/hosts.yml`). Reference: corpus (good pattern).
 

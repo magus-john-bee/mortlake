@@ -175,19 +175,19 @@ For skill collections maintained in external repos (e.g., Feynman research skill
 # In config.yaml
 skills:
   external_dirs:
-    - /home/user/reference-repos/feynman/skills
+    - /home/user/src/feynman/skills
 ```
 
 Setup pattern:
 ```bash
 # Shallow clone the upstream repo
-git clone --depth 1 https://github.com/org/repo.git ~/reference-repos/repo
+git clone --depth 1 https://github.com/org/repo.git ~/src/repo
 
 # Add to Hermes config
-hermes config set skills.external_dirs[0] ~/reference-repos/repo/skills
+hermes config set skills.external_dirs[0] ~/src/repo/skills
 
 # Update later
-cd ~/reference-repos/repo && git pull
+cd ~/src/repo && git pull
 ```
 
 Key behaviors: external skills are read-only (agent always writes to `~/.hermes/skills/`), local skills take precedence on name collision, non-existent paths are silently skipped.

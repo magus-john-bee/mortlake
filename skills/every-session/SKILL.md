@@ -42,9 +42,7 @@ All machines have three user directories under **the human user's home** (`/home
 - **`/home/john/vault/`** — repos containing material meant to be read (mostly markdown). Includes:
   - `book-of-thoth` — the agent's llm-wiki, for agent reference and knowledge persistence
   - `logbook` — the user's primary Logseq graph for personal reference and knowledge persistence. **All Logseq workflows assume this graph unless otherwise specified.**
-- **`/home/john/reference-repos/`** — repos pulled from GitHub or other VCS for reference only, not for editing. Feel free to clone additional repos here when you need to read or refer to them.
-
-These directories are created by the `user-dirs` NixOS module (tmpfiles rules). On mab they're persisted through impermanence.
+These directories are created by the `dev-dirs` NixOS module (tmpfiles rules). On preservation hosts they're persisted through the preservation module.
 
 > ⚠️ **`~` pitfall:** The Hermes agent runs as a systemd service under its own user (`/var/lib/hermes/`). The `~` shell variable and tilde expansion resolve to `/var/lib/hermes/`, **not** `/home/john/`. When the user says `~/src/corpus`, they mean `/home/john/src/corpus`. Always use the absolute path.
 
