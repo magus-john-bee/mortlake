@@ -15,11 +15,6 @@ _:
         sopsFile = ./supersecrets.yaml;
       };
 
-      mortlake.restic = {
-        paths = [ "/var/lib/syncthing" ];
-        exclude = [ "/var/lib/syncthing/st" ];
-      };
-
       systemd.tmpfiles.rules = [
         "d /var/lib/syncthing 0755 john users"
         "d /var/lib/syncthing/st 0755 john users"

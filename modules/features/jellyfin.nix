@@ -3,11 +3,6 @@
 _:
 {
   flake.nixosModules.jellyfin = _: {
-    mortlake.restic = {
-      paths = [ "/var/lib/jellyfin" ];
-      exclude = [ "/var/lib/jellyfin/transcodes" ];
-    };
-
     networking.firewall.allowedTCPPorts = [ 8096 ]; # LAN access
 
     services.jellyfin = {

@@ -54,27 +54,5 @@
   outputs = inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } (
       inputs.import-tree ./modules
-      // {
-        # Utility for provisioning: print the age public key for this machine's
-        # SSH host key. Works on any machine with nix — no mortlake build needed.
-        #   nix run github:magus-john-bee/mortlake#get-age-key
-        perSystem = { pkgs, ... }: {
-          packages.get-age-key = pkgs.writeShellScriptBin "get-age-key" ''
-            echo "Reading SSH host key from /persistent or /etc..." >&2
-            for path in \
-              /persistent/etc/ssh/ssh_host_ed25519_key.pub \
-              /etc/ssh/ssh_host_ed25519_key.pub
-            do
-              if [ -f "$path" ]; then
-                echo "Found: $path" >&2
-                ${pkgs.ssh-to-age} < "$path"
-                exit 0
-              fi
-            done
-            echo "No SSH ed25519 host key found." >&2
-            exit 1
-          '';
-        };
-      }
     );
 }
