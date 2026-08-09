@@ -42,7 +42,7 @@
     {
       sops.templates."pi-auth.json" = {
         content = ''
-          {"zai":{"type":"api_key","key":"${p.glm-api-key}"}}
+          {"zai":{"type":"api_key","key":"${p.glm-api-key}"},"openrouter":{"type":"api_key","key":"${p.openrouter-api-key}"}}
         '';
         owner = "john";
       };
