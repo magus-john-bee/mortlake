@@ -11,8 +11,7 @@ _:
       syncthingStDir = "/var/lib/syncthing/st";
 
       # Tracker pattern rendered by sops — not hardcoded in the Nix store.
-      # TODO: uncomment when torrent-tracker-pattern secret is added to sops.
-      # trackerPatternFile = config.sops.templates."transmission-tracker-pattern".path;
+      trackerPatternFile = config.sops.templates."transmission-tracker-pattern".path;
 
       copyTorrentToSyncthing = pkgs.writeShellApplication {
         name = "copy-torrent-to-syncthing";
@@ -32,13 +31,11 @@ _:
 
           # Only act on torrents from the allowed tracker.
           # Pattern comes from sops-rendered file (not in the Nix store).
-          # TODO: uncomment when torrent-tracker-pattern secret is added to sops.
-          # if [[ -z "''${TR_TORRENT_TRACKERS:-}" ]] || ! grep -Eiqf "${trackerPatternFile}" <<< "$TR_TORRENT_TRACKERS"; then
-          #   echo "Transmission done script: not from allowed tracker, skipping" >&2
-          #   exit 0
-          # fi
+          if [[ -z "''${TR_TORRENT_TRACKERS:-}" ]] || ! grep -Eiqf "${trackerPatternFile}" <<< "$TR_TORRENT_TRACKERS"; then
+            echo "Transmission done script: not from allowed tracker, skipping" >&2
+            exit 0
+          fi
 
-          # For now, copy all completed torrents
           mkdir -p "${syncthingStDir}"
 
           if [[ -f "$torrent_path" ]]; then
@@ -57,16 +54,19 @@ _:
       };
     in
     {
-      # Tracker pattern — encrypted, not visible in Nix store or repo.
-      # TODO: add "torrent-tracker-pattern" to supersecrets.yaml and uncomment.
-      # sops.templates."transmission-tracker-pattern" = {
-      #   content = "${config.sops.placeholder.torrent-tracker-pattern}";
-      #   owner = "john";
-      # };
+      # Tracker pattern — encrypted, not visible in Nix store or repo
+      sops.secrets."torrent-tracker-pattern" = {
+        owner = "john";
+        sopsFile = ./supersecrets.yaml;
+      };
+
+      sops.templates."transmission-tracker-pattern" = {
+        content = "${config.sops.placeholder.torrent-tracker-pattern}";
+        owner = "john";
+      };
 
       mortlake.restic = {
         paths = [ "/var/lib/transmission" ];
-        exclude = [ "/var/lib/transmission/Downloads" ];
       };
 
       services.transmission = {

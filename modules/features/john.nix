@@ -18,21 +18,22 @@
         systemctl reload-or-restart nscd 2>/dev/null || true
       '';
 
-      # Generate an Ed25519 user SSH key on first boot / install. The
-      # private key lives under ~/.ssh and is preserved by
-      # preservation-common (users.john.directories includes ".ssh"), so
-      # rerolls reuse the same key without manual ssh-keygen.
+      # Copy the host's SSH key as john's user key. On a single-user machine
+      # where john IS root (NOPASSWD:ALL), maintaining a separate user key
+      # is pointless ceremony. The host key is already generated, persisted,
+      # and used by sops. One key, one identity, zero friction.
+      #
+      # We copy (not symlink) because the host key is root:root 600, and SSH
+      # refuses keys where (st_mode & 077) != 0 — setfacl would trip that.
+      # Running every boot is idempotent; the content never changes.
       system.activationScripts.john-ssh-keys.text = lib.mkAfter ''
         mkdir -p ${sshDir}
         chmod 0700 ${sshDir}
-        if [ ! -f ${privateKey} ]; then
-          ${pkgs.openssh}/bin/ssh-keygen -t ed25519 -N "" \
-            -C "john@${config.networking.hostName}" \
-            -f ${privateKey} </dev/null
-          chown john:users ${privateKey} ${publicKey}
-          chmod 0600 ${privateKey}
-          chmod 0644 ${publicKey}
-        fi
+        cp /persistent/etc/ssh/ssh_host_ed25519_key ${privateKey}
+        cp /persistent/etc/ssh/ssh_host_ed25519_key.pub ${publicKey}
+        chown john:users ${privateKey} ${publicKey}
+        chmod 0600 ${privateKey}
+        chmod 0644 ${publicKey}
       '';
 
       # Default ACL: any file/dir created under /home/john — even by root
