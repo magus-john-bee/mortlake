@@ -53,20 +53,39 @@ _:
           envTemplate = "uriel-restic-b2-env";
           paths = [
             "/persistent/var/lib/hermes"
+            "/home/john/vault"
+            "/home/john/src"
+            "/home/john/reference-repos"
+            "/home/john/.ssh"
           ];
           exclude = [ "*.tmp" ];
         };
 
-        # Jehoel — server + desktop
-        # Service modules (jellyfin, transmission, mealie) self-register via
-        # mortlake.restic.paths, so they're not listed here.
+        # Jehoel — server + desktop.
+        # Paths previously self-registered by service modules via
+        # mortlake.restic.paths; now listed here directly.
         jehoel = {
           name = "jehoel";
           repository = "s3:s3.us-east-005.backblazeb2.com/jehoel-restic";
           passwordSecret = "jehoel-restic-password";
           envTemplate = "jehoel-restic-b2-env";
-          paths = [ "/home/john/data" ];
-          exclude = [ "*.tmp" ];
+          paths = [
+            "/home/john/data"
+            "/home/john/vault"
+            "/home/john/src"
+            "/home/john/reference-repos"
+            "/home/john/.ssh"
+            "/var/lib/jellyfin"
+            "/var/lib/transmission"
+            "/var/lib/mealie"
+            "/var/lib/syncthing"
+          ];
+          exclude = [
+            "*.tmp"
+            "/var/lib/jellyfin/transcodes"
+            "/var/lib/transmission/Downloads"
+            "/var/lib/syncthing/st"
+          ];
         };
 
         # Raphael (was puck) — Framework 12 laptop
@@ -87,25 +106,6 @@ _:
       isRaphael = hostName == "raphael";
     in
     {
-      options.mortlake.restic = {
-        paths = lib.mkOption {
-          type = lib.types.listOf lib.types.str;
-          default = [ ];
-          description = ''
-            Extra paths to include in the host's restic backup.
-            Intended for service modules to contribute their data directories.
-          '';
-        };
-        exclude = lib.mkOption {
-          type = lib.types.listOf lib.types.str;
-          default = [ ];
-          description = ''
-            Extra exclude patterns for the host's restic backup.
-            Intended for service modules to exclude large or regenerable data.
-          '';
-        };
-      };
-
       config = {
         sops.secrets = lib.mkMerge [
           (lib.mkIf isJehoel {
@@ -155,8 +155,8 @@ _:
           passwordFile = secrets."${cfg.passwordSecret}".path;
           environmentFile = templates."${cfg.envTemplate}".path;
 
-          paths = cfg.paths ++ config.mortlake.restic.paths;
-          exclude = cfg.exclude ++ config.mortlake.restic.exclude;
+          paths = cfg.paths;
+          exclude = cfg.exclude;
 
           initialize = false;
 

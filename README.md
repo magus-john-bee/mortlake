@@ -65,14 +65,7 @@ nix run nixpkgs#nixos-anywhere -- --flake .#<host> --target-host john@<ip> --pha
 
 ## Restic Backups
 
-Each host has a restic backup job configured in `restic.nix`. Service modules contribute their own backup paths via the `mortlake.restic` option:
-
-```nix
-mortlake.restic = {
-  paths = [ "/var/lib/my-service" ];
-  exclude = [ "/var/lib/my-service/cache" ];
-};
-```
+Each host has a restic backup job configured in `restic.nix`. All backup paths and excludes are listed per-host in the `hostConfig` attrset — service modules no longer self-register paths.
 
 ## Design Principles
 
