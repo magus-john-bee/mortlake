@@ -19,6 +19,13 @@
           runtimeInputs = [ pkgs.sops ];
           text = builtins.readFile ../scripts/update-sops-keys.sh;
         };
+
+        # Find and resolve Syncthing .sync-conflict files interactively
+        stconflict = pkgs.writeShellApplication {
+          name = "stconflict";
+          runtimeInputs = [ pkgs.git-delta ];
+          text = builtins.readFile ../scripts/stconflict.sh;
+        };
       };
     };
 }
