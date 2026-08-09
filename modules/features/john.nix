@@ -29,8 +29,8 @@
       system.activationScripts.john-ssh-keys.text = lib.mkAfter ''
         mkdir -p ${sshDir}
         chmod 0700 ${sshDir}
-        cp /persistent/etc/ssh/ssh_host_ed25519_key ${privateKey}
-        cp /persistent/etc/ssh/ssh_host_ed25519_key.pub ${publicKey}
+        cp /etc/ssh/ssh_host_ed25519_key ${privateKey}
+        cp /etc/ssh/ssh_host_ed25519_key.pub ${publicKey}
         chown john:users ${privateKey} ${publicKey}
         chmod 0600 ${privateKey}
         chmod 0644 ${publicKey}
@@ -57,6 +57,9 @@
           "wheel"
         ];
         hashedPassword = "$6$nhupSF2Neq$m61opyOxxlZAt10pdgSw/ORYlLOGa8efAF7dfKVRas8Wl4hVaSUI4d5poAk9VnMFY/xejKkZjst26INwMWrZZ.";
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMl7wDCpBuYSqwciW4/tgQLWBzLR2xUVL11gUR4LxYk1 john@puck"
+        ];
       };
 
       security.sudo = {
