@@ -49,6 +49,17 @@
         owner = "john";
       };
 
+      # Pi needs auth.json to enable the ZAI provider. The env var alone
+      # satisfies auth, but the provider must be registered to show models.
+      # auth.json uses $VAR_NAME references — actual key stays in the env var,
+      # never in the nix store.
+      system.activationScripts.pi-auth.text = ''
+        mkdir -p /home/john/.pi/agent
+        printf '%s\n' '{"zai":{"type":"api_key","key":"$ZAI_API_KEY"}}' > /home/john/.pi/agent/auth.json
+        chown john:users /home/john/.pi/agent/auth.json
+        chmod 600 /home/john/.pi/agent/auth.json
+      '';
+
       environment.systemPackages = [
         pkgs.pi-coding-agent
         prime-agent
