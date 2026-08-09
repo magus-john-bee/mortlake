@@ -23,7 +23,7 @@
         # Find and resolve Syncthing .sync-conflict files interactively
         stconflict = pkgs.writeShellApplication {
           name = "stconflict";
-          runtimeInputs = [ pkgs.git-delta ];
+          runtimeInputs = [ pkgs.delta ];
           text = builtins.readFile ../scripts/stconflict.sh;
         };
       };
