@@ -108,6 +108,20 @@ _:
     {
       config = {
         sops.secrets = lib.mkMerge [
+          (lib.mkIf isUriel {
+            "uriel-restic-password" = {
+              owner = "john";
+              sopsFile = ./secrets.yaml;
+            };
+            "uriel-b2-access-key-id" = {
+              owner = "john";
+              sopsFile = ./secrets.yaml;
+            };
+            "uriel-b2-secret-access-key" = {
+              owner = "john";
+              sopsFile = ./secrets.yaml;
+            };
+          })
           (lib.mkIf isJehoel {
             "jehoel-restic-password" = supersecrets;
             "jehoel-b2-access-key-id" = supersecrets;
