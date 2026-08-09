@@ -101,7 +101,7 @@ for f in "${conflicts[@]}"; do
       ((resolved++))
       ;;
     m)
-      ''${EDITOR:-hx} "$orig" "$f"
+      "''${EDITOR:-hx}" "$orig" "$f"
       # After manual edit, the conflict file should be removed by the user.
       # Check and offer cleanup.
       if [[ -f "$f" ]]; then
