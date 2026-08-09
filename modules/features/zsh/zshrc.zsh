@@ -1,8 +1,3 @@
-# Source sops-managed environment secrets (ZAI_API_KEY, etc.)
-if [[ -f /run/secrets/rendered/pi-env ]]; then
-  source /run/secrets/rendered/pi-env
-fi
-
 zvm_after_init() {
   autoload -Uz compinit && compinit
 
