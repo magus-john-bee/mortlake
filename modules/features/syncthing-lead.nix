@@ -7,7 +7,7 @@ in
 _:
 {
   flake.nixosModules.syncthing-lead =
-    { config, lib, ... }:
+    { config, lib, pkgs, ... }:
     {
       # GUI password — sops secret
       sops.secrets."syncthing-gui-password" = {
@@ -57,11 +57,17 @@ _:
       # Syncthing GUI password: read sops secret at runtime, write to
       # syncthing config via CLI. The secret doesn't exist at Nix eval time,
       # so we can't use builtins.readFile.
+      # Uses a script wrapper because systemd doesn't do shell expansion in
+      # ExecStartPost — $(...) needs explicit bash invocation.
       systemd.services.syncthing = {
         after = [ "sops-nix.service" ];
-        serviceConfig.ExecStartPost = [
-          "${lib.getExe config.services.syncthing.package} cli config gui set password \"$(cat ${config.sops.secrets."syncthing-gui-password".path})\""
-        ];
+        serviceConfig = {
+          ExecStartPost = lib.mkForce (
+            "+${pkgs.writeShellScript "syncthing-set-gui-password" ''
+              ${lib.getExe config.services.syncthing.package} cli config gui set password "$(cat ${config.sops.secrets."syncthing-gui-password".path})"
+            ''}"
+          );
+        };
       };
     };
 }
