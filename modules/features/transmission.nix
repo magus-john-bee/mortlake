@@ -57,7 +57,7 @@ _:
       # Tracker pattern — encrypted, not visible in Nix store or repo
       sops.secrets."torrent-tracker-pattern" = {
         owner = "john";
-        sopsFile = ./supersecrets.yaml;
+        sopsFile = ./secrets.yaml;
       };
 
       sops.templates."transmission-tracker-pattern" = {
