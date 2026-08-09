@@ -49,15 +49,6 @@
         owner = "john";
       };
 
-      # Pre-authenticate pi with ZAI so no interactive /login needed.
-      # auth.json is the credential store pi reads on startup.
-      sops.templates."pi-auth.json" = {
-        content = ''
-          {"zai":{"type":"api_key","key":"${p.glm-api-key}"}}
-        '';
-        owner = "john";
-      };
-
       environment.systemPackages = [
         pkgs.pi-coding-agent
         prime-agent
@@ -75,14 +66,5 @@
         ".pi"
         ".prime"
       ];
-
-      # Symlink sops-generated auth.json into ~/.pi/agent/ on every activation.
-      # auth.json is the credential store — pi reads it on startup.
-      # ~/.pi is persisted, but we want this to be declarative, not stateful.
-      system.activationScripts.pi-auth.text = ''
-        mkdir -p /home/john/.pi/agent
-        ln -sf ${config.sops.templates."pi-auth.json".path} /home/john/.pi/agent/auth.json
-        chown -h john:users /home/john/.pi/agent/auth.json
-      '';
     };
 }
