@@ -22,14 +22,13 @@ let
 
           settings = {
             auto_sync = sync;
-            sync_frequency = if sync then "2m" else null;
             search_mode = "fuzzy";
             filter_mode = "global";
             style = "compact";
             keymap_mode = "vim-insert";
             theme.name = "nord";
             sync.records = sync;
-          };
+          } // (lib.optionalAttrs sync { sync_frequency = "2m"; });
 
           env.ATUIN_CONFIG_DIR = dirOf config.constructFiles.configDir.path;
 
