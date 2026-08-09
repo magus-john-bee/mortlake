@@ -29,8 +29,8 @@
       system.activationScripts.john-ssh-keys.text = lib.mkAfter ''
         mkdir -p ${sshDir}
         chmod 0700 ${sshDir}
-        cp /persistent/etc/ssh/ssh_host_ed25519_key ${privateKey}
-        cp /persistent/etc/ssh/ssh_host_ed25519_key.pub ${publicKey}
+        cp /etc/ssh/ssh_host_ed25519_key ${privateKey}
+        cp /etc/ssh/ssh_host_ed25519_key.pub ${publicKey}
         chown john:users ${privateKey} ${publicKey}
         chmod 0600 ${privateKey}
         chmod 0644 ${publicKey}

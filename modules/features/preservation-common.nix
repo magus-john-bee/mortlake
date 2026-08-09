@@ -34,6 +34,10 @@
               user = "john";
               group = "users";
             }
+            {
+              directory = "/etc/ssh";
+              mode = "0755";
+            }
           ];
 
           files = [

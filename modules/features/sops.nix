@@ -7,14 +7,14 @@
 
       environment = {
         systemPackages = [ pkgs.ssh-to-age ];
-        sessionVariables.SOPS_AGE_KEY_CMD = "sudo ssh-to-age -private-key -i /persistent/etc/ssh/ssh_host_ed25519_key";
+        sessionVariables.SOPS_AGE_KEY_CMD = "sudo ssh-to-age -private-key -i /etc/ssh/ssh_host_ed25519_key";
       };
 
       sops = {
         defaultSopsFile = ./secrets.yaml;
         defaultSopsFormat = "yaml";
 
-        age.sshKeyPaths = [ "/persistent/etc/ssh/ssh_host_ed25519_key" ];
+        age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
         secrets =
           let
