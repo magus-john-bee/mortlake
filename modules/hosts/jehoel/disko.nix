@@ -64,7 +64,10 @@
       };
     };
 
-    fileSystems."/persistent".neededForBoot = true;
+    fileSystems = {
+      "/nix".neededForBoot = true;
+      "/persistent".neededForBoot = true;
+    };
 
     # Swapfile on the /swap btrfs subvolume
     swapDevices = [
