@@ -42,6 +42,7 @@ in
       services.nginx.virtualHosts."${cacheDomain}" = {
         forceSSL = true;
         enableACME = true;
+        locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
         locations."/".proxyPass =
           "http://${config.services.nix-serve.bindAddress}:${toString config.services.nix-serve.port}";
       };
