@@ -15,7 +15,10 @@
     hostName = "humbled-jehoel";
     useDHCP = lib.mkDefault true;
     networkmanager.enable = true;
-    firewall.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 22 ];
+    };
   };
 
   # Password auth for bootstrap — no SSH keys deployed yet
