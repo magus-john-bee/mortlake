@@ -31,6 +31,7 @@ in
         enable = true;
         protocol = "porkbun";
         domains = [
+          "ssh.${baseDomain}"
           "cache.${baseDomain}"
           "mealie.${baseDomain}"
           "jehoel.${baseDomain}"
