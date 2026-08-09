@@ -57,13 +57,18 @@ _:
       # Syncthing GUI password: read sops secret at runtime, write to
       # syncthing config via CLI. The secret doesn't exist at Nix eval time,
       # so we can't use builtins.readFile.
-      # Uses a script wrapper because systemd doesn't do shell expansion in
-      # ExecStartPost — $(...) needs explicit bash invocation.
+      # Uses a script wrapper that waits for syncthing to be ready before
+      # setting the password.
       systemd.services.syncthing = {
         after = [ "sops-nix.service" ];
         serviceConfig = {
           ExecStartPost = lib.mkForce (
             "+${pkgs.writeShellScript "syncthing-set-gui-password" ''
+              ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/bash -c '
+                while ! ${lib.getExe config.services.syncthing.package} cli show system >/dev/null 2>&1; do
+                  sleep 1
+                done
+              '
               ${lib.getExe config.services.syncthing.package} cli config gui set password "$(cat ${config.sops.secrets."syncthing-gui-password".path})"
             ''}"
           );
