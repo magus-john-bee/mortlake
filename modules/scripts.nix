@@ -26,6 +26,13 @@
           runtimeInputs = [ pkgs.delta ];
           text = builtins.readFile ../scripts/stconflict.sh;
         };
+
+        # Provision a Hetzner Cloud VPS from scratch with nixos-anywhere
+        provision-hetzner = pkgs.writeShellApplication {
+          name = "provision-hetzner";
+          runtimeInputs = [ pkgs.hcloud ];
+          text = builtins.readFile ../scripts/provision-hetzner.sh;
+        };
       };
     };
 }
