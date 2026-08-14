@@ -73,7 +73,7 @@
 
           model = {
             provider = "zai";
-            default = "glm-5.2";
+            default = "glm-5.3";
             # Hermes' hardcoded fallback for GLM is 202,752 (~200K).
             # GLM-5.2 actually has a 1M context window.
             context_length = 1048576;
