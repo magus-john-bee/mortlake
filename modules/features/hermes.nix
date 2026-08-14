@@ -81,7 +81,7 @@
 
           fallback_model = {
             provider = "openrouter";
-            model = "deepseek/deepseek-v4-flash";
+            model = "deepseek/deepseek-v4-pro";
           };
 
           stt = {
