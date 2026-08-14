@@ -9,7 +9,7 @@
 #
 # Pi has native Z.AI support built in:
 #   /login zai
-#   /model glm-5.2
+#   /model glm-5.3
 # The built-in zai provider uses baseUrl: https://api.z.ai/api/coding/paas/v4
 # with correct compat flags (thinkingFormat: "zai", supportsDeveloperRole: false).
 #
