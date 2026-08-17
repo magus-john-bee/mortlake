@@ -87,13 +87,10 @@
         users.john.directories = [ "data" ];
       };
 
-      nix.settings.post-build-hook =
-        let
-          hook = pkgs.writeShellScript "push-to-cache" ''
-            ${pkgs.nix}/bin/nix copy --to ssh://john@jehoel $OUT_PATHS || true
-          '';
-        in
-        "${hook}";
+      # No post-build-hook here: this host RUNS the cache (nix-serve reads
+      # straight from the local store), so pushing to itself is a no-op that
+      # just burns an SSH round-trip (and fails host-key verification) per
+      # build. Clients (raphael, thoth) push here; jehoel only serves.
 
       system.stateVersion = "25.11";
     };
