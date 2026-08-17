@@ -22,12 +22,15 @@
         self.nixosModules.helix
         self.nixosModules.zellij
         self.nixosModules.dev-dirs
-        self.nixosModules.restic
+        # TODO(restic): re-enable once the Backblaze side is provisioned —
+        # new bucket for uriel (old thoth-restic objects are being deleted;
+        # nothing references that bucket anymore), `restic-<host> init`,
+        # and B2 keys in supersecrets if they change.
+        # self.nixosModules.restic
         self.nixosModules.intellishell
         # AI tooling
         self.nixosModules.pi
         self.nixosModules.herdr
-        self.nixosModules.gbrain
         self.nixosModules.taskdog
         self.nixosModules.nginx
       ];
@@ -35,9 +38,13 @@
       boot = {
         loader.grub = {
           enable = true;
+          # This Hetzner box boots BIOS-legacy (bootctl: "Not booted with
+          # EFI"; sda1 is an EF02 bios-boot partition). device=/dev/sda
+          # installs BIOS GRUB into sda1; keeping efiSupport also writes
+          # EFI files to the ESP — boots under either firmware mode.
+          device = "/dev/sda";
           efiSupport = true;
           efiInstallAsRemovable = true;
-          device = "nodev";
         };
         kernelParams = [ "console=ttyS0" ];
       };
