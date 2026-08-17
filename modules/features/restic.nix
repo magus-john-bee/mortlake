@@ -60,7 +60,6 @@ _:
             "/var/lib/jellyfin/transcodes"
             "/var/lib/transmission/Downloads"
             "/var/lib/transmission/.incomplete"
-            "/var/lib/syncthing/st"
           ];
         };
 
