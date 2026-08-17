@@ -1,35 +1,7 @@
-# TODO (jehoel restic) — remaining manual steps:
-#
-# 1. B2 Application Key — create a key restricted to the jehoel-restic bucket
-#    (S3 compatible). Need: keyID (005...) + applicationKey.
-#
-# 2. Restic repo password — generate or choose a strong passphrase:
-#      openssl rand -base64 32
-#    Store it somewhere safe; it goes into sops next.
-#
-# 3. Add secrets to supersecrets.yaml (on Jehoel or Raphael — has age key):
-#      cd ~/src/mortlake
-#      sops modules/features/supersecrets.yaml
-#    Add three keys:
-#      jehoel-restic-password: "<the passphrase from step 2>"
-#      jehoel-b2-access-key-id: "<keyID from step 1>"
-#      jehoel-b2-secret-access-key: "<applicationKey from step 1>"
-#
-# 4. Import this module in jehoel/configuration.nix (already present as
-#    self.nixosModules.restic in the imports list — confirm it's there).
-#
-# 5. Rebuild:
-#      sudo nixos-rebuild switch --flake .#jehoel
-#    With initialize = false, the repo must already exist (restic 0.17.0+
-#    treats re-init as fatal). Create it manually if needed:
-#      source <(cat /run/secrets.d/jehoel-restic-b2-env)
-#      restic -r s3:s3.us-east-005.backblazeb2.com/jehoel-restic init
-#
-# 6. Verify first backup:
-#      systemctl status restic-backups-jehoel
-#      sudo restic-jehoel snapshots
-#    (wrapper sources the env file automatically)
-#
+# Repo initialization is manual (initialize = false; restic 0.17+ treats
+# re-init as fatal). For a new host's bucket:
+#   sudo restic-<host> init
+# The wrapper sources the sops env template automatically.
 _:
 {
   flake.nixosModules.restic =
@@ -73,18 +45,21 @@ _:
             "/home/john/data"
             "/home/john/vault"
             "/home/john/src"
-            "/home/john/reference-repos"
             "/home/john/.ssh"
             "/var/lib/jellyfin"
             "/var/lib/transmission"
             "/var/lib/mealie"
             "/var/lib/syncthing"
           ];
+          # Media and downloaded data are replaceable; configs, metadata,
+          # torrent files (.config/transmission-daemon/torrents) and
+          # fast-resume state are small and included.
           exclude = [
             "*.tmp"
+            "/var/lib/jellyfin/library"
             "/var/lib/jellyfin/transcodes"
             "/var/lib/transmission/Downloads"
-            "/var/lib/syncthing/st"
+            "/var/lib/transmission/.incomplete"
           ];
         };
 
