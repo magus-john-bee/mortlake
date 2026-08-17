@@ -105,6 +105,10 @@ done
 
 # ── Run nixos-anywhere ────────────────────────────────────────────────
 echo "⟩ Provisioning $HOST with nixos-anywhere..."
+# EXTRA_ARGS is intentionally word-split: it carries multiple complete
+# flags (e.g. '--kexec --debug'), not a single value. Quoting would
+# pass them as one argument.
+# shellcheck disable=SC2086
 exec nix run github:nix-community/nixos-anywhere -- \
   --flake ".#$HOST" \
   --target-host "root@$SERVER_IP" \
