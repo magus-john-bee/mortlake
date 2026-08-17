@@ -164,8 +164,13 @@
           };
           exa = {
             url = "https://mcp.exa.ai/mcp?tools=web_search_exa,web_fetch_exa,web_search_advanced_exa,get_code_context_exa";
+            # Escaped \${...} → literal ${EXA_API_KEY} in config.yaml.
+            # Hermes interpolates ${VAR} at MCP-connect time from the
+            # gateway process env, which carries EXA_API_KEY via the
+            # sops hermes-env template. (builtins.getEnv baked the
+            # *building* host's env in at eval time — empty on jehoel.)
             headers = {
-              x-api-key = "${builtins.getEnv "EXA_API_KEY"}";
+              x-api-key = "\${EXA_API_KEY}";
             };
           };
           nixos = {
