@@ -42,6 +42,10 @@
       };
 
       hardware = {
+        # Intel AX211 BT (8087:0032) — BT half of the M.2 card, USB-attached
+        # internally (btusb). WiFi half is PCIe (8086:2725). Firmware via
+        # enableRedistributableFirmware. Pairings persist via /var/lib/bluetooth.
+        bluetooth.enable = true;
         enableRedistributableFirmware = lib.mkDefault true;
         cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 

@@ -64,6 +64,7 @@
 
       preservation.preserveAt."/persistent" = {
         directories = [
+          "/var/lib/bluetooth"
           "/var/lib/acme"
           "/var/lib/nginx"
           {
