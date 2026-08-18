@@ -63,8 +63,11 @@
           # mortlake switch.
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBHRm1rqdQJBm82C1fn8sNzP+gG691b70MOSRI5Vsn0m john@mab"
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILxMx03v5a9RBU5PH979XTuXYXsDzjiu/t0/ACdB+b9X john@xtx"
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMl7wDCpBuYSqwciW4/tgQLWBzLR2xUVL11gUR4LxYk1 john@puck"
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMl7wDCpBuYSqwciW4/tgQLWBzLR2xUVL11xYk1 john@puck"
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA8+i8bREEEwTtYIGoldz0OQaB4YFKt+wG+MHf1caq5X root@thoth"
+          # jehoel host key — deploy-rs / rebuild sessions originate from jehoel
+          # (build host). Same identity thoth's key uses on other mortlake hosts.
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPeQiYDQJGWpEnXZSwVIFm8CJ+95iOwhl06SfGnap0z root@jehoel"
         ];
       };
 
