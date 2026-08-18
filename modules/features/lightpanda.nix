@@ -23,16 +23,16 @@
   perSystem =
     { pkgs, ... }:
     let
-      version = "0.3.4";
+      version = "0.3.7";
 
       srcs = {
         x86_64-linux = pkgs.fetchurl {
           url = "https://github.com/lightpanda-io/browser/releases/download/${version}/lightpanda-x86_64-linux";
-          hash = "sha256-u88VtlHeRseNGz9WSJXnK+uNnYHFp/mwvQAEnCsxH24=";
+          hash = "sha256-iVM5sCIFFxoYHd50OuAGi7RWSIQHb+rISCusqcISqlo=";
         };
         aarch64-linux = pkgs.fetchurl {
           url = "https://github.com/lightpanda-io/browser/releases/download/${version}/lightpanda-aarch64-linux";
-          hash = "sha256-A0ng+VuME7mMDtOs4Xa7zsrs7EZ0qaLPrt1TeU9CYJQ=";
+          hash = "sha256-TA7LKLT8+21bzoLshuFfxs3onOoWjPOEBJTw7iZ1WFI=";
         };
       };
 
