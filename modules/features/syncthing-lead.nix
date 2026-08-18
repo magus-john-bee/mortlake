@@ -39,11 +39,12 @@ _:
             # TODO: fill in real device IDs for raphael and raziel.
             # "raphael".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
             # "raziel".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
+            "pixel8".id = "7YWROAI-Z66BW2L-UE2DPVL-WOEMEBH-FNRKHPQ-NVDXRHR-EQOXICC-CDRLLAF";
           };
           folders = {
             "st" = {
               path = "/var/lib/syncthing/st";
-              # devices = [ "raphael" "raziel" ];
+              devices = [ "pixel8" ];
             };
           };
           gui = {
