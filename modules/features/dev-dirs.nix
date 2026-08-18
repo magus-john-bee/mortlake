@@ -4,8 +4,6 @@ _:
     # Directory creation
     systemd.tmpfiles.rules = [
       "d /home/john/vault              0755 john users - -"
-      "d /home/john/vault/logbook      0755 john users - -"
-      "d /home/john/vault/book-of-thoth 0755 john users - -"
       "d /home/john/src                0755 john users - -"
     ];
 

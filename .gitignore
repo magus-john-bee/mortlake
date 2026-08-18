@@ -33,9 +33,6 @@ sites/*/node_modules/
 .config/herdr/
 .local/share/herdr/
 
-# GBrain
-.gbrain/
-
 # KeePassXC
 .config/keepassxc/
 .local/share/keepassxc/

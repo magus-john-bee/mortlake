@@ -68,11 +68,6 @@
           "/var/lib/acme"
           "/var/lib/nginx"
           {
-            directory = "/var/lib/jellyfin";
-            user = "john";
-            group = "users";
-          }
-          {
             directory = "/var/lib/transmission";
             user = "john";
             group = "users";

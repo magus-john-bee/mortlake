@@ -17,7 +17,7 @@ Personal monorepo for all code and configs. Named after John Dee's house at Mort
 | Host | Role | Status |
 |------|------|--------|
 | **Uriel** (was thoth) | Hetzner VPS — Hermes, Pi unconstrained, herdr, nginx, podman | Rename |
-| **Jehoel** (replaces mab) | Server + desktop — Jellyfin, Transmission, Mealie, Syncthing, Sunshine, AMD GPU | New |
+| **Jehoel** (replaces mab) | Server + desktop — Jellyfin, Transmission, Mealie, Syncthing, AMD GPU | New |
 | **Raphael** (was puck) | Framework 12 laptop — daily driver, Niri desktop | Rename |
 | **Raziel** | Android phone (GrapheneOS) — nix-on-droid | New |
 | **Haniel** | Android phone (vanilla Android) — nix-on-droid | New |
@@ -114,7 +114,6 @@ Write these before host configs that import them.
 - [ ] **`gui-packages.nix`** — anki, keepassxc (not proton-pass), librewolf, logseq, meld, okular, vlc. No zed-editor. No zed/garnix cache config. Note: may need `permittedInsecurePackages = [ "electron-39.8.10" ]` for logseq/anki.
 - [ ] **`sound.nix`** — pipewire, rtkit. Reference: corpus.
 - [ ] **`nerd-fonts.nix`** — fonts. Reference: corpus.
-- [ ] **`sunshine.nix`** — game streaming server (jehoel only). Vulkan/VAAPI packages, firewall ports (47984-48010), persist `~/.config/sunshine`.
 - [ ] **`the-aether.nix`** — NetworkManager WiFi profile with sops secret. Needed on raphael (laptop). **Co-located:** references `supersecrets.yaml` for `the-aether-pw`. Reference: corpus.
 - [ ] **AMD GPU config** — in jehoel `hardware.nix`. `amdgpu` kernel module, `hardware.graphics.enable`, RADV. Set `opencl = false` for 5700 XT (RDNA1). Flip to `true` when 7900 XTX goes in.
 - [ ] **`herald.nix`** — TUI email client ([herald-mail.app](https://herald-mail.app)). **Not in nixpkgs, no upstream flake — requires a local `buildGoModule` derivation.** Chosen over himalaya because Herald handles Proton Bridge's non-standard TLS cert (CA-as-end-entity) without issue, while himalaya's rustls stack hard-rejects it (unreleased fix as of mid-2026). Build requires Go 1.25+ and CGO (SQLite). Config at `~/.herald/conf.yaml` (IMAP/SMTP creds → sops, `chmod 600`). Persist `~/.herald/` (SQLite cache + config). Optional: Ollama integration for semantic search/classification. MCP server via `herald mcp`. First-run wizard handles Gmail OAuth or IMAP presets (Proton Bridge, Fastmail, iCloud, Outlook). Target: raphael (daily driver), optionally jehoel.
@@ -158,7 +157,7 @@ Host configs import modules from Phases 2–5. Don't start until the needed modu
 - [ ] Write fresh — 4 files (default.nix, configuration.nix, hardware.nix, disko.nix)
 - [ ] Server role: jellyfin (LAN-only), transmission, mealie, syncthing-lead, nginx, nix-serve, dd-client, restic
 - [ ] Desktop role: niri, greetd, ghostty, browser, sound, nerd-fonts, noctalia
-- [ ] New: sunshine, AMD GPU config (amdgpu, Vulkan/RADV, `opencl = false`)
+- [ ] New: AMD GPU config (amdgpu, Vulkan/RADV, `opencl = false`)
 - [ ] Post-build hook for nix-serve cache
 - [ ] **Secrets chicken-and-egg:** Jehoel is a new machine — no age key until first boot. Migration order: provision machine → obtain SSH host key → `ssh-to-age` → add `&jehoel` to `.sops.yaml` → add to creation_rules → `sops updatekeys` → rebuild with secrets.
 

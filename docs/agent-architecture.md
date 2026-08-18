@@ -74,7 +74,7 @@ Pi needs a NixOS module (`modules/features/pi-agent.nix` or similar) that:
 
 ## What Needs Updating in PLAN.md
 
-1. **`gbrain.nix` → `cognee.nix`** — Line 94 references gbrain. Replace with cognee module. The [cognee setup plan](./cognee-setup-plan.md) is the reference doc.
+1. **`gbrain.nix` → `cognee.nix`** — gbrain module was dropped (superseded by cognee; never imported by any host). The [cognee setup plan](./cognee-setup-plan.md) is the reference doc.
 2. **Add `pi-agent.nix` module** — Not currently in PLAN.md. Needs to be in Phase 3 or 4 (package/tooling tier).
 3. **Cognee scope** — The cognee setup doc says "memory for Pi". Update to "shared memory for all agents (Hermes + Pi on all hosts)".
 4. **Skills config** — Ensure Hermes module's `skills.config.external_dirs` includes `~/src/mortlake/skills/`. Pi module points at the same directory.
