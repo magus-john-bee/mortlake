@@ -67,16 +67,6 @@
           "/var/lib/bluetooth"
           "/var/lib/acme"
           "/var/lib/nginx"
-          {
-            directory = "/var/lib/transmission";
-            user = "john";
-            group = "users";
-          }
-          {
-            directory = "/var/lib/mealie";
-            user = "john";
-            group = "users";
-          }
         ];
 
         users.john.directories = [ "data" ];
