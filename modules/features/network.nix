@@ -34,5 +34,21 @@ _:
           HostName ssh.otwell.dev
           User john
       '';
+
+      # Pinned host keys — ssh uriel / ssh jehoel is not TOFU. Provenance:
+      # - uriel: on-disk key read on the host itself == keyscan-presented
+      # - jehoel: keyscan-presented == john@uriel known_hosts entry, and
+      #   derives to the &jehoel age anchor in .sops.yaml (only the key
+      #   jehoel sops-decrypts with could produce that)
+      programs.ssh.knownHosts = {
+        uriel = {
+          hostNames = [ "87.99.146.205" ];
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA8+i8bREEEwTtYIGoldz0OQaB4YFKt+wG+MHf1caq5X";
+        };
+        jehoel = {
+          hostNames = [ "ssh.otwell.dev" ];
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPeQiYDQJGWpEnXZSwVIFm8CJ+95iOwhl06SfGnap0z";
+        };
+      };
     };
 }
