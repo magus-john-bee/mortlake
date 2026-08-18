@@ -9,7 +9,7 @@ NixOS configuration using the **Dendritic Pattern** — every `.nix` file under 
 | Host | Role | Hardware |
 |------|------|----------|
 | **Uriel** | Hetzner VPS — Hermes, Pi, nginx, podman | Cloud VPS |
-| **Jehoel** | Server + desktop — Jellyfin, Transmission, Mealie, Sunshine, AMD GPU | Intel NUC + OCuLink eGPU |
+| **Jehoel** | Server + desktop — Jellyfin, Transmission, Mealie, Syncthing, AMD GPU | Intel NUC + OCuLink eGPU |
 | **Raphael** | Framework 12 laptop — daily driver | Framework 12 |
 | **Raziel** | Android phone (GrapheneOS) — nix-on-droid | Pixel |
 | **Haniel** | Android phone (vanilla Android) — nix-on-droid | Pixel |

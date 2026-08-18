@@ -29,8 +29,6 @@
         # When upgrading to 7900 XTX (RDNA3), enable opencl.enable for ROCm.
         #
         # kvm-amd for the 7840HS (was kvm-intel — leftover from mab's Intel NUC config).
-        # When VFIO is enabled (via specialisation), vfio.nix prepends the vfio
-        # modules to initrd.kernelModules so they load before amdgpu.
         kernelModules = [
           "kvm-amd"
           "amdgpu"
