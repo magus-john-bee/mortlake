@@ -10,5 +10,14 @@ _:
       user = "john";
       group = "users";
     };
+
+    # Jellyfin state — owned by the service user/group declared above.
+    preservation.preserveAt."/persistent".directories = [
+      {
+        directory = "/var/lib/jellyfin";
+        user = "john";
+        group = "users";
+      }
+    ];
   };
 }
