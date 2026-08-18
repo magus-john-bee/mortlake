@@ -95,5 +95,14 @@ _:
         transmissionPort
         transmissionPeerPort
       ];
+
+      # Transmission state — owned by the service user/group declared above.
+      preservation.preserveAt."/persistent".directories = [
+        {
+          directory = "/var/lib/transmission";
+          user = "john";
+          group = "users";
+        }
+      ];
     };
 }

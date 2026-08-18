@@ -26,5 +26,15 @@ _: {
       locations."/".proxyPass = "http://localhost:${toString mealiePort}";
       locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
     };
+
+    # Mealie state — service runs as john:users (overridden above) for
+    # /run/secrets access and preservation bind-mount compatibility.
+    preservation.preserveAt."/persistent".directories = [
+      {
+        directory = "/var/lib/mealie";
+        user = "john";
+        group = "users";
+      }
+    ];
   };
 }
