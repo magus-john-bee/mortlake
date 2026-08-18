@@ -46,11 +46,12 @@ _:
             # "raphael".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
             # "raziel".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
             "pixel8".id = "7YWROAI-Z66BW2L-UE2DPVL-WOEMEBH-FNRKHPQ-NVDXRHR-EQOXICC-CDRLLAF";
+            "pixel9".id = "XIDYDPP-XN7F4A4-WFWS7CU-HU3SUDX-VWHAKUN-XQ2VSYR-TM3OOPH-UFHJXQH";
           };
           folders = {
             "st" = {
               path = "/var/lib/syncthing/st";
-              devices = [ "pixel8" ];
+              devices = [ "pixel8" "pixel9" ];
             };
           };
           gui = {
