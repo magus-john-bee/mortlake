@@ -24,6 +24,7 @@
         nh
         sops
         ssh-to-age
+        tldr
         tre-command
 
         # ── Dev ──
@@ -38,6 +39,7 @@
         pandoc
         python313
         uv
+        yazi
       ] ++ flakePackages;
     };
 }
