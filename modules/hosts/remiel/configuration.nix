@@ -31,12 +31,11 @@
         pass
       ]);
 
+      # Shared aliases + pinned host keys + keep-alive — single source
+      # of truth in modules/features/ssh-aliases.nix.
       environment.etc = {
-        "ssh/ssh_config".text = ''
-          Host *
-            ServerAliveInterval 60
-            ServerAliveCountMax 3
-        '';
+        "ssh/ssh_config".text = self.sshClient.configText;
+        "ssh/ssh_known_hosts".text = self.sshClient.knownHostsText;
       };
 
       environment.etc."profile.d/nix-editor.sh".text = ''
@@ -44,13 +43,15 @@
         export NIX_REMOTE=daemon
       '';
 
-      nix.settings = {
-        experimental-features = [
-          "nix-command"
-          "flakes"
-        ];
-        extra-substituters = [ "https://cache.otwell.dev" ];
-        extra-trusted-public-keys = [
+      # nix-on-droid has no nix.settings — flat options instead, and
+      # the listOf ones merge with the module defaults (cache.nixos.org
+      # and nix-on-droid.cachix.org survive).
+      nix = {
+        extraOptions = ''
+          experimental-features = nix-command flakes
+        '';
+        substituters = [ "https://cache.otwell.dev" ];
+        trustedPublicKeys = [
           "cache.otwell.dev:1uNVs/iKY7NnLUcSoS++Zl2+iWl9qw1VuC0Fa5Lkt4I="
         ];
       };
