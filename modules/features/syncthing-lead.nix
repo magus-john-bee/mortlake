@@ -67,18 +67,20 @@ _:
         after = [ "sops-nix.service" ];
         serviceConfig = {
           ExecStartPost = lib.mkForce (
+            let
+              # --home flag so CLI talks to the right daemon regardless of
+              # the user's default config paths (which would be root's).
+              stcli = pkgs.writeShellScript "stcli" ''
+                exec ${lib.getExe config.services.syncthing.package} cli --home /var/lib/syncthing/.config/syncthing "$@"
+              '';
+            in
             "+${pkgs.writeShellScript "syncthing-set-gui-password" ''
-              # The NixOS module runs the daemon with --config/--data
-              # pointing at the state dir; syncthing cli defaults to
-              # ~/.local/state and would look at the wrong (root) config →
-              # connection refused. STHOMEDIR sets config+data together.
-              export STHOMEDIR=/var/lib/syncthing/.config/syncthing
               ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/bash -c '
-                while ! ${lib.getExe config.services.syncthing.package} cli show system >/dev/null 2>&1; do
+                while ! ${stcli} show system >/dev/null 2>&1; do
                   sleep 1
                 done
               '
-              ${lib.getExe config.services.syncthing.package} cli config gui set password "$(cat ${config.sops.secrets."syncthing-gui-password".path})"
+              ${stcli} config gui set password "$(cat ${config.sops.secrets."syncthing-gui-password".path})"
             ''}"
           );
         };
