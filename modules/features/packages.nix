@@ -6,7 +6,7 @@
       # Utility scripts defined as flake packages (scripts.nix).
       # Also available via `nix run .#<name>`, but we add them to
       # systemPackages so they're in PATH directly on every host.
-      flakePackages = builtins.attrValues (self.packages.${pkgs.system} or { });
+      flakePackages = builtins.attrValues (self.packages.${pkgs.stdenv.hostPlatform.system} or { });
     in
     {
       environment.systemPackages = with pkgs; [
