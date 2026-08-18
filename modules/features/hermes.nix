@@ -63,10 +63,10 @@
           "voice"
         ];
 
-        # v33 matches hermes-agent at this flake input's rev. The module
+        # v37 matches hermes-agent at the bumped flake input (1c4dc4c)'s rev. The module
         # deep-merges settings over the live config additively; this stamp
         # keeps `hermes doctor` from flagging drift after every rebuild.
-        settings._config_version = 33;
+        settings._config_version = 37;
 
         settings = {
           approvals.mode = "off";
