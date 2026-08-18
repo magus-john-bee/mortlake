@@ -128,7 +128,7 @@ Write these before host configs that import them.
 - [ ] **`syncthing-lead.nix`** — lead node (jehoel). **Device IDs from sops** (not hardcoded). **Rename:** puck→raphael, pixel→raziel/haniel, mab→jehoel device labels. **GUI password hash** → move to sops. Sets `mortlake.restic.paths`. Reference: corpus.
 - [ ] **`syncthing-follow.nix`** — follower node (raphael). Reference: corpus.
 - [ ] **`dd-client.nix`** — Porkbun DDNS. Clean domains list: `cache`, `mealie`, `jehoel`, `syncthing` only. Drop dead: airsonic, calibre, ha, jellyfin. Rename mab→jehoel. Reference: corpus but trim.
-- [ ] **`nix-serve.nix`** — binary cache behind nginx. **Co-located:** `nix-serve-key.yaml` (sops). Reference: corpus.
+- [ ] **`nix-serve.nix`** — binary cache behind nginx. Private key in `supersecrets.yaml` (`nix-serve-private-key`). Reference: corpus.
 - [ ] **`podman.nix`** — OCI runtime (uriel). Reference: corpus.
 - [ ] **Post-build hook** — `nix.settings.post-build-hook` to push to nix-serve cache via SSH. Needed on jehoel (cache host) and raphael (client). Pattern: `nix copy --to ssh://john@jehoel $OUT_PATHS || true`. Reference: mab/puck configs in corpus.
 

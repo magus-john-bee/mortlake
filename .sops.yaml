@@ -18,9 +18,3 @@ creation_rules:
           - *uriel
           - *jehoel
           - *raphael
-  - path_regex: ^modules/features/nix-serve-key\.yaml$
-    key_groups:
-      - age:
-          - *uriel
-          - *jehoel
-          - *raphael
