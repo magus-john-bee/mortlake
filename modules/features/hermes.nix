@@ -203,6 +203,8 @@
         pkgs.yt-dlp
         pkgs.libopus
         pkgs.codebase-memory-mcp
+        # pdftotext et al. for Hermes text-extraction (TODO.md, PR #68)
+        pkgs.poppler-utils
       ];
     };
 }

@@ -44,6 +44,11 @@
             {
               file = "/etc/ssh/ssh_host_ed25519_key";
               mode = "0600";
+              # sops runs in initrd on systemd-initrd hosts (uriel), where it
+              # derives the age key from this file. Without inInitrd the mount
+              # lands in stage 2, after activation, so decryption gets an empty
+              # key file ("0 successful groups required, got 0").
+              inInitrd = true;
             }
             "/etc/ssh/ssh_host_ed25519_key.pub"
             {
