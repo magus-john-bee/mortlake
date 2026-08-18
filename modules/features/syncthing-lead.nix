@@ -36,6 +36,9 @@ _:
         settings = {
           devices = {
             # Device IDs are public keys — not secrets.
+            # Hub-and-spoke: spokes (pixel8, …) only know jehoel; the st
+            # folder is shared with all registered peers below, and peers
+            # are not introducers, so they never sync with each other.
             # TODO: fill in real device IDs for raphael and raziel.
             # "raphael".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
             # "raziel".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
@@ -65,6 +68,10 @@ _:
         serviceConfig = {
           ExecStartPost = lib.mkForce (
             "+${pkgs.writeShellScript "syncthing-set-gui-password" ''
+              # The NixOS module runs the daemon with --config pointing at
+              # the state dir; syncthing cli defaults to ~/.local/state and
+              # would look at the wrong (root) config → connection refused.
+              export STCONFDIR=/var/lib/syncthing/.config/syncthing
               ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/bash -c '
                 while ! ${lib.getExe config.services.syncthing.package} cli show system >/dev/null 2>&1; do
                   sleep 1
