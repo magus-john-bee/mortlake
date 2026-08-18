@@ -68,12 +68,11 @@ _:
         serviceConfig = {
           ExecStartPost = lib.mkForce (
             "+${pkgs.writeShellScript "syncthing-set-gui-password" ''
-              # The NixOS module runs the daemon with --config pointing at
-              # the state dir; syncthing cli defaults to ~/.local/state and
-              # would look at the wrong (root) config → connection refused.
-              # --config and --data must move together (STCONFDIR+STDATASTORE).
-              export STCONFDIR=/var/lib/syncthing/.config/syncthing
-              export STDATASTORE=/var/lib/syncthing/.config/syncthing
+              # The NixOS module runs the daemon with --config/--data
+              # pointing at the state dir; syncthing cli defaults to
+              # ~/.local/state and would look at the wrong (root) config →
+              # connection refused. STHOMEDIR sets config+data together.
+              export STHOMEDIR=/var/lib/syncthing/.config/syncthing
               ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/bash -c '
                 while ! ${lib.getExe config.services.syncthing.package} cli show system >/dev/null 2>&1; do
                   sleep 1
