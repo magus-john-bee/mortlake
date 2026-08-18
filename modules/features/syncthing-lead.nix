@@ -33,6 +33,9 @@ _:
         overrideDevices = true;
         overrideFolders = true;
         openDefaultPorts = true;
+        # Plaintext GUI password from sops; syncthing-init (the module's
+        # config merger) bcrypt-hashes it and PATCHes /rest/config/gui.
+        guiPasswordFile = config.sops.secrets."syncthing-gui-password".path;
         settings = {
           devices = {
             # Device IDs are public keys — not secrets.
@@ -53,37 +56,19 @@ _:
           gui = {
             user = "john.otwell";
             insecureSkipHostcheck = true;
-            # Password set at runtime via activation script below.
           };
         };
       };
 
-      # Syncthing GUI password: read sops secret at runtime, write to
-      # syncthing config via CLI. The secret doesn't exist at Nix eval time,
-      # so we can't use builtins.readFile.
-      # Uses a script wrapper that waits for syncthing to be ready before
-      # setting the password.
+      # syncthing-init (the module's config merger) needs the sops-rendered
+      # GUI password file to exist before it runs; order both syncthing
+      # units after sops-nix (the module itself only orders after
+      # network.target).
       systemd.services.syncthing = {
         after = [ "sops-nix.service" ];
-        serviceConfig = {
-          ExecStartPost = lib.mkForce (
-            let
-              # --home flag so CLI talks to the right daemon regardless of
-              # the user's default config paths (which would be root's).
-              stcli = pkgs.writeShellScript "stcli" ''
-                exec ${lib.getExe config.services.syncthing.package} cli --home /var/lib/syncthing/.config/syncthing "$@"
-              '';
-            in
-            "+${pkgs.writeShellScript "syncthing-set-gui-password" ''
-              ${pkgs.coreutils}/bin/timeout 30 ${pkgs.bash}/bin/bash -c '
-                while ! ${stcli} show system >/dev/null 2>&1; do
-                  sleep 1
-                done
-              '
-              ${stcli} config gui set password "$(cat ${config.sops.secrets."syncthing-gui-password".path})"
-            ''}"
-          );
-        };
+      };
+      systemd.services.syncthing-init = {
+        after = [ "sops-nix.service" ];
       };
     };
 }
