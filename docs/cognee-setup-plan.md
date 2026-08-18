@@ -39,7 +39,7 @@ First Postgres in mortlake. PG17 + pgvector extension plugin.
 
 ### 2. `modules/features/cognee.nix` (new)
 
-systemd user service following the agentmemory/gbrain pattern.
+systemd user service following the established agent-service pattern.
 
 **Secrets (sops):**
 - Add `cognee-db-password` to `modules/features/secrets.yaml`
@@ -172,7 +172,7 @@ cognee-recall "How does mortlake discover modules?"
 | fastembed (bge-small-en) | Local ONNX, CPU-only, ~30MB model, zero API cost for embeddings |
 | GLM via Z.AI for LLM | Already have key; OpenAI-compatible endpoint; Cognee uses LiteLLM internally |
 | `uv run` at startup | Avoids fragile nix build with cognee's deep dep tree; matches two-layer Nix+uv philosophy from ml template |
-| systemd user service | Same pattern as agentmemory/gbrain; runs as john |
+| systemd user service | Same pattern as previous agent services; runs as john |
 
 ## Open questions
 
