@@ -11,7 +11,6 @@ set -euo pipefail
 SECRET_FILES=(
   "modules/features/secrets.yaml"
   "modules/features/supersecrets.yaml"
-  "modules/features/nix-serve-key.yaml"
 )
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || echo .)"
