@@ -1,6 +1,6 @@
 ---
 name: third-door-job-hunt
-description: Use when planning or executing a job hunt via direct outreach (the "Third Door") — bypassing job portals to contact hiring managers, peers, and founders directly. Covers target selection, contact discovery, email strategy, follow-up cadence, and web-to-research/AI career pivots. Message-drafting mechanics defer to career-ops contacto mode.
+description: Use when planning or executing a job hunt via direct outreach (the "Third Door") — contacting hiring managers, peers, and founders directly while using portals only as low-effort parallel channels. Covers target selection, contact discovery, email strategy, follow-up cadence, and web-to-research/AI career pivots. Core rule: effort scales with visibility — never spend tailored work where only a filter reads it. Message-drafting mechanics defer to career-ops contacto mode.
 tags: [career, job-hunt, outreach, third-door]
 version: 1.0.0
 license: MIT
@@ -45,6 +45,16 @@ same session.
   well-targeted emails; sourced candidates 5x more likely to be hired;
   referred candidates ~30% conversion vs ~7% cold pool.
 
+**Effort-per-visibility rule** (the actual principle — not door purity):
+the First Door is fine as a *parallel* channel when it costs near-zero.
+Fire the default resume into the portal in five minutes while the
+tailored work goes to a person. The waste case isn't portals — it's
+high-effort artifacts (tailored letters, work samples, long forms) spent
+where only a filter sees them. Allocate effort by the chance a
+decision-maker actually reads it: person reachable → full effort;
+HR-gated only → minimum viable portal application, then go find the
+person. Never let the portal application *be* the campaign.
+
 ## Target Profile (who to contact)
 
 Priority order:
@@ -54,7 +64,8 @@ Priority order:
 3. **Department head / VP / Director** — can create or refer roles pre-req.
 4. **Technical founder / CTO** — startups; lead with a GitHub link or demo,
    never a resume.
-5. **Internal recruiter** — weakest for Third Door purposes; fallback only.
+5. **Internal recruiter** — lowest visibility per effort; use for
+   low-effort parallel applications, never as the primary channel.
 
 Avoid: generic `careers@` inboxes; FAANG recruiters for technical roles (they
 can't override process — go to the HM); anyone whose listing explicitly says
