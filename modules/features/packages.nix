@@ -33,6 +33,7 @@
         fd
         fzf
         git
+        jq
         jujutsu
         just
         nodejs
