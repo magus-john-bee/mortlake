@@ -29,8 +29,14 @@ _:
             "/home/john/src"
             "/home/john/reference-repos"
             "/home/john/.ssh"
+            # taskdog SQLite DB + notes (hourly snapshots under backups/
+            # are excluded — redundant with the DB itself at daily cadence)
+            "/home/john/.local/share/taskdog"
           ];
-          exclude = [ "*.tmp" ];
+          exclude = [
+            "*.tmp"
+            "/home/john/.local/share/taskdog/backups"
+          ];
         };
 
         # Jehoel — server + desktop.
