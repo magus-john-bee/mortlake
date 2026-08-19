@@ -4,8 +4,9 @@
 # In nixpkgs as `pi-coding-agent` (buildNpmPackage). Binary is `pi`.
 # The nixpkgs package wraps pi with ripgrep and fd on PATH.
 #
-# Pi extensions need npm at runtime (they install to ~/.pi/agent/npm/).
-# Consider wrapping with nodejs on PATH when extensions are needed.
+# Pi extensions need npm at runtime (they install to ~/.pi/agent/npm/);
+# nodejs is declared in systemPackages below so the dependency travels
+# with this module (prime-agent also requires Node.js 22.8.0+).
 #
 # Pi has native Z.AI support built in:
 #   /login zai
@@ -20,6 +21,12 @@
 # Both pi and prime-agent are also in numtide/llm-agents.nix, but pi is
 # already in nixpkgs (pi-coding-agent) which is simpler to consume.
 # prime-agent comes from llm-agents.nix (not yet in nixpkgs).
+#
+# Versions (2026-08-18 audit, post flake bump #94):
+#   pi-coding-agent 0.84.2 (nixpkgs; was 0.80.7 live)
+#   prime-agent     0.7.2  (llm-agents.nix; was 0.7.0 live)
+# auth.json format unchanged — {"zai":{"type":"api_key","key":...}} matches
+# AuthStorageData in pi 0.84.2 type defs.
 #
 # TODO: Context enrichment stack (deferred — add after first boot):
 #   1. codebase-memory-mcp — C11 MCP server, indexes codebases into a
@@ -56,6 +63,10 @@
       environment.systemPackages = [
         pkgs.pi-coding-agent
         prime-agent
+        # Runtime for pi extensions (npm) and prime-agent (Node.js >= 22.8.0).
+        # Declared here rather than relying on packages.nix's nodejs by
+        # coincidence.
+        pkgs.nodejs
       ];
 
       # llm-agents.nix binary cache
