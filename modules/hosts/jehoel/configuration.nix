@@ -48,6 +48,7 @@
       networking = {
         hostName = "jehoel";
         useDHCP = lib.mkDefault true;
+        networkmanager.enable = true;
       };
 
       networking.firewall.allowedTCPPorts = [
@@ -67,6 +68,7 @@
           "/var/lib/bluetooth"
           "/var/lib/acme"
           "/var/lib/nginx"
+          "/etc/NetworkManager/system-connections"
         ];
 
         users.john.directories = [ "data" ];
