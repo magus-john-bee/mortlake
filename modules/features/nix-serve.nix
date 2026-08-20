@@ -1,7 +1,7 @@
 # Nix binary cache server using nix-serve behind nginx with HTTPS.
 #
-# Server-side only — import on the cache host (mab).
-# Clients (thoth etc.) configure substituter + post-build hook separately.
+# Server-side only — import on the cache host (jehoel). Clients (raphael,
+# uriel) get the substituter from nix-qol.nix and the public key only.
 #
 # The signing key pair must be generated before building. Run once:
 #
@@ -15,6 +15,11 @@
 #   - Attic: feature-rich (dedup, GC, token auth, multi-tenant, S3-backed)
 #   - Harmonia: Rust-based, fast, simple
 #
+# The cache host does NOT list cache.otwell.dev among its own substituters —
+# nix-qol.nix skips it when services.nix-serve.enable is true. Its store
+# already backs the cache, so querying itself is pure overhead and a local
+# nginx/ACME hiccup would become a nix failure mode on the build host.
+# Other substituters (cache.numtide.com via pi.nix) are unaffected.
 let
   cacheDomain = "cache.otwell.dev";
 in
@@ -43,13 +48,9 @@ in
           "http://${config.services.nix-serve.bindAddress}:${toString config.services.nix-serve.port}";
       };
 
-      # Allow `nix copy --to ssh://john@mab` from client machines.
-      # Required for the post-build hook to push paths to this cache.
-      #
-      # On client machines, add a post-build hook like:
-      #   nix.settings.post-build-hook = pkgs.writeShellScript "push-to-mab-cache" ''
-      #     ${pkgs.nix}/bin/nix copy --to ssh://john@mab $OUT_PATHS
-      #   '';
+      # Allow `nix copy --to ssh://john@jehoel` from client machines.
+      # Required for the post-build hook to push paths to this cache
+      # (see raphael/configuration.nix for the client side).
       nix.settings.trusted-users = [ "john" ];
     };
 }
