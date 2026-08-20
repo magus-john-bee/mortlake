@@ -1,7 +1,12 @@
 { inputs, ... }:
 {
   flake.nixosModules.nix-qol =
-    { pkgs, config, ... }:
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
     {
       nix = {
         settings = {
@@ -10,7 +15,13 @@
             "flakes"
           ];
 
-          extra-substituters = [ "https://cache.otwell.dev" ];
+          # Own binary cache — added everywhere except the cache host itself
+          # (services.nix-serve.enable). The cache host's store already backs
+          # the cache, so querying itself is pure overhead and couples its
+          # nix to local nginx/ACME health.
+          extra-substituters = lib.optionals (!config.services.nix-serve.enable) [
+            "https://cache.otwell.dev"
+          ];
           extra-trusted-public-keys = [
             "cache.otwell.dev:1uNVs/iKY7NnLUcSoS++Zl2+iWl9qw1VuC0Fa5Lkt4I="
           ];
