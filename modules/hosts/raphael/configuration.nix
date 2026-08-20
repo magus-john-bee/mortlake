@@ -31,6 +31,7 @@
         self.nixosModules.browser
         self.nixosModules.syncthing-follow
         # AI tooling
+        self.nixosModules.pi
         self.nixosModules.herdr
       ];
 
