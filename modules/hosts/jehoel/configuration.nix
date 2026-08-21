@@ -45,6 +45,9 @@
         self.nixosModules.taskdog
       ];
 
+      # Taskdog client — server lives on uriel (taskdog.otwell.dev).
+      services.taskdog.client.enable = true;
+
       networking = {
         hostName = "jehoel";
         useDHCP = lib.mkDefault true;

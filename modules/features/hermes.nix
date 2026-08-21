@@ -44,6 +44,8 @@
           DISCORD_BOT_TOKEN=${p.discord-bot-token}
           DISCORD_ALLOWED_USERS=${p.discord-allowed-users}
           DISCORD_HOME_CHANNEL=${p.discord-home-channel}
+          TASKDOG_API_BASE_URL=https://taskdog.otwell.dev
+          TASKDOG_API_KEY=${p.taskdog-api-key-hermes}
         '';
         owner = "john";
       };

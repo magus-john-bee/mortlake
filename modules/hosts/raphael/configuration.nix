@@ -32,7 +32,11 @@
         self.nixosModules.syncthing-follow
         # AI tooling
         self.nixosModules.herdr
+        self.nixosModules.taskdog
       ];
+
+      # Taskdog client — server lives on uriel (taskdog.otwell.dev).
+      services.taskdog.client.enable = true;
 
       networking = {
         hostName = "raphael";
