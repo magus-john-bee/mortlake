@@ -75,3 +75,15 @@ Each host has a restic backup job configured in `restic.nix`. All backup paths a
 
 - **Knowledge base** — Markdown notes live in `~/vault/logbook` (separate repo)
 - **Public projects** — career-ops and other release-intended projects stay separate
+
+## Development workflow
+
+Changes land on the private staging repo first (`uriel-mortlake/mortlake`, agent free rein), then promote here via PR:
+
+```bash
+git push origin main                              # staging (free rein)
+git push public main:refs/heads/promote/<slug>    # promotion branch
+# → open PR promote/<slug> → main, review, merge
+```
+
+`main` here is protected: PR + 1 approval required. Private planning files live only on the staging repo's `private/main` overlay branch — a pre-push hook enforces they never reach this repo.
