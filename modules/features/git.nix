@@ -1,0 +1,33 @@
+_: {
+  flake.nixosModules.git =
+    { pkgs, ... }:
+    {
+      environment.systemPackages = [ pkgs.delta ];
+
+      programs.git = {
+        enable = true;
+        config = [
+          {
+            core = {
+              editor = "hx";
+              pager = "delta";
+            };
+            credential.helper = "!gh auth git-credential";
+            delta = {
+              line-numbers = true;
+              navigate = true;
+              side-by-side = true;
+            };
+            init.defaultBranch = "main";
+            interactive.diffFilter = "delta --color-only";
+            pull.rebase = false;
+            alias.lg = "log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit";
+            user = {
+              name = "John Otwell";
+              email = "johnbee@otwell.dev";
+            };
+          }
+        ];
+      };
+    };
+}
