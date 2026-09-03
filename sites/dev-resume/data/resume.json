@@ -5,8 +5,8 @@
     "label": "Software Engineer",
     "image": "/img/headshot.jpg",
     "email": "johnbee@otwell.dev",
-    "phone": "+14703324450",
-    "url": "https://johnotwell.com",
+    "phone": "+147****4450",
+    "url": "https://john.otwell.dev",
     "summary": "I am a generalist software engineer who works comfortably at any layer of abstraction, from hardware-specific data-oriented design to highly distributed systems. I build and use tools for truly seeing what is happening in a system from top to bottom and beginning to end. When I do the hard work of asking the right questions and framing the right problems, solutions occur naturally. I communicate what I am doing, what I am assuming, and the understandings my work encodes. By keeping eyes on the system, asking the right questions, and communicating intelligently, I build good solutions.",
     "location": {
       "city": "Spartanburg",
@@ -220,7 +220,9 @@
         "LangChain",
         "AWS Bedrock",
         "Anthropic models",
-        "FastMCP"
+        "FastMCP",
+        "Semantic Kernel",
+        "Text-to-SQL"
       ]
     },
     {
@@ -229,7 +231,8 @@
       "keywords": [
         "PostgreSQL",
         "SQLite",
-        "MySQL"
+        "MySQL",
+        "OpenSearch"
       ]
     },
     {
@@ -290,10 +293,109 @@
     }
   ],
   "references": [],
-  "projects": [],
+  "projects": [
+    {
+      "name": "Market Intelligence Chat Assistant",
+      "description": "Customer-facing conversational assistant over S&P Global Market Intelligence institutional ownership data",
+      "highlights": [
+        "Built customer-facing chat assistant giving Investor Relations Officers natural-language access to institutional equity ownership, investor profiles, and expected-activity signals",
+        "Implemented planner-driven tool orchestration with Semantic Kernel, exposing product APIs as tools the assistant calls to answer data questions",
+        "Built retrieval-augmented (RAG) pipeline over product documentation to ground responses and answer product-usage questions alongside data queries",
+        "Delivered on Azure OpenAI as an IC on a 3-5 engineer team with QA and product ownership"
+      ],
+      "keywords": [
+        "Semantic Kernel",
+        "Azure OpenAI",
+        "Retrieval-Augmented Generation",
+        "Python"
+      ],
+      "roles": [
+        "Software Engineer"
+      ],
+      "entity": "S&P Global Market Intelligence",
+      "type": "application",
+      "startDate": "2023-10-01"
+    },
+    {
+      "name": "Natural-Language Query Engine",
+      "description": "Vanilla-Python engine translating sell-side analysts' plain-English questions into OpenSearch and SQL queries over Capital IQ sell-side data",
+      "highlights": [
+        "Built a natural-language query engine over most of the sell-side data Capital IQ exposes, on a two-tier architecture: canonical relational store digested into OpenSearch indexes",
+        "Compiled plain-English questions into structured OpenSearch queries \u2014 Query DSL filters, lexical full-text matching, and aggregations",
+        "Generated SQL SELECTs against the canonical relational store for relational slices of the data",
+        "Implemented LLM-driven query generation in vanilla Python with no agent framework, shaping behavior through iterated prompt refinement",
+        "Kept the query surface read-only, generating only read queries against the derived search tier and the canonical store"
+      ],
+      "keywords": [
+        "Python",
+        "OpenSearch",
+        "Query DSL",
+        "SQL",
+        "Text-to-SQL"
+      ],
+      "roles": [
+        "Software Engineer"
+      ],
+      "entity": "S&P Global Market Intelligence",
+      "type": "application",
+      "startDate": "2025-07-01",
+      "endDate": "2025-12-01"
+    },
+    {
+      "name": "Multi-Agent Assistant Orchestrator",
+      "description": "Planner-led multi-agent orchestrator (LangChain/LangGraph) built as the agentic successor to the Market Intelligence chat assistant, designed to plug into multiple MCP servers",
+      "highlights": [
+        "Built the agentic successor to the chat assistant: a planner-led multi-agent orchestrator, shipped to production for the Investor Relations audience",
+        "Orchestrated multiple agents with distinct tools, prompts, RAG resources, and security models using LangChain and LangGraph",
+        "Designed the tool layer to plug into multiple MCP servers, decoupling agents from any single tool source",
+        "Iterated models, prompts, and tools across agents, deploying them through Amazon Bedrock's model-serving APIs",
+        "Delivered as an IC on a 3-5 engineer team with QA and product ownership"
+      ],
+      "keywords": [
+        "LangChain",
+        "LangGraph",
+        "AWS Bedrock",
+        "Anthropic Claude",
+        "MCP",
+        "Python"
+      ],
+      "roles": [
+        "Software Engineer"
+      ],
+      "entity": "S&P Global Market Intelligence",
+      "type": "application",
+      "startDate": "2025-10-01",
+      "endDate": "2026-09-01"
+    },
+    {
+      "name": "Market Data MCP Server",
+      "description": "FastMCP server uniting backend market-data APIs behind a single tool surface for AI applications and developer agent harnesses",
+      "highlights": [
+        "Led the design and build of an MCP server on FastMCP, uniting backend product APIs into a single tool surface on a 3-5 engineer team",
+        "Auto-generated tool definitions from OpenAPI/Swagger specs using a little-documented FastMCP capability, replacing hand-written tool scaffolding",
+        "Built tools that queried backend APIs directly and performed cross-API data processing when single calls were insufficient",
+        "Exposed the server over both stdio and Streamable HTTP",
+        "Served two client populations in production: the multi-agent orchestrator as its primary consumer, and developers' agent harnesses across the organization as a shared tool layer"
+      ],
+      "keywords": [
+        "FastMCP",
+        "MCP",
+        "OpenAPI",
+        "Streamable HTTP",
+        "Python"
+      ],
+      "roles": [
+        "Software Engineer"
+      ],
+      "entity": "S&P Global Market Intelligence",
+      "type": "application",
+      "startDate": "2025-10-01",
+      "endDate": "2026-09-01"
+    }
+  ],
   "meta": {
     "version": "1.0.0",
-    "lastModified": "2026-07-07T18:30:00Z",
-    "canonical": "https://github.com/jbotwell/career-ops/blob/main/data/resume.json"
+    "lastModified": "2026-09-02T17:30:00Z",
+    "canonical": "https://github.com/magus-john-bee/mortlake/blob/main/sites/dev-resume/data/resume.json"
   }
 }
