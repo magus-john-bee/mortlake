@@ -34,6 +34,7 @@
         content = ''
           ELEVENLABS_API_KEY=${p.elevenlabs-api-key}
           EXA_API_KEY=${p.exa-api-key}
+          FAL_KEY=${p.fal-api-key}
           GLM_API_KEY=${p.glm-api-key}
           GROQ_API_KEY=${p.groq-api-key}
           DEEPSEEK_API_KEY=${p.deepseek-api-key}
