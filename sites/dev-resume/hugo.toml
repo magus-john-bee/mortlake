@@ -11,6 +11,11 @@ defaultContentLanguage = "en"
 
 [module]
 replacements = "github.com/schnerring/hugo-mod-json-resume -> hugo-mod-json-resume"
+  # Explicit mounts replace Hugo's defaults — static/ must be mounted or
+  # CNAME + static/img (headshot) never reach public/.
+  [[module.mounts]]
+    source = "static"
+    target = "static"
   [[module.mounts]]
     source = "node_modules/simple-icons/icons"
     target = "assets/simple-icons"
