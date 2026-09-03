@@ -5,8 +5,8 @@
     "label": "Software Engineer",
     "image": "/img/headshot.jpg",
     "email": "johnbee@otwell.dev",
-    "url": "https://johnotwell.com",
-    "summary": "I am a generalist software engineer who works comfortably at any layer of abstraction, from hardware-specific data-oriented design to highly distributed systems. I build and use tools for truly seeing what is happening in a system from top to bottom and beginning to end. When I do the hard work of asking the right questions and framing the right problems, solutions occur naturally. I communicate what I am doing, what I am assuming, and the understandings my work encodes. By keeping eyes on the system, asking the right questions, and communicating intelligently, I build good solutions.",
+    "url": "https://john.otwell.dev",
+    "summary": "I'm a generalist software engineer fluent with generative AI — using it to complement my own work, and building with it to complement the work of technical teams. I'm comfortable across many layers of abstraction, from data-oriented systems work to distributed infrastructure. Experience spanning biology, education, finance, cryptocurrency, and AI keeps my skillset broad and makes cross-domain learning fast.",
     "location": {
       "city": "Spartanburg",
       "countryCode": "US",
@@ -394,7 +394,7 @@
   ],
   "meta": {
     "version": "1.0.0",
-    "lastModified": "2026-09-02T17:30:00Z",
+    "lastModified": "2026-09-03T16:30:00Z",
     "canonical": "https://github.com/uriel-mortlake/mortlake/blob/main/data/resume.json"
   }
 }

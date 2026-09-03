@@ -58,7 +58,7 @@ replacements = "github.com/schnerring/hugo-mod-json-resume -> hugo-mod-json-resu
 [params]
   author = "John Otwell"
   subtitle = "Software Engineer"
-  description = "John Otwell — Software Engineer. A generalist software engineer who works comfortably at any layer of abstraction, from hardware-specific data-oriented design to highly distributed systems."
+  description = "John Otwell — Software Engineer. I'm a generalist software engineer fluent with generative AI — using it to complement my own work, and building with it to complement the work of technical teams."
   defaultTheme = "dark"
 
   [params.logo]

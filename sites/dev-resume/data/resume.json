@@ -6,7 +6,7 @@
     "image": "/img/headshot.jpg",
     "email": "johnbee@otwell.dev",
     "url": "https://john.otwell.dev",
-    "summary": "I am a generalist software engineer who works comfortably at any layer of abstraction, from hardware-specific data-oriented design to highly distributed systems. I build and use tools for truly seeing what is happening in a system from top to bottom and beginning to end. When I do the hard work of asking the right questions and framing the right problems, solutions occur naturally. I communicate what I am doing, what I am assuming, and the understandings my work encodes. By keeping eyes on the system, asking the right questions, and communicating intelligently, I build good solutions.",
+    "summary": "I'm a generalist software engineer fluent with generative AI — using it to complement my own work, and building with it to complement the work of technical teams. I'm comfortable across many layers of abstraction, from data-oriented systems work to distributed infrastructure. Experience spanning biology, education, finance, cryptocurrency, and AI keeps my skillset broad and makes cross-domain learning fast.",
     "location": {
       "city": "Spartanburg",
       "countryCode": "US",
@@ -320,7 +320,7 @@
       "description": "Vanilla-Python engine translating sell-side analysts' plain-English questions into OpenSearch and SQL queries over Capital IQ sell-side data",
       "highlights": [
         "Built a natural-language query engine over most of the sell-side data Capital IQ exposes, on a two-tier architecture: canonical relational store digested into OpenSearch indexes",
-        "Compiled plain-English questions into structured OpenSearch queries \u2014 Query DSL filters, lexical full-text matching, and aggregations",
+        "Compiled plain-English questions into structured OpenSearch queries — Query DSL filters, lexical full-text matching, and aggregations",
         "Generated SQL SELECTs against the canonical relational store for relational slices of the data",
         "Implemented LLM-driven query generation in vanilla Python with no agent framework, shaping behavior through iterated prompt refinement",
         "Kept the query surface read-only, generating only read queries against the derived search tier and the canonical store"
@@ -394,7 +394,7 @@
   ],
   "meta": {
     "version": "1.0.0",
-    "lastModified": "2026-09-02T17:30:00Z",
+    "lastModified": "2026-09-03T16:30:00Z",
     "canonical": "https://github.com/magus-john-bee/mortlake/blob/main/sites/dev-resume/data/resume.json"
   }
 }

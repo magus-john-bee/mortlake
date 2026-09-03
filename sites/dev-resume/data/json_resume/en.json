@@ -6,7 +6,7 @@
     "image": "/img/headshot.jpg",
     "email": "johnbee@otwell.dev",
     "url": "https://john.otwell.dev",
-    "summary": "A generalist software engineer who works comfortably at any layer of abstraction, from hardware-specific data-oriented design to highly distributed systems. My study and experience span biology, education, finance, cryptocurrency, and AI orchestration—I see connections across domains that specialists often miss, and I use that breadth to frame the right problems so solutions follow naturally. I build tools for truly seeing what is happening in a system end to end, communicate what I am assuming and the models my work encodes, and leverage AI tooling to move faster and reason more clearly about complex systems.",
+    "summary": "I'm a generalist software engineer fluent with generative AI — using it to complement my own work, and building with it to complement the work of technical teams. I'm comfortable across many layers of abstraction, from data-oriented systems work to distributed infrastructure. Experience spanning biology, education, finance, cryptocurrency, and AI keeps my skillset broad and makes cross-domain learning fast.",
     "location": {
       "city": "Spartanburg",
       "countryCode": "US",
@@ -394,7 +394,7 @@
   ],
   "meta": {
     "version": "1.0.0",
-    "lastModified": "2026-09-02T17:30:00Z",
+    "lastModified": "2026-09-03T16:30:00Z",
     "canonical": "https://github.com/magus-john-bee/mortlake/blob/main/sites/dev-resume/data/resume.json"
   }
 }

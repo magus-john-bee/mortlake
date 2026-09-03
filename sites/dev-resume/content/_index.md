@@ -4,6 +4,6 @@ date = "2026-07-08"
 draft = false
 +++
 
-A generalist software engineer who works comfortably at any layer of abstraction, from hardware-specific data-oriented design to highly distributed systems.
+I'm a generalist software engineer fluent with generative AI — using it to complement my own work, and building with it to complement the work of technical teams.
 
 [View my CV →](/cv/)
