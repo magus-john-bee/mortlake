@@ -58,49 +58,51 @@
         owner = "john";
       };
 
-      system.activationScripts.pi-auth.text = ''
-        mkdir -p /home/john/.pi/agent
-        ln -sf ${config.sops.templates."pi-auth.json".path} /home/john/.pi/agent/auth.json
-        chown -h john:users /home/john/.pi/agent/auth.json
-      '';
+      system.activationScripts = {
+        pi-auth.text = ''
+          mkdir -p /home/john/.pi/agent
+          ln -sf ${config.sops.templates."pi-auth.json".path} /home/john/.pi/agent/auth.json
+          chown -h john:users /home/john/.pi/agent/auth.json
+        '';
 
-      # Declarative model defaults (vanilla pi settings). Without these, pi's
-      # model-resolver walks its known-provider table and openrouter's default
-      # (moonshotai/kimi-k2.6) wins on any host with both keys — seen live on
-      # jehoel. Primary is GLM 5.3 via the ZAI coding plan.
-      #
-      # settings.json is ALSO pi's user-preference store (theme, editor,
-      # ctrl+s saves) — merge-update only the default keys, never clobber.
-      system.activationScripts.pi-model-defaults.text = ''
-        mkdir -p /home/john/.pi/agent
-        ${pkgs.python3}/bin/python3 - <<'EOF'
-        import json, os
-        path = os.path.expanduser("/home/john/.pi/agent/settings.json")
-        try:
-            with open(path) as f:
-                settings = json.load(f)
-        except (FileNotFoundError, json.JSONDecodeError):
-            settings = {}
-        settings["defaultProvider"] = "zai"
-        settings["defaultModel"] = "glm-5.3"
-        with open(path, "w") as f:
-            json.dump(settings, f, indent=2)
-        EOF
-        chown john:users /home/john/.pi/agent/settings.json 2>/dev/null || true
-      '';
+        # Declarative model defaults (vanilla pi settings). Without these, pi's
+        # model-resolver walks its known-provider table and openrouter's default
+        # (moonshotai/kimi-k2.6) wins on any host with both keys — seen live on
+        # jehoel. Primary is GLM 5.3 via the ZAI coding plan.
+        #
+        # settings.json is ALSO pi's user-preference store (theme, editor,
+        # ctrl+s saves) — merge-update only the default keys, never clobber.
+        pi-model-defaults.text = ''
+          mkdir -p /home/john/.pi/agent
+          ${pkgs.python3}/bin/python3 - <<'EOF'
+          import json, os
+          path = os.path.expanduser("/home/john/.pi/agent/settings.json")
+          try:
+              with open(path) as f:
+                  settings = json.load(f)
+          except (FileNotFoundError, json.JSONDecodeError):
+              settings = {}
+          settings["defaultProvider"] = "zai"
+          settings["defaultModel"] = "glm-5.3"
+          with open(path, "w") as f:
+              json.dump(settings, f, indent=2)
+          EOF
+          chown john:users /home/john/.pi/agent/settings.json 2>/dev/null || true
+        '';
 
-      # Shared agent skills: mortlake's skills/ tree is the cross-agent source
-      # of truth (Hermes reads it via skills.external_dirs; see
-      # corpus-nixos-modules "Shared Agent Skills Directory"). pi and
-      # prime-agent discover it through the Agent Skills standard location
-      # ~/.agents/skills (both scan it; project .agents/skills too). The
-      # symlink is recreated at activation because /home/john is tmpfs.
-      system.activationScripts.pi-agent-skills.text = ''
-        mkdir -p /home/john/.agents
-        ln -sfn /home/john/src/mortlake/skills /home/john/.agents/skills
-        chown john:users /home/john/.agents
-        chown -h john:users /home/john/.agents/skills
-      '';
+        # Shared agent skills: mortlake's skills/ tree is the cross-agent source
+        # of truth (Hermes reads it via skills.external_dirs; see
+        # corpus-nixos-modules "Shared Agent Skills Directory"). pi and
+        # prime-agent discover it through the Agent Skills standard location
+        # ~/.agents/skills (both scan it; project .agents/skills too). The
+        # symlink is recreated at activation because /home/john is tmpfs.
+        pi-agent-skills.text = ''
+          mkdir -p /home/john/.agents
+          ln -sfn /home/john/src/mortlake/skills /home/john/.agents/skills
+          chown john:users /home/john/.agents
+          chown -h john:users /home/john/.agents/skills
+        '';
+      };
 
       environment.systemPackages = [
         pkgs.pi-coding-agent
