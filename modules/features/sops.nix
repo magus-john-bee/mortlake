@@ -25,6 +25,7 @@
           {
             "elevenlabs-api-key" = john;
             "exa-api-key" = john;
+            "fal-api-key" = john;
             "glm-api-key" = john;
             "groq-api-key" = john;
             "deepseek-api-key" = john;
