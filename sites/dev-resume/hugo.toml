@@ -81,7 +81,7 @@ replacements = "github.com/schnerring/hugo-mod-json-resume -> hugo-mod-json-resu
   [[menu.main]]
     identifier = "github"
     name = "GitHub"
-    url = "https://github.com/jbotwell"
+    url = "https://github.com/magus-john-bee"
     weight = 20
   [[menu.main]]
     identifier = "linkedin"
