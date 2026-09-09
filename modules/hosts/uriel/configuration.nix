@@ -32,6 +32,7 @@
         self.nixosModules.pi
         self.nixosModules.herdr
         self.nixosModules.taskdog
+        self.nixosModules.silverbullet
         self.nixosModules.nginx
       ];
 
