@@ -55,7 +55,7 @@ silverbullet module yet.
 | `GET /.fs/<path>` | read a file's raw content (e.g. `/.fs/index.md`). Response headers: `X-Last-Modified` (ms epoch), `X-Permission` (rw/ro), `X-Content-Length` |
 | `PUT /.fs/<path>` | write body to a file (creates/overwrites; markdown or binary) |
 | `DELETE /.fs/<path>` | delete a file |
-| `GET /index.json` | full file listing with lastModified + permissions (sync index) |
+| `GET /.fs/` | full file listing, JSON array (name, created, lastModified, contentType, contentLength, perm). Library/Std/* entries are SB's built-in virtual pages — not on disk |
 | `GET /.config` | client config JSON (readOnly, indexPage, …) |
 
 ```bash
@@ -67,7 +67,7 @@ curl -s -X PUT -H "Authorization: Bearer $TOKEN" --data-binary @page.md \
 # delete
 curl -s -X DELETE -H "Authorization: Bearer $TOKEN" https://sb.otwell.dev/.fs/pages/old.md
 # list everything
-curl -s -H "Authorization: Bearer $TOKEN" https://sb.otwell.dev/index.json
+curl -s -H "Authorization: Bearer $TOKEN" https://sb.otwell.dev/.fs/
 ```
 
 Do NOT send the `X-Sync-Mode: true` header — that marks requests as coming
