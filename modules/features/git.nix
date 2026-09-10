@@ -1,6 +1,11 @@
-_: {
+{
   flake.nixosModules.git =
-    { pkgs, ... }:
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
     {
       environment.systemPackages = [ pkgs.delta ];
 
@@ -12,7 +17,13 @@ _: {
               editor = "hx";
               pager = "delta";
             };
-            credential.helper = "!gh auth git-credential";
+            # gh's stock helper answers the ACTIVE gh account; when
+            # gh.credRouter is set (jehoel, dual-identity), it is appended and
+            # routes non-active usernames via `gh auth token --user`.
+            credential.helper = [
+              "!gh auth git-credential"
+            ]
+            ++ lib.optionals (config.gh.credRouter != null) [ config.gh.credRouter ];
             delta = {
               line-numbers = true;
               navigate = true;
