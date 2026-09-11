@@ -89,7 +89,9 @@
 
           fallback_model = {
             provider = "openrouter";
-            model = "deepseek/deepseek-v4-flash";
+            # V4.1 Flash (2026-09-10, CED arch) — retires V4-Pro; vision is
+            # native, so fallback and vision share one slug.
+            model = "deepseek/deepseek-v4.1-flash";
           };
 
           stt = {
@@ -115,7 +117,8 @@
           auxiliary = {
             vision = {
               provider = "openrouter";
-              model = "deepseek/deepseek-v4-flash-vision-exp";
+              # Native multimodal in V4.1 Flash — replaces retired vision-exp.
+              model = "deepseek/deepseek-v4.1-flash";
             };
             flush_memories = {
               provider = "groq";
