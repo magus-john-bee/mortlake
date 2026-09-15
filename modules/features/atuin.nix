@@ -134,8 +134,12 @@ in
           ExecStart = toString (
             pkgs.writeShellScript "atuin-login" ''
               # Wait for the sync host to resolve before attempting login.
+              # NOTE: getent is NOT in the glibc out output's bin/ — nixpkgs
+              # splits it into its own derivation. Use pkgs.getent, or the
+              # loop below fails instantly (127) every iteration and burns the
+              # full 5-minute budget before exiting 1 (raphael, 2026-09-14).
               i=0
-              until ${pkgs.glibc}/bin/getent hosts hub.atuin.sh >/dev/null 2>&1; do
+              until ${lib.getExe pkgs.getent} hosts hub.atuin.sh >/dev/null 2>&1; do
                 i=$((i + 1))
                 [ "$i" -ge 60 ] && exit 1
                 sleep 5
