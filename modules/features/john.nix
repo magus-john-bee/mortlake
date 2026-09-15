@@ -65,11 +65,18 @@
           # mortlake switch.
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBHRm1rqdQJBm82C1fn8sNzP+gG691b70MOSRI5Vsn0m john@mab"
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILxMx03v5a9RBU5PH979XTuXYXsDzjiu/t0/ACdB+b9X john@xtx"
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMl7wDCpBuYSqwciW4/tgQLWBzLR2xUVL11xYk1 john@puck"
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA8+i8bREEEwTtYIGoldz0OQaB4YFKt+wG+MHf1caq5X root@thoth"
           # jehoel host key — deploy-rs / rebuild sessions originate from jehoel
           # (build host). Same identity thoth's key uses on other mortlake hosts.
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPeQiYDQJGWpEnXZSwVIFm8CJ+95iOwhl06SfGnap0z root@jehoel"
+          # raphael host key — installed as "puck", renamed raphael (the
+          # corpus-era john@puck key was the previous install's identity and
+          # is dead). Label updated to root@raphael on-host 2026-09-14; key
+          # material unchanged (fingerprint
+          # SHA256:TRxhxCAb9lFPp0LaTflhbRj5TNzV8BDkjRhxbkcJQ9Q). Verified via
+          # ssh-to-age: derives to the &raphael anchor in .sops.yaml — same
+          # provenance standard as ssh-aliases.nix (jehoel/uriel entries).
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN1xWsgUtOgd7ZTRvn9VMzlGH4kJLdLDcFr8blIHQ8qK root@raphael"
         ];
       };
 

@@ -11,6 +11,7 @@
         self.nixosModules.raphaelHardware
         self.nixosModules.raphaelDisko
         self.nixosModules.preservation-common
+        self.nixosModules.dev-dirs
         self.nixosModules.john
         self.nixosModules.clock
         self.nixosModules.network
@@ -55,6 +56,11 @@
           "/etc/NetworkManager/system-connections"
           "/var/lib/bluetooth"
         ];
+
+        # Host-specific home content (jehoel persists `data` the same way).
+        # src/vault come from dev-dirs.nix; reference-repos exists only on
+        # this host (June-era, already on the persistent subvol).
+        users.john.directories = [ "reference-repos" ];
       };
 
       nix.settings.post-build-hook =
