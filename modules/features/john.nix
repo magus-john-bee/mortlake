@@ -69,12 +69,14 @@
           # jehoel host key — deploy-rs / rebuild sessions originate from jehoel
           # (build host). Same identity thoth's key uses on other mortlake hosts.
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDPeQiYDQJGWpEnXZSwVIFm8CJ+95iOwhl06SfGnap0z root@jehoel"
-          # raphael host key — box installed as "puck", renamed raphael (key
-          # comment predates the rename; the corpus-era john@puck key was the
-          # previous install's identity and is dead). Verified via ssh-to-age:
-          # derives to the &raphael anchor in .sops.yaml — same provenance
-          # standard as ssh-aliases.nix (jehoel/uriel entries).
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN1xWsgUtOgd7ZTRvn9VMzlGH4kJLdLDcFr8blIHQ8qK root@puck"
+          # raphael host key — installed as "puck", renamed raphael (the
+          # corpus-era john@puck key was the previous install's identity and
+          # is dead). Label updated to root@raphael on-host 2026-09-14; key
+          # material unchanged (fingerprint
+          # SHA256:TRxhxCAb9lFPp0LaTflhbRj5TNzV8BDkjRhxbkcJQ9Q). Verified via
+          # ssh-to-age: derives to the &raphael anchor in .sops.yaml — same
+          # provenance standard as ssh-aliases.nix (jehoel/uriel entries).
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN1xWsgUtOgd7ZTRvn9VMzlGH4kJLdLDcFr8blIHQ8qK root@raphael"
         ];
       };
 
