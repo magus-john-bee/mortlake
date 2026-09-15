@@ -121,18 +121,37 @@ in
           "sops-nix.service"
           "network-online.target"
         ];
+        unitConfig = {
+          # network-online.target does NOT guarantee DNS readiness — the
+          # resolver can lag it by a minute+ on boot. Keep retrying instead
+          # of losing history sync for the entire boot session.
+          StartLimitIntervalSec = 600;
+          StartLimitBurst = 30;
+        };
         serviceConfig = {
           Type = "oneshot";
           User = "john";
           ExecStart = toString (
             pkgs.writeShellScript "atuin-login" ''
+              # Wait for the sync host to resolve before attempting login.
+              i=0
+              until ${pkgs.glibc}/bin/getent hosts hub.atuin.sh >/dev/null 2>&1; do
+                i=$((i + 1))
+                [ "$i" -ge 60 ] && exit 1
+                sleep 5
+              done
               ${lib.getExe atuin} login \
                 -u "$(cat ${config.sops.secrets.atuin-username.path})" \
                 -p "$(cat ${config.sops.secrets.atuin-password.path})" \
                 -k "$(cat ${config.sops.secrets.atuin-key.path})"
+              # Repopulate the tmpfs history db at boot rather than waiting
+              # for the first interactive shell's auto-sync.
+              ${lib.getExe atuin} sync
             ''
           );
           RemainAfterExit = true;
+          Restart = "on-failure";
+          RestartSec = 15;
         };
         wantedBy = [ "multi-user.target" ];
       };
