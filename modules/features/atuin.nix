@@ -133,13 +133,6 @@ in
           User = "john";
           ExecStart = toString (
             pkgs.writeShellScript "atuin-login" ''
-              # Wait for the sync host to resolve before attempting login.
-              i=0
-              until ${pkgs.glibc}/bin/getent hosts hub.atuin.sh >/dev/null 2>&1; do
-                i=$((i + 1))
-                [ "$i" -ge 60 ] && exit 1
-                sleep 5
-              done
               ${lib.getExe atuin} login \
                 -u "$(cat ${config.sops.secrets.atuin-username.path})" \
                 -p "$(cat ${config.sops.secrets.atuin-password.path})" \
