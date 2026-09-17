@@ -20,8 +20,8 @@
       },
       {
         "network": "GitHub",
-        "username": "magus-john-bee",
-        "url": "https://github.com/magus-john-bee"
+        "username": "jbotwell",
+        "url": "https://github.com/jbotwell"
       }
     ]
   },
@@ -395,6 +395,6 @@
   "meta": {
     "version": "1.0.0",
     "lastModified": "2026-09-03T17:30:00Z",
-    "canonical": "https://github.com/magus-john-bee/mortlake/blob/main/sites/dev-resume/data/resume.json"
+    "canonical": "https://github.com/jbotwell/mortlake/blob/main/sites/dev-resume/data/resume.json"
   }
 }
