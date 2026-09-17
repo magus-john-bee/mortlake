@@ -22,6 +22,10 @@
         self.nixosModules.helix
         self.nixosModules.zellij
         self.nixosModules.dev-dirs
+        # Syncthing spoke: st folder peers with jehoel (the hub) only —
+        # syncthing-follow.nix. Device identity persists via
+        # preservation-common (/var/lib/syncthing).
+        self.nixosModules.syncthing-follow
         # TODO(restic): re-enable once the Backblaze side is provisioned —
         # new bucket for uriel (old thoth-restic objects are being deleted;
         # nothing references that bucket anymore), `restic-<host> init`,
