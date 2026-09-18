@@ -39,6 +39,7 @@
         self.nixosModules.ghostty
         self.nixosModules.browser
         self.nixosModules.sound
+        self.nixosModules.printing
 
         # AI tooling
         self.nixosModules.pi
