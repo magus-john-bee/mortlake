@@ -15,8 +15,8 @@
     "profiles": [
       {
         "network": "LinkedIn",
-        "username": "john-otwell-b555a6241",
-        "url": "https://www.linkedin.com/in/john-otwell-b555a6241"
+        "username": "john-otwell",
+        "url": "https://www.linkedin.com/in/john-otwell"
       },
       {
         "network": "GitHub",
@@ -394,7 +394,7 @@
   ],
   "meta": {
     "version": "1.0.0",
-    "lastModified": "2026-09-03T17:30:00Z",
+    "lastModified": "2026-09-23T13:10:40Z",
     "canonical": "https://github.com/uriel-mortlake/mortlake/blob/main/data/resume.json"
   }
 }
