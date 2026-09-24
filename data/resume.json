@@ -291,7 +291,18 @@
       "keywords": []
     }
   ],
-  "references": [],
+  "references": [
+    {
+      "name": "AJ Smith",
+      "position": "Director - AI Engineering, S&P Global",
+      "reference": "John is a very intelligent engineer with a real passion for AI. He stays on top of the latest research and architectures, and he's hands-on: he builds on new papers himself rather than just reading about them. As a founding engineer on one of S&P Global's first commercial AI chatbots, he put that curiosity to work building a product used by real customers."
+    },
+    {
+      "name": "Kevin M.",
+      "position": "FinTech Engineering Leader",
+      "reference": "John is a strong developing software engineer who constantly engages himself in learning new things, spanning topics from blockchain engineering to the English language, and he actively forays into many other diverse branches of knowledge. John demonstrated grit and a deep ownership of his work when it came to taking action and pushing forward initiatives, actively managing tech debt, and producing specification documents, to name just a few. One thing that especially stood out to me about John is his proactive mindset designing features that are often as future-proof as possible, allowing for flexibility even as product requirements change.  John has a bright future as a technology polyglot and I believe any team would be lucky to have someone of his diverse skillset."
+    }
+  ],
   "projects": [
     {
       "name": "Market Intelligence Chat Assistant",
@@ -394,7 +405,7 @@
   ],
   "meta": {
     "version": "1.0.0",
-    "lastModified": "2026-09-23T13:10:40Z",
+    "lastModified": "2026-09-24T00:00:00Z",
     "canonical": "https://github.com/uriel-mortlake/mortlake/blob/main/data/resume.json"
   }
 }
