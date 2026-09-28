@@ -95,6 +95,16 @@
         max-substitution-jobs = lib.mkOverride 90 3;
       };
 
+      # Uriel builds other hosts' closures (cross-host test builds) and
+      # had accumulated 20.8 GiB of unreachable store paths by 2026-09.
+      # Collect unrooted garbage weekly so it can't fill the 36G disk.
+      nix.gc = {
+        automatic = true;
+        dates = "weekly";
+        options = "--delete-older-than 14d";
+        persistent = true;
+      };
+
       system.stateVersion = "25.05";
     };
 }
