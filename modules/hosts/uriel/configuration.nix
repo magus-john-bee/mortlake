@@ -38,6 +38,9 @@
         self.nixosModules.taskdog
         self.nixosModules.silverbullet
         self.nixosModules.nginx
+        # eBay Sell API prerequisite: account-deletion endpoint gates the
+        # production keyset (see personal-resale skill / selling-ops).
+        self.nixosModules.ebayDeletion
       ];
 
       # Taskdog: uriel is THE server; local CLI also talks to it via
@@ -47,6 +50,10 @@
         server.enable = true;
         client.enable = true;
       };
+
+      # deletion.otwell.dev — eBay challenge/deletion endpoint behind
+      # nginx + ACME (DNS record must exist at the registrar first).
+      services.ebayDeletion.enable = true;
 
       boot = {
         loader.grub = {
