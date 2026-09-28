@@ -21,25 +21,41 @@ _: {
       };
 
       hostConfig = {
-        # Uriel (was thoth) — Hetzner VPS
+        # Uriel (was thoth) — Hetzner VPS. New bucket uriel-restic
+        # (2026-09-28); old thoth-restic is being deleted.
         uriel = {
           name = "uriel";
-          repository = "s3:s3.us-east-005.backblazeb2.com/thoth-restic";
+          repository = "s3:s3.us-east-005.backblazeb2.com/uriel-restic";
           passwordSecret = "uriel-restic-password";
           envTemplate = "uriel-restic-b2-env";
           paths = [
-            "/persistent/var/lib/hermes"
-            "/home/john/vault"
-            "/home/john/src"
-            "/home/john/reference-repos"
+            # SSH host keys (the sops-nix age key source — lose these and
+            # secrets.yaml/supersecrets.yaml are undecryptable) + machine-id
+            "/persistent/etc"
             "/home/john/.ssh"
-            # taskdog SQLite DB + notes (hourly snapshots under backups/
-            # are excluded — redundant with the DB itself at daily cadence)
+            "/home/john/src"
+            "/home/john/vault"
+            # taskdog server (uriel is THE server) — SQLite DB; hourly
+            # snapshots under backups/ excluded as redundant
             "/home/john/.local/share/taskdog"
+            "/home/john/.local/share/atuin"
+            # Hermes state: state.db (sessions/history), skills, vault
+            # logbook copy, .ssh. Caches excluded below. vault/logbook
+            # overlaps /home/john/vault — restic dedup makes that free.
+            "/var/lib/hermes"
+            # Syncthing device identity + SilverBullet server auth
+            "/var/lib/syncthing"
+            "/var/lib/silverbullet"
           ];
           exclude = [
             "*.tmp"
             "/home/john/.local/share/taskdog/backups"
+            "/var/lib/hermes/.npm"
+            "/var/lib/hermes/.cache"
+            "/var/lib/hermes/.local"
+            "/var/lib/hermes/.hermes/logs"
+            "/var/lib/hermes/.hermes/lsp"
+            "/var/lib/hermes/.hermes/cache"
           ];
         };
 
@@ -52,10 +68,15 @@ _: {
           passwordSecret = "jehoel-restic-password";
           envTemplate = "jehoel-restic-b2-env";
           paths = [
+            # SSH host keys (sops-nix age key source for supersecrets.yaml)
+            # + machine-id
+            "/persistent/etc"
             "/home/john/data"
             "/home/john/vault"
             "/home/john/src"
             "/home/john/.ssh"
+            # Shell history DB
+            "/home/john/.local/share/atuin"
             "/var/lib/jellyfin"
             "/var/lib/transmission"
             "/var/lib/mealie"

@@ -26,11 +26,10 @@
         # syncthing-follow.nix. Device identity persists via
         # preservation-common (/var/lib/syncthing).
         self.nixosModules.syncthing-follow
-        # TODO(restic): re-enable once the Backblaze side is provisioned —
-        # new bucket for uriel (old thoth-restic objects are being deleted;
-        # nothing references that bucket anymore), `restic-<host> init`,
-        # and B2 keys in supersecrets if they change.
-        # self.nixosModules.restic
+        # Uriel restic → B2 bucket uriel-restic (s3 API). Repo init is
+        # manual: `sudo restic-uriel init` after deploy (restic 0.17+
+        # treats re-init as fatal, hence initialize = false).
+        self.nixosModules.restic
         self.nixosModules.intellishell
         # AI tooling
         self.nixosModules.pi
@@ -94,6 +93,16 @@
         max-jobs = 1;
         cores = 1;
         max-substitution-jobs = lib.mkOverride 90 3;
+      };
+
+      # Uriel builds other hosts' closures (cross-host test builds) and
+      # had accumulated 20.8 GiB of unreachable store paths by 2026-09.
+      # Collect unrooted garbage weekly so it can't fill the 36G disk.
+      nix.gc = {
+        automatic = true;
+        dates = "weekly";
+        options = "--delete-older-than 14d";
+        persistent = true;
       };
 
       system.stateVersion = "25.05";

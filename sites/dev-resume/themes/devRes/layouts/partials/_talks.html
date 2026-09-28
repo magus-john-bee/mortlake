@@ -1,11 +1,11 @@
-{{ if .Site.Data.content.talks.enable }}
+{{ if hugo.Data.content.talks.enable }}
   <div class="talks">
     <span class="category-header">
       <i class="fas fa-bullhorn fa-2x"></i>
       <h2>Talks</h2>
     </span>
 
-    {{ range .Site.Data.content.talks.items }}
+    {{ range hugo.Data.content.talks.items }}
       <div class="uk-grid-collapse uk-child-width-1-2@s uk-margin" uk-grid>
           <div class="uk-card-media-left uk-cover-container">
             <img src="{{ .cover }}" uk-cover alt="Talk Thumbnail">
