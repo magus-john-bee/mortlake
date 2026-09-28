@@ -1,4 +1,4 @@
-{{ if .Site.Data.content.education.enable }}
+{{ if hugo.Data.content.education.enable }}
   <div class="education">
     <span class="category-header">
       <i class="fas fa-graduation-cap fa-2x"></i>
@@ -6,7 +6,7 @@
     </span>
 
     <div class="timeline-container">
-      {{ range .Site.Data.content.education.items }}
+      {{ range hugo.Data.content.education.items }}
         <div class="timeline-item">
           <span class="date">{{ .timeStart }} - {{ .timeEnd }}</span>
           <h3>

@@ -1,4 +1,4 @@
-{{ $cv := index $.Site.Data.json_resume $.Site.Language.Lang }}
+{{ $cv := index hugo.Data.json_resume $.Site.Language.Lang }}
 {{ with $cv.certificates }}
   <div class="jr__list jr-certificates__list">
     {{ range . }}

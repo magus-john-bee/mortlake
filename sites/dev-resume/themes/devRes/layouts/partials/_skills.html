@@ -1,4 +1,4 @@
-{{ if .Site.Data.content.skills.enable }}
+{{ if hugo.Data.content.skills.enable }}
   <div class="skills">
     <span class="category-header">
       <i class="fal fa-code fa-2x"></i>
@@ -6,7 +6,7 @@
     </span>
 
 
-    {{ range .Site.Data.content.skills.items }}
+    {{ range hugo.Data.content.skills.items }}
       <h3>{{ .family }}</h3>
       <div class="block">
         {{ range .items }}

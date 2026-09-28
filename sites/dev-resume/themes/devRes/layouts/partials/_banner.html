@@ -1,14 +1,14 @@
 <div id="header">
   <div class="uk-card uk-card-default">
     <div class="uk-card-media-top">
-      <img src="{{ .Site.Data.content.banner.photo }}" alt="Profile Image">
+      <img src="{{ hugo.Data.content.banner.photo }}" alt="Profile Image">
     </div>
     <div class="uk-card-body">
       <div class="description">
-        {{ .Site.Data.content.banner.text | safeHTML }}
+        {{ hugo.Data.content.banner.text | safeHTML }}
       </div>
       <div class="links">
-        {{ range .Site.Data.content.banner.links }}
+        {{ range hugo.Data.content.banner.links }}
           <a href="{{ .url }}" target="_blank" rel="noreferrer">
             <i class="{{ .icon }}"></i>{{ .text }}
           </a>
@@ -31,12 +31,12 @@
 <div id="mobile-banner" uk-offcanvas>
   <div class="uk-offcanvas-bar">
     <button class="uk-offcanvas-close" type="button" uk-close></button>
-    <img src="{{ .Site.Data.content.banner.photo }}" alt="Profile Image">
+    <img src="{{ hugo.Data.content.banner.photo }}" alt="Profile Image">
     <div class="description">
-      {{ .Site.Data.content.banner.text | safeHTML }}
+      {{ hugo.Data.content.banner.text | safeHTML }}
     </div>
     <div class="links">
-      {{ range .Site.Data.content.banner.links }}
+      {{ range hugo.Data.content.banner.links }}
         <a href="{{ .url }}" target="_blank" rel="noreferrer">
           <i class="{{ .icon }}"></i>{{ .text }}
         </a>
