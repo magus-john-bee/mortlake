@@ -1,4 +1,4 @@
-{{ if .Site.Data.content.aboutMe.enable }}
+{{ if hugo.Data.content.aboutMe.enable }}
   <div class="about-me">
     <span class="category-header">
       <i class="fas fa-user fa-2x"></i>
@@ -7,10 +7,10 @@
     </span>
 
     <div>
-      <p>{{ .Site.Data.content.aboutMe.text | safeHTML }}</p>
-      {{ if .Site.Data.content.aboutMe.list.enable }}
+      <p>{{ hugo.Data.content.aboutMe.text | safeHTML }}</p>
+      {{ if hugo.Data.content.aboutMe.list.enable }}
       <ul>
-        {{ range .Site.Data.content.aboutMe.list.items }}
+        {{ range hugo.Data.content.aboutMe.list.items }}
           <li>{{ .text }}</li>
         {{ end }}
       </ul>

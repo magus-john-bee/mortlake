@@ -1,4 +1,4 @@
-{{ $cv := index $.Site.Data.json_resume $.Site.Language.Lang }}
+{{ $cv := index hugo.Data.json_resume $.Site.Language.Lang }}
 {{ with $cv.basics }}
   <div class="jr__item jr-basics__item">
     {{ partial "json-resume/basics-image.html" . }}
