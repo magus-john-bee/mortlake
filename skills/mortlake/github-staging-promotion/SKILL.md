@@ -18,8 +18,18 @@ Two repos, two identities, one pipeline. Sources of truth: `README.md`
 | main | **agent free rein** — direct push OK | **protected** — PR + 1 approval |
 | Role | all work lands here | publication of record |
 
-Other hosts (uriel, raphael, phones) use a read-only `jbotwell` identity —
+Other hosts (raphael, phones) use a read-only `jbotwell` identity —
 never push from them.
+
+Two checkouts, two roles:
+
+- **jehoel** `/home/john/src/mortlake` — work checkout (HTTPS + PAT
+  routing). Branches, PRs, evals happen here.
+- **uriel** `/home/john/src/mortlake` — promotion checkout. Both remotes
+  use the SSH alias `github-uriel` (→ Hermes's deploy key
+  `/var/lib/hermes/.ssh/id_ed25519_gh_uriel`). The adjacent
+  `/home/john/src/mortlake-private` is a git worktree of `private/main`.
+  No cron/timer — promotion runs on demand (you, or Hermes when asked).
 
 ## Credential plumbing (jehoel only)
 
@@ -44,10 +54,14 @@ gh pr create -R magus-john-bee/mortlake ...
 
 ## Promotion pipeline
 
+Runs from **uriel's checkout** (SSH remotes, Hermes's key):
+
 ```bash
+# on uriel, /home/john/src/mortlake
 git push origin main                              # staging (free rein)
 git push public main:refs/heads/promote/<slug>    # promotion branch
-# → open PR promote/<slug> → main on magus-john-bee/mortlake (plain gh)
+# → open PR promote/<slug> → main on magus-john-bee/mortlake (plain gh,
+#   from jehoel — canonical is visible to the active account)
 # → human reviews (1 approval required), merge
 ```
 
@@ -58,14 +72,16 @@ against canonical main is cumulative, so promote promptly after landing.
 
 ## Gotchas
 
-1. **`public` remote may be missing** — the NixOS activation script
-   (`ghRemoteHints` in `gh.nix`) only fixes URLs of remotes that already
-   exist. If missing:
+1. **jehoel's clone has no `public` remote** — the NixOS activation
+   script (`ghRemoteHints` in `gh.nix`) only fixes URLs of remotes that
+   already exist, and promotion is done from uriel anyway. If you must
+   promote from jehoel:
    `git remote add public https://magus-john-bee@github.com/magus-john-bee/mortlake.git`
 2. **`private/main` overlay** — staging-only branch holding private
-   planning files. A pre-push hook enforces they never reach the public
-   repo. Never merge `private/main` content into work destined for
-   promotion.
+   planning files, checked out as the worktree
+   `/home/john/src/mortlake-private` on uriel. A pre-push hook enforces
+   its content never reaches the public repo. Never merge `private/main`
+   into work destined for promotion.
 3. **Don't confuse the repos** — `gh repo list` under the active account
    shows a `magus-john-bee/mortlake` with different branch names
    (`promote/*`); that's canonical, not a fork. Staging is invisible to it.
