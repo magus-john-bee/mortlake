@@ -29,6 +29,7 @@
             "glm-api-key" = john;
             "groq-api-key" = john;
             "deepseek-api-key" = john;
+            "mistral-api-key" = john;
             "openrouter-api-key" = john;
             "hf-token" = john;
             "discord-bot-token" = john;
