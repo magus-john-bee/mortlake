@@ -29,7 +29,9 @@
 
         registry = pkgs.lib.mapAttrs (_: value: { flake = value; }) inputs;
 
-        nixPath = pkgs.lib.mapAttrsToList (key: value: "${key}=${value.to.path}") config.nix.registry;
+        settings.nix-path = pkgs.lib.mapAttrsToList (
+          key: value: "${key}=${value.to.path}"
+        ) config.nix.registry;
       };
 
       # nix-ld: critical for running pre-built binaries (MCP servers, Pi tools)
