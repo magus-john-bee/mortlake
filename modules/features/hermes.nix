@@ -38,6 +38,7 @@
           GLM_API_KEY=${p.glm-api-key}
           GROQ_API_KEY=${p.groq-api-key}
           DEEPSEEK_API_KEY=${p.deepseek-api-key}
+          MISTRAL_API_KEY=${p.mistral-api-key}
           OPENROUTER_API_KEY=${p.openrouter-api-key}
           HF_TOKEN=${p.hf-token}
           LOGSEQ_PATH=/home/john/vault/logbook
@@ -62,6 +63,7 @@
         extraDependencyGroups = [
           "exa"
           "messaging"
+          "mistral"
           "tts-premium"
           "voice"
         ];
@@ -99,10 +101,12 @@
           };
 
           tts = {
-            provider = "elevenlabs";
-            elevenlabs = {
-              voice_id = "fATgBRI8wg5KkDFg8vBd";
-              model_id = "eleven_multilingual_v2";
+            # Voxtral (Mistral) — switched from ElevenLabs 2026-09-28.
+            # Key: mistral-api-key via hermes-env; SDK via the "mistral" extra.
+            provider = "mistral";
+            mistral = {
+              model = "voxtral-mini-tts-2603";
+              voice_id = "e3596645-b1af-469e-b857-f18ddedc7652";
             };
           };
 
