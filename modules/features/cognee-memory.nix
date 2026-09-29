@@ -171,16 +171,6 @@
             rm -f /var/lib/hermes/.hermes/plugins/agentmemory
           '';
 
-          # Provider flip + env. settings deep-merge over the live
-          # config.yaml (nix keys win; the hermes module's merge script
-          # preserves user-added keys).
-          services.hermes-agent = {
-            settings.memory.provider = "cognee";
-            environmentFiles = [
-              (config.sops.templates."cognee-client-env".path)
-            ];
-          };
-
           # Client env via sops template (renders at /run/secrets/cognee-client-env).
           # COGNEE_BASE_URL selects remote mode; dataset shares the one brain.
           sops.templates."cognee-client-env" = {
@@ -191,6 +181,17 @@
               COGNEE_IMPROVE_ON_END=true
             '';
             owner = "john";
+          };
+
+          # Provider flip + env. settings deep-merge over the live
+          # config.yaml (nix keys win; the hermes module's merge script
+          # preserves user-added keys). Declared AFTER the sops template
+          # so config.sops.templates."cognee-client-env" resolves.
+          services.hermes-agent = {
+            settings.memory.provider = "cognee";
+            environmentFiles = [
+              (config.sops.templates."cognee-client-env".path)
+            ];
           };
         })
 
