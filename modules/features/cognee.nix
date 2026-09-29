@@ -82,13 +82,13 @@ _: {
           # Auth — JWT secret pinned in sops so tokens survive restarts.
           FASTAPI_USERS_JWT_SECRET=${p.cognee-jwt-secret}
           ENABLE_BACKEND_ACCESS_CONTROL=True
-          # LLM: GLM via Z.AI coding endpoint (openai-compatible).
-          # Model must be provider-qualified for litellm; bare "glm-5.3"
-          # fails provider routing (tested live).
-          LLM_PROVIDER=openai
-          LLM_API_KEY=${p.glm-api-key}
-          LLM_ENDPOINT=https://api.z.ai/api/coding/paas/v4
-          LLM_MODEL=openai/glm-5.3
+          # LLM: deepseek-v4.1-flash via OpenRouter — the same cheap-model
+          # slug hermes uses for fallback/vision. Extraction doesn't need
+          # GLM-level quality; this keeps cognee usage off the Z.AI coding
+          # plan. litellm needs the openrouter/ provider prefix.
+          LLM_PROVIDER=openrouter
+          LLM_API_KEY=${p.openrouter-api-key}
+          LLM_MODEL=openrouter/deepseek/deepseek-v4.1-flash
           LLM_TEMPERATURE=0
           # Embeddings: local fastembed (ONNX CPU). Without explicit
           # provider+model, cognee defaults to OpenAI embeddings reusing

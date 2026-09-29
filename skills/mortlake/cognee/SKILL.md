@@ -68,5 +68,6 @@ Datasets are cheap; cross-dataset recall is the default.
 - Backups: daily restic (uriel) includes /var/lib/cognee; the backup
   stops cognee.service for a consistent file-store snapshot and restarts
   it after.
-- Entity extraction uses GLM via Z.AI (`glm-5.3`); embeddings are local
-  fastembed (CPU). MemoryMax 1200M on the 1.9GB box.
+- Entity extraction uses deepseek-v4.1-flash via OpenRouter (same slug
+  as hermes fallback/vision); embeddings are local fastembed (CPU).
+  MemoryMax 1200M on the 1.9GB box.
