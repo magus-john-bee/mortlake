@@ -60,7 +60,15 @@
         createUser = false;
         package = inputs.hermes-agent.packages.${system}.default;
         addToSystemPackages = true;
-        environmentFiles = [ config.sops.templates."hermes-env".path ];
+        # hermes-env (below) + cognee-client-env (bottom of this module,
+        # mkIf-gated on services.cognee-memory.hermes.enable — appended
+        # via lib.mkMerge so both render in any order).
+        environmentFiles = lib.mkMerge [
+          [ config.sops.templates."hermes-env".path ]
+          (lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable) [
+            (config.sops.templates."cognee-client-env".path)
+          ])
+        ];
         extraDependencyGroups = [
           "exa"
           "messaging"
@@ -238,9 +246,9 @@
             owner = "john";
           };
 
-      services.hermes-agent.environmentFiles =
-        lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable)
-          [ config.sops.templates."cognee-client-env".path ];
+      # NOTE: cognee-client-env is appended to environmentFiles via the
+      # lib.mkMerge at the services.hermes-agent block above — no second
+      # assignment here (duplicate attr = eval error).
 
       environment.systemPackages = [
         pkgs.ffmpeg
