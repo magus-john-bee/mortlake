@@ -83,10 +83,12 @@ _: {
           FASTAPI_USERS_JWT_SECRET=${p.cognee-jwt-secret}
           ENABLE_BACKEND_ACCESS_CONTROL=True
           # LLM: GLM via Z.AI coding endpoint (openai-compatible).
+          # Model must be provider-qualified for litellm; bare "glm-5.3"
+          # fails provider routing (tested live).
           LLM_PROVIDER=openai
           LLM_API_KEY=${p.glm-api-key}
           LLM_ENDPOINT=https://api.z.ai/api/coding/paas/v4
-          LLM_MODEL=glm-5.3
+          LLM_MODEL=openai/glm-5.3
           LLM_TEMPERATURE=0
           # Storage roots (SQLite + LanceDB + Kuzu live under these).
           SYSTEM_ROOT_DIRECTORY=${persistentStateDir}/system
