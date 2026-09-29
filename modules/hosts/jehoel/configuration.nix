@@ -17,6 +17,7 @@
         self.nixosModules.git
         self.nixosModules.zsh
         self.nixosModules.atuin
+        self.nixosModules.intellishell
         self.nixosModules.helix
         self.nixosModules.zellij
         self.nixosModules.dev-dirs
@@ -46,6 +47,8 @@
         self.nixosModules.herdr
         self.nixosModules.taskdog
       ];
+
+      services.intellishell.enable = true;
 
       # Taskdog client — server lives on uriel (taskdog.otwell.dev).
       services.taskdog.client.enable = true;

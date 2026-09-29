@@ -26,12 +26,6 @@ zvm_after_init() {
   source @zsh_autosuggestions@/share/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 
   eval "$(@zoxide@ init zsh)"
-
-  if [[ "$(hostname)" == "mab" || "$(hostname)" == "thoth" ]]; then
-    clip-paste() { LBUFFER+="$(cat /tmp/clipboard)"; }
-    zle -N clip-paste
-    bindkey '^V' clip-paste
-  fi
 }
 
 alias gaa='git add .'
