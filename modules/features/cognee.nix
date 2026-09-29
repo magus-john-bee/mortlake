@@ -102,6 +102,10 @@ _: {
           PYTHONUNBUFFERED=1
         '';
         owner = "john";
+        # Template changes (LLM_*, EMBEDDING_*) must restart the service —
+        # without this, a redeployed env lands in the rendered file but the
+        # running process keeps the old values (observed live).
+        restartUnits = [ "cognee.service" ];
       };
 
       systemd = {
