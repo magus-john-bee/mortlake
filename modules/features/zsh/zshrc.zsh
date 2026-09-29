@@ -26,12 +26,6 @@ zvm_after_init() {
   source @zsh_autosuggestions@/share/zsh-autosuggestions/zsh-autosuggestions.plugin.zsh
 
   eval "$(@zoxide@ init zsh)"
-
-  if [[ "$(hostname)" == "mab" || "$(hostname)" == "thoth" ]]; then
-    clip-paste() { LBUFFER+="$(cat /tmp/clipboard)"; }
-    zle -N clip-paste
-    bindkey '^V' clip-paste
-  fi
 }
 
 alias gaa='git add .'
@@ -45,6 +39,8 @@ alias gsv='git status -vv'
 alias glg='git lg'
 alias gd='git diff'
 alias cht='cht.sh'
+alias iig='intelli-shell import gist && intelli-shell export gist'
+alias ieg='intelli-shell export gist'
 alias ouroboros='uvx --from "ouroboros-ai[mcp]" ouroboros'
 alias ooo='uvx --from "ouroboros-ai[mcp]" ouroboros'
 alias chub='npx @aisuite/chub'

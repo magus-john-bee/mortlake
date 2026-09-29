@@ -23,6 +23,7 @@
         self.nixosModules.git
         self.nixosModules.zsh
         self.nixosModules.atuin
+        self.nixosModules.intellishell
         self.nixosModules.helix
         self.nixosModules.zellij
         self.nixosModules.nerd-fonts
@@ -37,8 +38,11 @@
         self.nixosModules.taskdog
       ];
 
-      # Taskdog client — server lives on uriel (taskdog.otwell.dev).
-      services.taskdog.client.enable = true;
+      services = {
+
+        # Taskdog client — server lives on uriel (taskdog.otwell.dev).
+        taskdog.client.enable = true;
+      };
 
       networking = {
         hostName = "raphael";
