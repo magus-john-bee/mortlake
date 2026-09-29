@@ -189,17 +189,15 @@
             owner = "john";
           };
         })
-        (lib.optionalAttrs (cfg.enable && cfg.hermes.enable) {
-          # Provider flip + env. settings deep-merge over the live
-          # config.yaml (nix keys win; the hermes module's merge script
-          # preserves user-added keys).
-          services.hermes-agent = {
-            settings.memory.provider = "cognee";
-            environmentFiles = [
-              (config.sops.templates."cognee-client-env".path)
-            ];
-          };
-        })
+
+        # NOTE: the services.hermes-agent provider flip + env wiring lives
+        # in hermes.nix, NOT here. Foreign-module options (defined only on
+        # hosts that import hermes.nix) cannot be referenced from this
+        # module at all: mkIf doesn't protect the structural unknown-option
+        # check on hosts that lack the option, and optionalAttrs recurses
+        # (forcing config at module-merge time). hermes.nix reads
+        # config.services.cognee-memory.hermes.enable instead — the option
+        # travels with this module to every host, so the gate is safe.
 
         # ── pi + prime-agent (all hosts) ────────────────────────────────
         # (plain mkIf is safe here: system.activationScripts exists on

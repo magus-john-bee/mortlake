@@ -10,6 +10,7 @@
     let
       inherit (pkgs.stdenv.hostPlatform) system;
       p = config.sops.placeholder;
+      cogneeMemory = config.services.cognee-memory;
 
       enabled-toolsets = [
         "search"
@@ -160,6 +161,14 @@
           };
 
           documents."SOUL.md" = builtins.readFile ./hermes/SOUL.md;
+
+          # Cognee shared memory (remote mode): provider flip from the dead
+          # agentmemory plugin (store path GC'd; see cognee-memory.nix for
+          # the plugin dir — the env template + environmentFiles wiring
+          # lives HERE because services.hermes-agent options only exist on
+          # hosts importing this module). Deep-merges over live config.yaml;
+          # nix keys win.
+          memory.provider = lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable) "cognee";
         };
 
         # Trimmed MCP servers — removed mempalace, codegraph, procontext, ouroboros, agentmemory
@@ -212,6 +221,26 @@
           NoNewPrivileges = lib.mkForce false;
         };
       };
+
+      # Cognee client env (remote mode): COGNEE_BASE_URL selects the thin
+      # HTTP client, COGNEE_API_KEY authenticates (X-Api-Key; REQUIRED for
+      # remote URLs — the plugin refuses to start without it), dataset
+      # shared across all agents. Appended to the service env files.
+      sops.templates."cognee-client-env" =
+        lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable)
+          {
+            content = ''
+              COGNEE_BASE_URL=https://cognee.otwell.dev
+              COGNEE_API_KEY=${p.cognee-api-key}
+              COGNEE_PLUGIN_DATASET=${cogneeMemory.hermes.dataset}
+              COGNEE_IMPROVE_ON_END=true
+            '';
+            owner = "john";
+          };
+
+      services.hermes-agent.environmentFiles =
+        lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable)
+          [ config.sops.templates."cognee-client-env".path ];
 
       environment.systemPackages = [
         pkgs.ffmpeg
