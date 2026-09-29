@@ -10,18 +10,16 @@ Confirmed architecture for coding agents, memory, and skills across all hosts.
 | **Hermes** | Uriel only | Discord-connected assistant (same as this one). MCP-enabled. |
 | **Codex** | Uriel | Secondary, heavy coding only. Skeleton deployment. |
 
-## Memory — Cognee + Postgres
+## Memory — Cognee (uriel, cognee.otwell.dev)
 
-All agents (Hermes + all Pi instances on all machines) talk to a shared Cognee system.
+All agents (Hermes + pi + prime-agent on all machines) talk to a shared Cognee server.
 
-- **Backend:** Postgres 17 + pgvector (relational + vector + graph in one DB)
-- **API:** Cognee HTTP service on `:8000` (systemd user service)
-- **Embeddings:** fastembed / bge-small-en-v1.5 (local ONNX, CPU)
-- **LLM:** GLM via Z.AI (entity extraction during cognify)
-- **Host:** TBD — designed to be host-configurable. Module option sets the Cognee endpoint; agents read it from environment or Pi/Hermes config. Can live on Uriel (public, reachable by all) or Jehoel (more compute, LAN tunnel needed for remote agents).
-- **Clients:**
-  - Pi: `curl localhost:8000` (or remote endpoint) — CLI, no MCP
-  - Hermes: HTTP client tool or curl — no MCP wrapper needed, just REST calls
+- **Server:** uriel, `modules/features/cognee.nix` — uv venv (`cognee[api]==1.6.1`), systemd `cognee.service` behind nginx + ACME at `https://cognee.otwell.dev`
+- **Storage:** upstream file-based defaults (SQLite relational + LanceDB vector + Kuzu graph) under `/persistent/var/lib/cognee` — no Postgres (upstream flipped defaults to file-based; July Postgres plan superseded)
+- **LLM:** GLM 5.3 via Z.AI (entity extraction during cognify); **Embeddings:** fastembed default, local ONNX CPU
+- **Auth:** single admin user; shared API key in sops (`cognee-api-key`) → `/run/secrets/cognee-api-key` on every host; `X-Api-Key` header
+- **Clients:** `cognee` CLI (stdlib Python, in pi.nix → all hosts) — `cognee remember|recall|status`; `$COGNEE_URL` env
+- **Backup:** daily restic on uriel includes `/var/lib/cognee`, with cognee.service stopped around the snapshot for consistent file stores
 
 ## Intelligence Stack (Pi — CLI-first, no MCP)
 

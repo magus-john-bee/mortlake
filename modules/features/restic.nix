@@ -46,6 +46,12 @@ _: {
             # Syncthing device identity + SilverBullet server auth
             "/var/lib/syncthing"
             "/var/lib/silverbullet"
+            # Cognee agent memory: SQLite/LanceDB/Kuzu under one tree.
+            # File stores must be quiesced for a consistent snapshot —
+            # backupPrepare/CleanupCommand below stop/start the API server
+            # around the restic run (|| true so a missing cognee.module
+            # never fails the backup).
+            "/var/lib/cognee"
           ];
           exclude = [
             "*.tmp"
@@ -177,6 +183,13 @@ _: {
 
           inherit (cfg) paths;
           inherit (cfg) exclude;
+
+          # Cognee's stores are live files (SQLite WAL, LanceDB, Kuzu WAL).
+          # Quiesce around the snapshot: stop the API server first, snapshot
+          # the quiesced tree, then bring it back. || true guards hosts
+          # without the cognee module.
+          backupPrepareCommand = lib.optionalString isUriel "systemctl stop cognee.service || true";
+          backupCleanupCommand = lib.optionalString isUriel "systemctl start cognee.service || true";
 
           initialize = false;
 

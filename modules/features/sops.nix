@@ -38,6 +38,7 @@
             "minimax-api-key" = john;
             "gh-oauth-token" = john;
             "gh-gist-token" = john;
+            "cognee-api-key" = john;
           };
       };
     };
