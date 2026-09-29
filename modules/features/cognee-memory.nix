@@ -202,15 +202,23 @@
         })
 
         # ── pi + prime-agent (all hosts) ────────────────────────────────
+        # (plain mkIf is safe here: system.activationScripts exists on
+        # every NixOS host — no foreign-module options involved.)
         (lib.mkIf (cfg.enable && cfg.pi.enable) {
           # stringAfter setupSecrets: the script READS the sops-rendered
           # MCP token to build mcpUrl — without the ordering it can run
           # before sops-nix renders secrets (empty token until next
           # activation). "users" for /home/john to exist.
-          system.activationScripts.cognee-pi-extension = lib.stringAfter (
-            [ "users" ]
-            ++ lib.optional (config.system.activationScripts ? setupSecrets) "setupSecrets"
-          ) ''
+          #
+          # NOTE: reading config.system.activationScripts (a plain
+          # attrset of scripts, no option resolution of OUR attrs) here
+          # is recursion-safe; the ? test never evaluates script bodies.
+          system.activationScripts.cognee-pi-extension =
+            lib.stringAfter (
+              [ "users" ]
+              ++ lib.optional (config.system.activationScripts ? setupSecrets) "setupSecrets"
+            )
+              ''
             mkdir -p /home/john/.pi/agent
             # 1. npm-install the extension if missing. nodejs comes from
             #    pi.nix systemPackages (activation PATH includes the
@@ -256,7 +264,7 @@
             PYEOF
             chown -R john:users /home/john/.pi/agent 2>/dev/null || true
             chown -R john:users /home/john/.prime/agent 2>/dev/null || true
-          '';
+            '';
         })
       ];
     };
