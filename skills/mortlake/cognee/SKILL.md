@@ -42,7 +42,7 @@ project). Datasets are cheap; cross-dataset recall is the default.
 ## Server-side notes (ops)
 
 - venv pinned `cognee[api]==1.6.1`, rebuilt by `cognee-venv.service` if
-  its nix interpreter is GC'd; server is `cognee.service` (127.0.0.1:8000).
+  its nix interpreter is GC'd; server is `cognee.service` (127.0.0.1:8010).
 - Auth: single admin user; one shared API key (sops `cognee-api-key`).
   Issue/rotate via /api/v1/auth/apikeys (login first).
 - Backups: daily restic (uriel) includes /var/lib/cognee; the backup

@@ -1,6 +1,6 @@
 # Cognee — shared agent memory (https://cognee.ai, topoteretes/cognee).
 #
-# Topology: uriel-only service bound to 127.0.0.1:8000, fronted by nginx +
+# Topology: uriel-only service bound to 127.0.0.1:8010, fronted by nginx +
 # ACME at cognee.otwell.dev (same vhost pattern as taskdog/silverbullet).
 # Clients (pi / prime-agent / hermes, any host) talk HTTPS + X-Api-Key.
 #
@@ -39,7 +39,8 @@ _: {
     }:
     let
       domain = "cognee.otwell.dev";
-      port = 8000;
+      # 8000 is taskdog's loopback port on uriel; cognee takes 8010.
+      port = 8010;
       # Same directory through the preservation bind mount's source path —
       # writable even before the mount exists (first boot / early switch).
       persistentStateDir = "/persistent/var/lib/cognee";
