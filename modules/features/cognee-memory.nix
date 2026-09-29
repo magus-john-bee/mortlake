@@ -53,6 +53,7 @@
 #   pi extensions load from ~/.pi/agent/npm via pi's shared loader. The
 #   config mirror below covers the (unverified) case that prime reads its
 #   own cognee-config.json — check live after deploy; harmless if unused.
+{ self, ... }:
 {
   perSystem =
     { pkgs, lib, ... }:
@@ -123,12 +124,14 @@
       config,
       lib,
       pkgs,
-      self,
       ...
     }:
     let
       cfg = config.services.cognee-memory;
       mcpUrl = "https://cognee.otwell.dev/mcp";
+      # self from the flake-parts closure (outer function arg) — the
+      # NixOS module system does not provide `self` as a module arg
+      # (attribute 'self' missing at eval).
       plugin = self.packages.${pkgs.stdenv.hostPlatform.system}.cognee-hermes-plugin;
     in
     {
