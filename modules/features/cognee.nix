@@ -104,6 +104,8 @@ _: {
         # activation/boot as root.
         tmpfiles.rules = [
           "d /home/john/.cognee 0755 john users -"
+          # Kuzu/Ladybug JSON extension auto-installs to ~/.lbdb on first run.
+          "d /home/john/.lbdb 0755 john users -"
           "d ${persistentStateDir} 0755 john users -"
           "d ${persistentStateDir}/system 0755 john users -"
           "d ${persistentStateDir}/data 0755 john users -"
@@ -183,6 +185,7 @@ _: {
             ReadWritePaths = [
               persistentStateDir
               "/home/john/.cognee"
+              "/home/john/.lbdb"
               "/home/john/.cache"
             ];
             NoNewPrivileges = true;
