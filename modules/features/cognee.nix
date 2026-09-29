@@ -344,35 +344,37 @@ _: {
       services.nginx.virtualHosts."${domain}" = lib.mkIf config.services.nginx.enable {
         forceSSL = true;
         enableACME = true;
-        locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
-        # Chunked LLM responses + long-running cognify pipelines.
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${toString port}";
-          proxyWebsockets = true;
-          extraConfig = ''
-            proxy_read_timeout 600s;
-            proxy_send_timeout 600s;
-          '';
-        };
-        # MCP endpoint for pi-cognee (and any MCP client). Token-gated:
-        # pi-cognee sends no auth headers, so the token rides as ?token=
-        # (Authorization: Bearer also accepted — map checks both). The
-        # token lives in sops (cognee-mcp-token); the map file is
-        # sops-rendered so the token never enters the nix store.
-        locations."/mcp" = {
-          proxyPass = "http://127.0.0.1:${toString mcpPort}";
-          proxyWebsockets = true;
-          extraConfig = ''
-            # MCP streamable-http: long-lived POST+SSE responses + pings.
-            proxy_read_timeout 600s;
-            proxy_send_timeout 600s;
-            proxy_buffering off;
-            # Host must reach the proxy intact (FastMCP DNS-rebinding
-            # guard validates it — MCP_ALLOWED_HOSTS on the container).
-            proxy_set_header Host ${domain};
-            # Gate: 401 unless ?token= or Authorization matches.
-            if ($mcp_token_ok = "0") { return 401; }
-          '';
+        locations = {
+          "/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
+          # Chunked LLM responses + long-running cognify pipelines.
+          "/" = {
+            proxyPass = "http://127.0.0.1:${toString port}";
+            proxyWebsockets = true;
+            extraConfig = ''
+              proxy_read_timeout 600s;
+              proxy_send_timeout 600s;
+            '';
+          };
+          # MCP endpoint for pi-cognee (and any MCP client). Token-gated:
+          # pi-cognee sends no auth headers, so the token rides as ?token=
+          # (Authorization: Bearer also accepted — map checks both). The
+          # token lives in sops (cognee-mcp-token); the map file is
+          # sops-rendered so the token never enters the nix store.
+          "/mcp" = {
+            proxyPass = "http://127.0.0.1:${toString mcpPort}";
+            proxyWebsockets = true;
+            extraConfig = ''
+              # MCP streamable-http: long-lived POST+SSE responses + pings.
+              proxy_read_timeout 600s;
+              proxy_send_timeout 600s;
+              proxy_buffering off;
+              # Host must reach the proxy intact (FastMCP DNS-rebinding
+              # guard validates it — MCP_ALLOWED_HOSTS on the container).
+              proxy_set_header Host ${domain};
+              # Gate: 401 unless ?token= or Authorization matches.
+              if ($mcp_token_ok = "0") { return 401; }
+            '';
+          };
         };
       };
 
