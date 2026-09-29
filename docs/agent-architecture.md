@@ -18,7 +18,8 @@ All agents (Hermes + pi + prime-agent on all machines) talk to a shared Cognee s
 - **Storage:** upstream file-based defaults (SQLite relational + LanceDB vector + Kuzu graph) under `/persistent/var/lib/cognee` — no Postgres (upstream flipped defaults to file-based; July Postgres plan superseded)
 - **LLM:** GLM 5.3 via Z.AI (entity extraction during cognify); **Embeddings:** fastembed default, local ONNX CPU
 - **Auth:** single admin user; shared API key in sops (`cognee-api-key`) → `/run/secrets/cognee-api-key` on every host; `X-Api-Key` header
-- **Clients:** `cognee` CLI (stdlib Python, in pi.nix → all hosts) — `cognee remember|recall|status`; `$COGNEE_URL` env
+- **MCP proxy:** `cognee-mcp.service` on uriel (podman, digest-pinned `cognee/cognee-mcp`, API mode → 8010, binds 127.0.0.1:8012) behind nginx `https://cognee.otwell.dev/mcp` — token-gated (`cognee-mcp-token` in sops; `?token=` or `Authorization: Bearer`)
+- **Clients:** Hermes (uriel) = official memory-provider plugin, remote mode, active provider `cognee`; pi/prime-agent (all hosts) = `@kerryhatcher/pi-cognee` extension, MCP mode; anything else = curl (`X-Api-Key`)
 - **Backup:** daily restic on uriel includes `/var/lib/cognee`, with cognee.service stopped around the snapshot for consistent file stores
 
 ## Intelligence Stack (Pi — CLI-first, no MCP)

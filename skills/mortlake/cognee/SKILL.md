@@ -13,12 +13,21 @@ module `modules/features/cognee.nix`).
 
 ## Clients
 
-- **Hermes**: official memory-provider plugin (`cognee-integration-
-  hermes-agent`), remote mode — COGNEE_BASE_URL + COGNEE_API_KEY.
-- **pi / prime-agent**: community pi-cognee extension, MCP mode via the
-  cognee-mcp proxy (API mode). See pi-integration docs.
-- **Manual/cron**: plain curl (below). A bespoke `cognee` CLI was
-  removed — upstream clients + curl cover everything.
+- **Hermes (uriel)**: official plugin `cognee-integration-hermes-agent`
+  1.2.2, vendored as a nix package (`cognee-hermes-plugin`) and symlinked
+  `plugins/cognee` — REMOTE mode via `COGNEE_BASE_URL` (stdlib HTTP client;
+  the plugin.yaml cognee pin is inert). Active provider
+  (`memory.provider: cognee`); MEMORY.md/USER.md stay active and mirror
+  into cognee automatically. Wiring: modules/features/hermes.nix +
+  cognee-memory.nix.
+- **pi / prime-agent (all hosts)**: `@kerryhatcher/pi-cognee` extension,
+  MCP mode, seeded by the cognee-memory activation script. mcpUrl =
+  `https://cognee.otwell.dev/mcp?token=<cognee-mcp-token>` (the extension
+  sends no auth headers — the token rides as a query param; nginx maps
+  `$arg_token`/`Authorization` and 401s everything else). Tools:
+  cognee_remember/recall/forget/datasets/... via `/cognee-mode mcp`,
+  `/cognee-config`.
+- **Manual/cron**: plain curl (below).
 
 ## Manual use (curl, any host)
 
@@ -61,9 +70,10 @@ Datasets are cheap; cross-dataset recall is the default.
 
 ## Handoff
 
-Agent integrations (next session): **docs/cognee-agent-integration-todo.md**
-in mortlake — hermes plugin (remote mode), cognee-mcp proxy on uriel,
-pi-cognee ext (MCP mode) for pi+prime-agent. Server is DONE and live.
+Agent integrations: **DONE 09-29** — hermes plugin (remote mode, vendored
+wheel), cognee-mcp proxy on uriel (podman, digest-pinned, port 8012,
+nginx /mcp + token gate), pi-cognee ext (MCP mode) on all hosts.
+Plan + live-verification log: docs/cognee-agent-integration-todo.md.
 
 Deploy discipline learned live: on jehoel, `git fetch && git reset
 --hard origin/main` before EVERY deploy — a piped `git pull | tail`

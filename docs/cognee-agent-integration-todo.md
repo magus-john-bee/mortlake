@@ -1,9 +1,10 @@
-# Cognee Agent Integration — TODO (next session)
+# Cognee Agent Integration — DONE (09-29)
 
-Status: cognee server LIVE on uriel (canonical main @ 4a11fa8, staging
-5b492f9). Verified: health, HTTPS remember/recall, deepseek-v4.1-flash
-extraction, post-GC restart. Remaining: wire the three agents. This file
-is the handoff; see skills/mortlake/cognee/SKILL.md for ops gotchas.
+Status: COMPLETE on staging main (f21abff). Server live since 4a11fa8;
+agents wired 09-29: hermes plugin (remote mode), cognee-mcp proxy,
+pi-cognee extension. Everything below was verified LIVE on uriel before
+the nix was written. Remaining for the operator: deploy (jehoel
+remote-build), then run the test matrix in §4.
 
 ## 0. Context (what exists)
 
@@ -78,14 +79,25 @@ Community ext `npm:@kerryhatcher/pi-cognee`, MCP mode:
 
 ## 4. Wrap-up
 
-- Update skills/mortlake/cognee/SKILL.md client section once real.
-- Update docs/agent-architecture.md (it says CLI; now integrations).
-- PR: single promote branch `promote/cognee-agent-integration` — but
-  CARVE per-concern from staging diffs, not staging snapshots (host
-  configs shared across concerns bit us twice; see session log).
-- Test matrix: hermes session memory, pi recall in a repo dir, cross-
-  host (jehoel pi sees uriel-written memory), dataset=agent_memory
-  shared across all three clients.
+- DONE 09-29: skills/mortlake/cognee/SKILL.md client section updated
+  from live integrations; docs/agent-architecture.md clients line now
+  names plugin + extension + proxy (CLI line removed).
+- PR: promote branch `promote/cognee-agent-integration` — carved as ONE
+  concern (all 9 staging commits are this feature) off public/main,
+  squashed to a single commit. NOT a staging snapshot (host configs
+  shared across concerns bit us twice; here the only host-config deltas
+  ARE this concern's imports).
+- Test matrix (post-deploy, live):
+  1. hermes: `hermes memory status` shows cognee; session "remember
+     that X" → new session "what is X".
+  2. pi recall in a repo dir (jehoel): "check your cognee memory".
+  3. cross-host: jehoel pi recalls a uriel-written memory.
+  4. dataset=agent_memory shared across hermes; pi writes to
+     pi_cognee_memory (proxy agent-scoping — expected, recall is
+     cross-dataset).
+  5. /mcp without token → 401; with ?token= → initialize OK.
+  6. prime-agent: `pi list` inside prime shows the extension; if not,
+     `pi install npm:@kerryhatcher/pi-cognee` inside prime once.
 
 ## Gotchas already paid for (don't relearn)
 
