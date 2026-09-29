@@ -172,157 +172,159 @@ _: {
           "d ${persistentStateDir}/data 0755 john users -"
         ];
 
-        # One-shot venv builder. uv resolves into ~/.cache/uv (persisted via
-        # preservation-common users.john .cache) so rebuilds are warm.
-        # LD_LIBRARY_PATH: pip-native wheels (tokenizers etc.) need host
-        # libstdc++/zlib — nix-ld doesn't apply inside systemd services
-        # (skills/mortlake/nix-ld-systemd-gotcha).
-        services.cognee-venv = {
-          description = "Cognee venv builder (uv)";
-          after = [
-            "network-online.target"
-            "local-fs.target"
-          ];
-          wants = [ "network-online.target" ];
-          serviceConfig = {
-            Type = "oneshot";
-            User = "john";
-            Group = "users";
-            Environment = [
-              "HOME=/home/john"
-              "LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib"
+        services = {
+          # One-shot venv builder. uv resolves into ~/.cache/uv (persisted via
+          # preservation-common users.john .cache) so rebuilds are warm.
+          # LD_LIBRARY_PATH: pip-native wheels (tokenizers etc.) need host
+          # libstdc++/zlib — nix-ld doesn't apply inside systemd services
+          # (skills/mortlake/nix-ld-systemd-gotcha).
+          services.cognee-venv = {
+            description = "Cognee venv builder (uv)";
+            after = [
+              "network-online.target"
+              "local-fs.target"
             ];
-            ExecStart = "${venvBuildScript}";
-            RemainAfterExit = true;
-            TimeoutStartSec = "900";
-            ReadWritePaths = [
-              persistentStateDir
-              "/home/john/.cache"
-            ];
-            NoNewPrivileges = true;
-            PrivateTmp = true;
-            ProtectSystem = "strict";
-            ProtectHome = "read-only";
-          };
-        };
-
-        # Cognee API server. Requires the venv (built above).
-        services.cognee = {
-          description = "Cognee — shared agent memory (cognee.otwell.dev)";
-          requires = [ "cognee-venv.service" ];
-          after = [
-            "network-online.target"
-            "sops-nix.service"
-            "cognee-venv.service"
-          ];
-          wants = [ "network-online.target" ];
-          wantedBy = [ "multi-user.target" ];
-          environment = {
-            HOME = "/home/john";
-            # Bind loopback only; nginx is the public edge.
-            HTTP_API_HOST = "127.0.0.1";
-            HTTP_API_PORT = toString port;
-            # pip-native wheels need host libstdc++/zlib (see cognee-venv note).
-            LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib";
+            wants = [ "network-online.target" ];
+            serviceConfig = {
+              Type = "oneshot";
+              User = "john";
+              Group = "users";
+              Environment = [
+                "HOME=/home/john"
+                "LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib"
+              ];
+              ExecStart = "${venvBuildScript}";
+              RemainAfterExit = true;
+              TimeoutStartSec = "900";
+              ReadWritePaths = [
+                persistentStateDir
+                "/home/john/.cache"
+              ];
+              NoNewPrivileges = true;
+              PrivateTmp = true;
+              ProtectSystem = "strict";
+              ProtectHome = "read-only";
+            };
           };
 
-          serviceConfig = {
-            User = "john";
-            Group = "users";
-            ExecStart = "${persistentStateDir}/venv/bin/python -m cognee.api.client";
-            EnvironmentFile = config.sops.templates."cognee-env".path;
-            WorkingDirectory = persistentStateDir;
-            Restart = "on-failure";
-            RestartSec = "5";
-            # Lifespan runs migrations at startup; first boot also downloads
-            # the fastembed model — give it room.
-            TimeoutStartSec = "300";
-            # Kuzu/Ladybug WAL must checkpoint cleanly; cognee drains
-            # background tasks on shutdown (BACKGROUND_DRAIN_TIMEOUT_SECONDS).
-            TimeoutStopSec = "30";
-            KillMode = "mixed";
-            MemoryMax = "1200M";
-            ReadWritePaths = [
-              persistentStateDir
-              "/home/john/.cognee"
-              "/home/john/.lbdb"
-              "/home/john/.cache"
+          # Cognee API server. Requires the venv (built above).
+          services.cognee = {
+            description = "Cognee — shared agent memory (cognee.otwell.dev)";
+            requires = [ "cognee-venv.service" ];
+            after = [
+              "network-online.target"
+              "sops-nix.service"
+              "cognee-venv.service"
             ];
-            NoNewPrivileges = true;
-            PrivateTmp = true;
-            ProtectSystem = "strict";
-            ProtectHome = "read-only";
-            ProtectKernelTunables = true;
-            ProtectKernelModules = true;
-            ProtectControlGroups = true;
-            RestrictAddressFamilies = [
-              "AF_INET"
-              "AF_INET6"
-              "AF_UNIX"
-            ];
-            RestrictNamespaces = true;
-            LockPersonality = true;
-          };
-        };
+            wants = [ "network-online.target" ];
+            wantedBy = [ "multi-user.target" ];
+            environment = {
+              HOME = "/home/john";
+              # Bind loopback only; nginx is the public edge.
+              HTTP_API_HOST = "127.0.0.1";
+              HTTP_API_PORT = toString port;
+              # pip-native wheels need host libstdc++/zlib (see cognee-venv note).
+              LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib";
+            };
 
-        # ── cognee-mcp proxy (API mode) ─────────────────────────────────
-        # Translates MCP (pi-cognee extension, MCP mode) to the cognee
-        # REST API. Container, not a venv: the pip package drags
-        # cognee[docs,neo4j,postgres-binary] (~3GB) that API mode never
-        # runs. Rootful podman — rootless storage lives on the tmpfs root
-        # (~/.local/share/containers, 962M total; the 2.77G image needs
-        # the preserved /var/lib/containers).
-        #
-        # Flags verified live 09-29 (tag main @ 4e3245d):
-        #  - TRANSPORT_MODE=http + HTTP_PORT → --transport http --host
-        #    0.0.0.0 --port $HTTP_PORT via the image entrypoint. We pass
-        #    explicit args instead AND override entrypoint — the wrapper
-        #    rewrites localhost/127.0.0.1 in API_URL to a docker-bridge
-        #    address (host.docker.internal etc.), which is wrong here:
-        #    cognee.service binds 127.0.0.1 only and we run --network=host.
-        #  - COGNEE_BASE_URL/COGNEE_API_KEY are the flag-less env path
-        #    (mcp-local-setup.md) — no URL rewriting.
-        #  - COGNEE_API_AUTH_SCHEME=x-api-key: REQUIRED — default bearer
-        #    gets 401 from our server (X-Api-Key auth). Live-diagnosed.
-        #  - MCP_ALLOWED_HOSTS: FastMCP Host/Origin guard. nginx proxies
-        #    with Host: cognee.otwell.dev (recommendedProxySettings), which
-        #    the loopback auto-guard would reject — 421/403.
-        services.cognee-mcp = {
-          description = "Cognee MCP proxy (API mode → cognee.service)";
-          after = [
-            "network-online.target"
-            "cognee.service"
-          ];
-          wants = [ "network-online.target" ];
-          requires = [ "cognee.service" ];
-          wantedBy = [ "multi-user.target" ];
-          serviceConfig = {
-            Type = "simple";
-            # Pull then run. Image is digest-pinned; podman pull is a
-            # no-op when present (fast restarts).
-            ExecStartPre = [
-              "${pkgs.podman}/bin/podman pull -q ${cogneeMcpImage}"
-              "${pkgs.podman}/bin/podman rm -f cognee-mcp >/dev/null 2>&1 || true"
+            serviceConfig = {
+              User = "john";
+              Group = "users";
+              ExecStart = "${persistentStateDir}/venv/bin/python -m cognee.api.client";
+              EnvironmentFile = config.sops.templates."cognee-env".path;
+              WorkingDirectory = persistentStateDir;
+              Restart = "on-failure";
+              RestartSec = "5";
+              # Lifespan runs migrations at startup; first boot also downloads
+              # the fastembed model — give it room.
+              TimeoutStartSec = "300";
+              # Kuzu/Ladybug WAL must checkpoint cleanly; cognee drains
+              # background tasks on shutdown (BACKGROUND_DRAIN_TIMEOUT_SECONDS).
+              TimeoutStopSec = "30";
+              KillMode = "mixed";
+              MemoryMax = "1200M";
+              ReadWritePaths = [
+                persistentStateDir
+                "/home/john/.cognee"
+                "/home/john/.lbdb"
+                "/home/john/.cache"
+              ];
+              NoNewPrivileges = true;
+              PrivateTmp = true;
+              ProtectSystem = "strict";
+              ProtectHome = "read-only";
+              ProtectKernelTunables = true;
+              ProtectKernelModules = true;
+              ProtectControlGroups = true;
+              RestrictAddressFamilies = [
+                "AF_INET"
+                "AF_INET6"
+                "AF_UNIX"
+              ];
+              RestrictNamespaces = true;
+              LockPersonality = true;
+            };
+          };
+
+          # ── cognee-mcp proxy (API mode) ─────────────────────────────────
+          # Translates MCP (pi-cognee extension, MCP mode) to the cognee
+          # REST API. Container, not a venv: the pip package drags
+          # cognee[docs,neo4j,postgres-binary] (~3GB) that API mode never
+          # runs. Rootful podman — rootless storage lives on the tmpfs root
+          # (~/.local/share/containers, 962M total; the 2.77G image needs
+          # the preserved /var/lib/containers).
+          #
+          # Flags verified live 09-29 (tag main @ 4e3245d):
+          #  - TRANSPORT_MODE=http + HTTP_PORT → --transport http --host
+          #    0.0.0.0 --port $HTTP_PORT via the image entrypoint. We pass
+          #    explicit args instead AND override entrypoint — the wrapper
+          #    rewrites localhost/127.0.0.1 in API_URL to a docker-bridge
+          #    address (host.docker.internal etc.), which is wrong here:
+          #    cognee.service binds 127.0.0.1 only and we run --network=host.
+          #  - COGNEE_BASE_URL/COGNEE_API_KEY are the flag-less env path
+          #    (mcp-local-setup.md) — no URL rewriting.
+          #  - COGNEE_API_AUTH_SCHEME=x-api-key: REQUIRED — default bearer
+          #    gets 401 from our server (X-Api-Key auth). Live-diagnosed.
+          #  - MCP_ALLOWED_HOSTS: FastMCP Host/Origin guard. nginx proxies
+          #    with Host: cognee.otwell.dev (recommendedProxySettings), which
+          #    the loopback auto-guard would reject — 421/403.
+          services.cognee-mcp = {
+            description = "Cognee MCP proxy (API mode → cognee.service)";
+            after = [
+              "network-online.target"
+              "cognee.service"
             ];
-            ExecStart = pkgs.writeShellScript "cognee-mcp-run" ''
-              exec ${pkgs.podman}/bin/podman run --rm \
-                --name cognee-mcp \
-                --network host \
-                --entrypoint cognee-mcp \
-                -e COGNEE_BASE_URL=http://127.0.0.1:${toString port} \
-                -e COGNEE_API_KEY="$(cat ${config.sops.secrets."cognee-api-key".path})" \
-                -e COGNEE_API_AUTH_SCHEME=x-api-key \
-                -e MCP_ALLOWED_HOSTS=${domain}:* \
-                ${cogneeMcpImage} \
-                --transport http --host 127.0.0.1 --port ${toString mcpPort}
-            '';
-            # Clean stop: podman stop (10s grace) then --rm reaps it.
-            ExecStop = "${pkgs.podman}/bin/podman stop -t 10 cognee-mcp || true";
-            # Restart policy: cognee.service bouncing pulls the proxy up too.
-            Restart = "on-failure";
-            RestartSec = "10";
-            TimeoutStartSec = "300";
-            TimeoutStopSec = "60";
+            wants = [ "network-online.target" ];
+            requires = [ "cognee.service" ];
+            wantedBy = [ "multi-user.target" ];
+            serviceConfig = {
+              Type = "simple";
+              # Pull then run. Image is digest-pinned; podman pull is a
+              # no-op when present (fast restarts).
+              ExecStartPre = [
+                "${pkgs.podman}/bin/podman pull -q ${cogneeMcpImage}"
+                "${pkgs.podman}/bin/podman rm -f cognee-mcp >/dev/null 2>&1 || true"
+              ];
+              ExecStart = pkgs.writeShellScript "cognee-mcp-run" ''
+                exec ${pkgs.podman}/bin/podman run --rm \
+                  --name cognee-mcp \
+                  --network host \
+                  --entrypoint cognee-mcp \
+                  -e COGNEE_BASE_URL=http://127.0.0.1:${toString port} \
+                  -e COGNEE_API_KEY="$(cat ${config.sops.secrets."cognee-api-key".path})" \
+                  -e COGNEE_API_AUTH_SCHEME=x-api-key \
+                  -e MCP_ALLOWED_HOSTS=${domain}:* \
+                  ${cogneeMcpImage} \
+                  --transport http --host 127.0.0.1 --port ${toString mcpPort}
+              '';
+              # Clean stop: podman stop (10s grace) then --rm reaps it.
+              ExecStop = "${pkgs.podman}/bin/podman stop -t 10 cognee-mcp || true";
+              # Restart policy: cognee.service bouncing pulls the proxy up too.
+              Restart = "on-failure";
+              RestartSec = "10";
+              TimeoutStartSec = "300";
+              TimeoutStopSec = "60";
+            };
           };
         };
       };
