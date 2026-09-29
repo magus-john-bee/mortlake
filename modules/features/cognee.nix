@@ -96,6 +96,16 @@ _: {
         owner = "john";
       };
 
+      # tmpfs home: cognee writes logs to ~/.cognee, which must EXIST before
+      # the service's mount namespace is set up (ReadWritePaths on a missing
+      # path → 226/NAMESPACE). tmpfiles runs at activation/boot as root.
+      systemd.tmpfiles.rules = [
+        "d /home/john/.cognee 0755 john users -"
+        "d ${persistentStateDir} 0755 john users -"
+        "d ${persistentStateDir}/system 0755 john users -"
+        "d ${persistentStateDir}/data 0755 john users -"
+      ];
+
       # One-shot venv builder. uv resolves into ~/.cache/uv (persisted via
       # preservation-common users.john .cache) so rebuilds are warm.
       systemd.services.cognee-venv = {
