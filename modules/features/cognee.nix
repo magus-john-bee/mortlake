@@ -108,6 +108,9 @@ _: {
 
       # One-shot venv builder. uv resolves into ~/.cache/uv (persisted via
       # preservation-common users.john .cache) so rebuilds are warm.
+      # LD_LIBRARY_PATH: pip-native wheels (tokenizers etc.) need host
+      # libstdc++/zlib — nix-ld doesn't apply inside systemd services
+      # (skills/mortlake/nix-ld-systemd-gotcha).
       systemd.services.cognee-venv = {
         description = "Cognee venv builder (uv)";
         after = [
@@ -119,7 +122,10 @@ _: {
           Type = "oneshot";
           User = "john";
           Group = "users";
-          Environment = [ "HOME=/home/john" ];
+          Environment = [
+            "HOME=/home/john"
+            "LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib"
+          ];
           ExecStart = "${venvBuildScript}";
           RemainAfterExit = true;
           TimeoutStartSec = "900";
@@ -150,6 +156,8 @@ _: {
           # Bind loopback only; nginx is the public edge.
           HTTP_API_HOST = "127.0.0.1";
           HTTP_API_PORT = toString port;
+          # pip-native wheels need host libstdc++/zlib (see cognee-venv note).
+          LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib";
         };
 
         serviceConfig = {
