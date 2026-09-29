@@ -74,57 +74,88 @@ _: {
       '';
     in
     {
-      sops.secrets = {
-        "cognee-jwt-secret" = {
+      sops = {
+        secrets = {
+          "cognee-jwt-secret" = {
+            owner = "john";
+            sopsFile = ./secrets.yaml;
+            restartUnits = [ "cognee.service" ];
+          };
+          "cognee-admin-password" = {
+            owner = "john";
+            sopsFile = ./secrets.yaml;
+            restartUnits = [ "cognee.service" ];
+          };
+          # Bearer token gating the public /mcp nginx location (the MCP
+          # proxy's own api-token authenticates IT to cognee; this gate is
+          # for the outside world). pi-cognee sends no auth headers, so the
+          # token rides as ?token= — both channels validated by the nginx map.
+          "cognee-mcp-token" = {
+            owner = "john";
+            sopsFile = ./secrets.yaml;
+            restartUnits = [ "nginx.service" ];
+          };
+        };
+
+        templates."cognee-env" = {
+          content = ''
+            # Auth — JWT secret pinned in sops so tokens survive restarts.
+            FASTAPI_USERS_JWT_SECRET=${p.cognee-jwt-secret}
+            ENABLE_BACKEND_ACCESS_CONTROL=True
+            # LLM: deepseek-v4.1-flash via OpenRouter — the same cheap-model
+            # slug hermes uses for fallback/vision. Extraction doesn't need
+            # GLM-level quality; this keeps cognee usage off the Z.AI coding
+            # plan. litellm needs the openrouter/ provider prefix.
+            LLM_PROVIDER=openrouter
+            LLM_API_KEY=${p.openrouter-api-key}
+            LLM_MODEL=openrouter/deepseek/deepseek-v4.1-flash
+            LLM_TEMPERATURE=0
+            # Embeddings: local fastembed (ONNX CPU). Without explicit
+            # provider+model, cognee defaults to OpenAI embeddings reusing
+            # LLM_API_KEY (401 against the GLM key) — pin both.
+            EMBEDDING_PROVIDER=fastembed
+            EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
+            # Storage roots (SQLite + LanceDB + Kuzu live under these).
+            SYSTEM_ROOT_DIRECTORY=${persistentStateDir}/system
+            DATA_ROOT_DIRECTORY=${persistentStateDir}/data
+            ENV=prod
+            PYTHONUNBUFFERED=1
+          '';
           owner = "john";
-          sopsFile = ./secrets.yaml;
+          # Template changes (LLM_*, EMBEDDING_*) must restart the service —
+          # without this, a redeployed env lands in the rendered file but the
+          # running process keeps the old values (observed live).
           restartUnits = [ "cognee.service" ];
         };
-        "cognee-admin-password" = {
-          owner = "john";
-          sopsFile = ./secrets.yaml;
-          restartUnits = [ "cognee.service" ];
-        };
-        # Bearer token gating the public /mcp nginx location (the MCP
-        # proxy's own api-token authenticates IT to cognee; this gate is
-        # for the outside world). pi-cognee sends no auth headers, so the
-        # token rides as ?token= — both channels validated by the nginx map.
-        "cognee-mcp-token" = {
-          owner = "john";
-          sopsFile = ./secrets.yaml;
+
+        # Token map: $mcp_token_ok = "1" when ?token= or Authorization:
+        # Bearer matches the sops secret, "0" otherwise. sops-rendered file
+        # included at the http{} level (appendHttpConfig below) — the token
+        # never enters the nix store. sops-nix renders templates before
+        # nginx starts (systemd dependency via sops-nix.service), so
+        # `nginx -t` at switch sees it.
+        templates."cognee-mcp-nginx-map" = {
+          content = ''
+            map $arg_token $mcp_arg_ok {
+                default "0";
+                ${p.cognee-mcp-token} "1";
+            }
+            map $http_authorization $mcp_hdr_ok {
+                default "0";
+                "Bearer ${p.cognee-mcp-token}" "1";
+            }
+            map "$mcp_arg_ok$mcp_hdr_ok" $mcp_token_ok {
+                default "0";
+                "01" "1";
+                "10" "1";
+                "11" "1";
+            }
+          '';
+          owner = "root";
+          group = "nginx";
+          mode = "0640";
           restartUnits = [ "nginx.service" ];
         };
-      };
-
-      sops.templates."cognee-env" = {
-        content = ''
-          # Auth — JWT secret pinned in sops so tokens survive restarts.
-          FASTAPI_USERS_JWT_SECRET=${p.cognee-jwt-secret}
-          ENABLE_BACKEND_ACCESS_CONTROL=True
-          # LLM: deepseek-v4.1-flash via OpenRouter — the same cheap-model
-          # slug hermes uses for fallback/vision. Extraction doesn't need
-          # GLM-level quality; this keeps cognee usage off the Z.AI coding
-          # plan. litellm needs the openrouter/ provider prefix.
-          LLM_PROVIDER=openrouter
-          LLM_API_KEY=${p.openrouter-api-key}
-          LLM_MODEL=openrouter/deepseek/deepseek-v4.1-flash
-          LLM_TEMPERATURE=0
-          # Embeddings: local fastembed (ONNX CPU). Without explicit
-          # provider+model, cognee defaults to OpenAI embeddings reusing
-          # LLM_API_KEY (401 against the GLM key) — pin both.
-          EMBEDDING_PROVIDER=fastembed
-          EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
-          # Storage roots (SQLite + LanceDB + Kuzu live under these).
-          SYSTEM_ROOT_DIRECTORY=${persistentStateDir}/system
-          DATA_ROOT_DIRECTORY=${persistentStateDir}/data
-          ENV=prod
-          PYTHONUNBUFFERED=1
-        '';
-        owner = "john";
-        # Template changes (LLM_*, EMBEDDING_*) must restart the service —
-        # without this, a redeployed env lands in the rendered file but the
-        # running process keeps the old values (observed live).
-        restartUnits = [ "cognee.service" ];
       };
 
       systemd = {
@@ -341,34 +372,6 @@ _: {
             if ($mcp_token_ok = "0") { return 401; }
           '';
         };
-      };
-
-      # Token map: $mcp_token_ok = "1" when ?token= or Authorization:
-      # Bearer matches the sops secret, "0" otherwise. sops-rendered file
-      # included at the http{} level — the token never enters the nix
-      # store. sops-nix renders templates before nginx starts (systemd
-      # dependency via sops-nix.service), so `nginx -t` at switch sees it.
-      sops.templates."cognee-mcp-nginx-map" = {
-        content = ''
-          map $arg_token $mcp_arg_ok {
-              default "0";
-              ${p.cognee-mcp-token} "1";
-          }
-          map $http_authorization $mcp_hdr_ok {
-              default "0";
-              "Bearer ${p.cognee-mcp-token}" "1";
-          }
-          map "$mcp_arg_ok$mcp_hdr_ok" $mcp_token_ok {
-              default "0";
-              "01" "1";
-              "10" "1";
-              "11" "1";
-          }
-        '';
-        owner = "root";
-        group = "nginx";
-        mode = "0640";
-        restartUnits = [ "nginx.service" ];
       };
 
       # Include into the http{} block (appendHttpConfig = types.lines).

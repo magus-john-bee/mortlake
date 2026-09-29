@@ -234,17 +234,15 @@
       # HTTP client, COGNEE_API_KEY authenticates (X-Api-Key; REQUIRED for
       # remote URLs — the plugin refuses to start without it), dataset
       # shared across all agents. Appended to the service env files.
-      sops.templates."cognee-client-env" =
-        lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable)
-          {
-            content = ''
-              COGNEE_BASE_URL=https://cognee.otwell.dev
-              COGNEE_API_KEY=${p.cognee-api-key}
-              COGNEE_PLUGIN_DATASET=${cogneeMemory.hermes.dataset}
-              COGNEE_IMPROVE_ON_END=true
-            '';
-            owner = "john";
-          };
+      sops.templates."cognee-client-env" = lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable) {
+        content = ''
+          COGNEE_BASE_URL=https://cognee.otwell.dev
+          COGNEE_API_KEY=${p.cognee-api-key}
+          COGNEE_PLUGIN_DATASET=${cogneeMemory.hermes.dataset}
+          COGNEE_IMPROVE_ON_END=true
+        '';
+        owner = "john";
+      };
 
       # NOTE: cognee-client-env is appended to environmentFiles via the
       # lib.mkMerge at the services.hermes-agent block above — no second
