@@ -43,8 +43,8 @@ project). Datasets are cheap; cross-dataset recall is the default.
 
 - venv pinned `cognee[api]==1.6.1`, rebuilt by `cognee-venv.service` if
   its nix interpreter is GC'd; server is `cognee.service` (127.0.0.1:8010).
-- Auth: single admin user; one shared API key (sops `cognee-api-key`).
-  Issue/rotate via /api/v1/auth/apikeys (login first).
+- Auth: single admin user (john@otwell.dev, password sops `cognee-admin-password`); one shared API key (sops `cognee-api-key`). Issue/rotate via POST /api/v1/auth/api-keys (login first — note the hyphen, not `apikeys`).
+- Gotchas found live (each cost a deploy): (1) litellm needs a provider-qualified model: `LLM_MODEL=openai/glm-5.3`, bare `glm-5.3` fails routing; (2) with `LLM_API_KEY` set, embeddings default to OpenAI reusing that key → 401; pin BOTH `EMBEDDING_PROVIDER=fastembed` AND `EMBEDDING_MODEL=BAAI/bge-small-en-v1.5` (provider alone leaves the OpenAI default model); (3) pip wheels need `LD_LIBRARY_PATH` with stdenv.cc.cc.lib + zlib in the service env (nix-ld doesn't apply); (4) Kuzu/Ladybug writes to `~/.lbdb` — tmpfiles + ReadWritePaths or 226/NAMESPACE at startup; (5) sops template changes need `restartUnits` on the template or the running process keeps stale env.
 - Backups: daily restic (uriel) includes /var/lib/cognee; the backup
   stops cognee.service for a consistent file-store snapshot and restarts
   it after.
