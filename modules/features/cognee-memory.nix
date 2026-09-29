@@ -159,6 +159,12 @@
 
       config = lib.mkMerge [
         # ── Hermes (uriel) ──────────────────────────────────────────────
+        # NOTE split mkIf/optionalAttrs: mkIf does NOT protect option
+        # resolution — a services.hermes-agent definition inside a false
+        # mkIf still errors with "option does not exist" on hosts that
+        # don't import the hermes module (jehoel/raphael). optionalAttrs
+        # decides key presence before option resolution, so it is the
+        # correct guard for foreign-module options.
         (lib.mkIf (cfg.enable && cfg.hermes.enable) {
           # Plugin symlink: plugins/cognee → nix store, recreated every
           # activation (Hermes home is persistent but the symlink is
@@ -182,11 +188,11 @@
             '';
             owner = "john";
           };
-
+        })
+        (lib.optionalAttrs (cfg.enable && cfg.hermes.enable) {
           # Provider flip + env. settings deep-merge over the live
           # config.yaml (nix keys win; the hermes module's merge script
-          # preserves user-added keys). Declared AFTER the sops template
-          # so config.sops.templates."cognee-client-env" resolves.
+          # preserves user-added keys).
           services.hermes-agent = {
             settings.memory.provider = "cognee";
             environmentFiles = [
