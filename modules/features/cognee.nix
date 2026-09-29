@@ -96,105 +96,109 @@ _: {
         owner = "john";
       };
 
-      # tmpfs home: cognee writes logs to ~/.cognee, which must EXIST before
-      # the service's mount namespace is set up (ReadWritePaths on a missing
-      # path → 226/NAMESPACE). tmpfiles runs at activation/boot as root.
-      systemd.tmpfiles.rules = [
-        "d /home/john/.cognee 0755 john users -"
-        "d ${persistentStateDir} 0755 john users -"
-        "d ${persistentStateDir}/system 0755 john users -"
-        "d ${persistentStateDir}/data 0755 john users -"
-      ];
-
-      # One-shot venv builder. uv resolves into ~/.cache/uv (persisted via
-      # preservation-common users.john .cache) so rebuilds are warm.
-      # LD_LIBRARY_PATH: pip-native wheels (tokenizers etc.) need host
-      # libstdc++/zlib — nix-ld doesn't apply inside systemd services
-      # (skills/mortlake/nix-ld-systemd-gotcha).
-      systemd.services.cognee-venv = {
-        description = "Cognee venv builder (uv)";
-        after = [
-          "network-online.target"
-          "local-fs.target"
+      systemd = {
+        # tmpfs home: cognee writes logs to ~/.cognee, which must EXIST
+        # before the service's mount namespace is set up (ReadWritePaths on
+        # a missing path → 226/NAMESPACE). tmpfiles runs at
+        # activation/boot as root.
+        tmpfiles.rules = [
+          "d /home/john/.cognee 0755 john users -"
+          "d ${persistentStateDir} 0755 john users -"
+          "d ${persistentStateDir}/system 0755 john users -"
+          "d ${persistentStateDir}/data 0755 john users -"
         ];
-        wants = [ "network-online.target" ];
-        serviceConfig = {
-          Type = "oneshot";
-          User = "john";
-          Group = "users";
-          Environment = [
-            "HOME=/home/john"
-            "LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib"
-          ];
-          ExecStart = "${venvBuildScript}";
-          RemainAfterExit = true;
-          TimeoutStartSec = "900";
-          ReadWritePaths = [
-            persistentStateDir
-            "/home/john/.cache"
-          ];
-          NoNewPrivileges = true;
-          PrivateTmp = true;
-          ProtectSystem = "strict";
-          ProtectHome = "read-only";
-        };
-      };
 
-      systemd.services.cognee = {
-        description = "Cognee — shared agent memory (cognee.otwell.dev)";
-        requires = [ "cognee-venv.service" ];
-        after = [
-          "network-online.target"
-          "sops-nix.service"
-          "cognee-venv.service"
-        ];
-        wants = [ "network-online.target" ];
-        wantedBy = [ "multi-user.target" ];
-
-        environment = {
-          HOME = "/home/john";
-          # Bind loopback only; nginx is the public edge.
-          HTTP_API_HOST = "127.0.0.1";
-          HTTP_API_PORT = toString port;
-          # pip-native wheels need host libstdc++/zlib (see cognee-venv note).
-          LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib";
+        # One-shot venv builder. uv resolves into ~/.cache/uv (persisted via
+        # preservation-common users.john .cache) so rebuilds are warm.
+        # LD_LIBRARY_PATH: pip-native wheels (tokenizers etc.) need host
+        # libstdc++/zlib — nix-ld doesn't apply inside systemd services
+        # (skills/mortlake/nix-ld-systemd-gotcha).
+        services.cognee-venv = {
+          description = "Cognee venv builder (uv)";
+          after = [
+            "network-online.target"
+            "local-fs.target"
+          ];
+          wants = [ "network-online.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            User = "john";
+            Group = "users";
+            Environment = [
+              "HOME=/home/john"
+              "LD_LIBRARY_PATH=${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib"
+            ];
+            ExecStart = "${venvBuildScript}";
+            RemainAfterExit = true;
+            TimeoutStartSec = "900";
+            ReadWritePaths = [
+              persistentStateDir
+              "/home/john/.cache"
+            ];
+            NoNewPrivileges = true;
+            PrivateTmp = true;
+            ProtectSystem = "strict";
+            ProtectHome = "read-only";
+          };
         };
 
-        serviceConfig = {
-          User = "john";
-          Group = "users";
-          ExecStart = "${persistentStateDir}/venv/bin/python -m cognee.api.client";
-          EnvironmentFile = config.sops.templates."cognee-env".path;
-          WorkingDirectory = persistentStateDir;
-          Restart = "on-failure";
-          RestartSec = "5";
-          # Lifespan runs migrations at startup; first boot also downloads
-          # the fastembed model — give it room.
-          TimeoutStartSec = "300";
-          # Kuzu/Ladybug WAL must checkpoint cleanly; cognee drains
-          # background tasks on shutdown (BACKGROUND_DRAIN_TIMEOUT_SECONDS).
-          TimeoutStopSec = "30";
-          KillMode = "mixed";
-          MemoryMax = "1200M";
-          ReadWritePaths = [
-            persistentStateDir
-            "/home/john/.cognee"
-            "/home/john/.cache"
+        # Cognee API server. Requires the venv (built above).
+        services.cognee = {
+          description = "Cognee — shared agent memory (cognee.otwell.dev)";
+          requires = [ "cognee-venv.service" ];
+          after = [
+            "network-online.target"
+            "sops-nix.service"
+            "cognee-venv.service"
           ];
-          NoNewPrivileges = true;
-          PrivateTmp = true;
-          ProtectSystem = "strict";
-          ProtectHome = "read-only";
-          ProtectKernelTunables = true;
-          ProtectKernelModules = true;
-          ProtectControlGroups = true;
-          RestrictAddressFamilies = [
-            "AF_INET"
-            "AF_INET6"
-            "AF_UNIX"
-          ];
-          RestrictNamespaces = true;
-          LockPersonality = true;
+          wants = [ "network-online.target" ];
+          wantedBy = [ "multi-user.target" ];
+
+          environment = {
+            HOME = "/home/john";
+            # Bind loopback only; nginx is the public edge.
+            HTTP_API_HOST = "127.0.0.1";
+            HTTP_API_PORT = toString port;
+            # pip-native wheels need host libstdc++/zlib (see cognee-venv note).
+            LD_LIBRARY_PATH = "${pkgs.stdenv.cc.cc.lib}/lib:${pkgs.zlib}/lib";
+          };
+
+          serviceConfig = {
+            User = "john";
+            Group = "users";
+            ExecStart = "${persistentStateDir}/venv/bin/python -m cognee.api.client";
+            EnvironmentFile = config.sops.templates."cognee-env".path;
+            WorkingDirectory = persistentStateDir;
+            Restart = "on-failure";
+            RestartSec = "5";
+            # Lifespan runs migrations at startup; first boot also downloads
+            # the fastembed model — give it room.
+            TimeoutStartSec = "300";
+            # Kuzu/Ladybug WAL must checkpoint cleanly; cognee drains
+            # background tasks on shutdown (BACKGROUND_DRAIN_TIMEOUT_SECONDS).
+            TimeoutStopSec = "30";
+            KillMode = "mixed";
+            MemoryMax = "1200M";
+            ReadWritePaths = [
+              persistentStateDir
+              "/home/john/.cognee"
+              "/home/john/.cache"
+            ];
+            NoNewPrivileges = true;
+            PrivateTmp = true;
+            ProtectSystem = "strict";
+            ProtectHome = "read-only";
+            ProtectKernelTunables = true;
+            ProtectKernelModules = true;
+            ProtectControlGroups = true;
+            RestrictAddressFamilies = [
+              "AF_INET"
+              "AF_INET6"
+              "AF_UNIX"
+            ];
+            RestrictNamespaces = true;
+            LockPersonality = true;
+          };
         };
       };
 
