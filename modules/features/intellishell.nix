@@ -10,31 +10,32 @@
 # export PATCHes the gist — run it as john in a real shell only. An
 # earlier options + systemd-timer version was simplified away; see git
 # history.
-{ pkgs, ... }:
-{
-  flake.nixosModules.intellishell = {
-    environment = {
-      etc."intellishell/config.toml".text = ''
-        check_updates = false
-        inline = true
+_: {
+  flake.nixosModules.intellishell =
+    { pkgs, ... }:
+    {
+      environment = {
+        etc."intellishell/config.toml".text = ''
+          check_updates = false
+          inline = true
 
-        [gist]
-        id = "4c83e47d1df90765651d45f73e87132c"
-        token = ""
+          [gist]
+          id = "4c83e47d1df90765651d45f73e87132c"
+          token = ""
 
-        [tui]
-        keyboard_enhancement = true
+          [tui]
+          keyboard_enhancement = true
 
-        [search]
-        mode = "auto"
-      '';
+          [search]
+          mode = "auto"
+        '';
 
-      systemPackages = [ pkgs.intelli-shell ];
+        systemPackages = [ pkgs.intelli-shell ];
+      };
+
+      # tmpfs root: the bookmarks db must survive reboots.
+      preservation.preserveAt."/persistent" = {
+        users.john.directories = [ ".local/share/intelli-shell" ];
+      };
     };
-
-    # tmpfs root: the bookmarks db must survive reboots.
-    preservation.preserveAt."/persistent" = {
-      users.john.directories = [ ".local/share/intelli-shell" ];
-    };
-  };
 }
