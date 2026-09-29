@@ -66,7 +66,7 @@
         environmentFiles = lib.mkMerge [
           [ config.sops.templates."hermes-env".path ]
           (lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable) [
-            (config.sops.templates."cognee-client-env".path)
+            config.sops.templates."cognee-client-env".path
           ])
         ];
         extraDependencyGroups = [
