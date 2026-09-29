@@ -59,6 +59,18 @@ remember also accepts `run_in_background=true`, file uploads (`data0=@file`),
 Default dataset `agent_memory`; segment per project via `datasetName`.
 Datasets are cheap; cross-dataset recall is the default.
 
+## Handoff
+
+Agent integrations (next session): **docs/cognee-agent-integration-todo.md**
+in mortlake — hermes plugin (remote mode), cognee-mcp proxy on uriel,
+pi-cognee ext (MCP mode) for pi+prime-agent. Server is DONE and live.
+
+Deploy discipline learned live: on jehoel, `git fetch && git reset
+--hard origin/main` before EVERY deploy — a piped `git pull | tail`
+masked fetch failures twice and deployed a stale tree. deploy-rs's
+flake check is the real eval gate; `nix flake check --no-build` once
+passed a broken tree.
+
 ## Server-side notes (ops)
 
 - venv pinned `cognee[api]==1.6.1`, rebuilt by `cognee-venv.service` if
