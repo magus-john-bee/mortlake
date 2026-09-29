@@ -111,15 +111,12 @@
         # Declared here rather than relying on packages.nix's nodejs by
         # coincidence.
         pkgs.nodejs
-        # Cognee shared-memory client (stdlib-only Python): `cognee
-        # remember|recall|...` against cognee.otwell.dev. Used by pi,
-        # prime-agent, hermes, and humans — see skills/mortlake/cognee.
-        (pkgs.writers.writePython3Bin "cognee" { doCheck = false; } ./cognee-client/cognee.py)
       ];
 
-      # Agent-visible endpoint + key location. The API key itself is issued
+      # Cognee endpoint, agent-visible on every host. The API key is issued
       # by the server post-deploy and lands in sops as `cognee-api-key`
-      # (renders at /run/secrets/cognee-api-key on every host).
+      # (renders at /run/secrets/cognee-api-key on every host). Clients
+      # (official Hermes plugin, pi extension — see PR 3) read both.
       environment.sessionVariables = {
         COGNEE_URL = "https://cognee.otwell.dev";
       };

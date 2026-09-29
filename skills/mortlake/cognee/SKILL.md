@@ -1,6 +1,6 @@
 ---
 name: cognee
-description: Use when storing or recalling shared agent memory — the `cognee` CLI talks to cognee.otwell.dev (knowledge-graph memory for pi, prime-agent, and hermes).
+description: Use when storing or recalling shared agent memory — cognee.otwell.dev (knowledge-graph memory; official Hermes plugin + pi extension as clients, curl for manual use).
 tags: [cognee, memory, agents, mortlake]
 ---
 
@@ -11,20 +11,40 @@ cognee server on uriel behind https://cognee.otwell.dev (nginx + ACME;
 storage SQLite+LanceDB+Kuzu under /persistent/var/lib/cognee; server
 module `modules/features/cognee.nix`).
 
-## CLI (any host)
+## Clients
 
-Auth is automatic: `$COGNEE_API_KEY` or `/run/secrets/cognee-api-key`
-(sops). `$COGNEE_URL` defaults to https://cognee.otwell.dev.
+- **Hermes**: official memory-provider plugin (`cognee-integration-
+  hermes-agent`), remote mode — COGNEE_BASE_URL + COGNEE_API_KEY.
+- **pi / prime-agent**: community pi-cognee extension, MCP mode via the
+  cognee-mcp proxy (API mode). See pi-integration docs.
+- **Manual/cron**: plain curl (below). A bespoke `cognee` CLI was
+  removed — upstream clients + curl cover everything.
+
+## Manual use (curl, any host)
+
+Auth: `X-Api-Key` from sops `cognee-api-key`
+(/run/secrets/cognee-api-key). Endpoint: https://cognee.otwell.dev.
 
 ```
-cognee remember "Mortlake discovers modules via import-tree."   # blocks until graph built
-cognee remember --bg "long text"                                 # background; poll status
-cognee remember --file doc.md --dataset docs                     # file upload
-cognee recall "How does mortlake discover modules?"              # auto-routed answer
-cognee recall --context "graph extracts about X"                 # raw retrieval, no LLM answer
-cognee recall --datasets agent_memory,docs "..."                 # scope datasets
-cognee status                                                     # health + datasets
+# remember (multipart; blocks until the graph is built — can take ~1min)
+curl -X POST https://cognee.otwell.dev/api/v1/remember \
+  -H "X-Api-Key: $(cat /run/secrets/cognee-api-key)" \
+  -F 'raw_data=Mortlake discovers modules via import-tree.' \
+  -F 'datasetName=agent_memory'
+
+# recall (JSON; auto-routed answer)
+curl -X POST https://cognee.otwell.dev/api/v1/recall \
+  -H "X-Api-Key: $(cat /run/secrets/cognee-api-key)" \
+  -H 'Content-Type: application/json' \
+  -d '{"query":"How does mortlake discover modules?"}'
+
+# health
+curl https://cognee.otwell.dev/health
 ```
+
+remember also accepts `run_in_background=true`, file uploads (`data0=@file`),
+`labels`, `node_set`; recall accepts `datasets`, `only_context`,
+`search_type`, `top_k`. See /openapi.json on the server.
 
 ## When to use
 
@@ -36,8 +56,8 @@ cognee status                                                     # health + dat
   clearly exists (mortlake patterns, past debugging, infrastructure
   decisions). Results carry provenance back to the source text.
 
-Default dataset `agent_memory`; use `--dataset` to segment (e.g. one per
-project). Datasets are cheap; cross-dataset recall is the default.
+Default dataset `agent_memory`; segment per project via `datasetName`.
+Datasets are cheap; cross-dataset recall is the default.
 
 ## Server-side notes (ops)
 
