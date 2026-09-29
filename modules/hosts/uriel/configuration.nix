@@ -33,8 +33,7 @@
         self.nixosModules.intellishell
         # AI tooling
         self.nixosModules.pi
-        # Shared agent memory (cognee.otwell.dev) — server runs here;
-        # pi.nix ships the `cognee` CLI to all hosts.
+        # Shared agent memory (cognee.otwell.dev) — server runs here.
         self.nixosModules.cognee
         self.nixosModules.herdr
         self.nixosModules.taskdog
