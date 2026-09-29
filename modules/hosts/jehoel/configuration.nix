@@ -49,7 +49,6 @@
       ];
 
       services = {
-        intellishell.enable = true;
 
         # Taskdog client — server lives on uriel (taskdog.otwell.dev).
         taskdog.client.enable = true;

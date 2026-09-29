@@ -46,7 +46,6 @@
       ];
 
       services = {
-        intellishell.enable = true;
 
         # Taskdog: uriel is THE server; local CLI also talks to it via
         # https (through nginx) so the local client exercises the same
