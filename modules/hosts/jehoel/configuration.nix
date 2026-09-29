@@ -23,7 +23,7 @@
         self.nixosModules.dev-dirs
         self.nixosModules.restic
         # Shared agent memory client (pi/prime-agent; server on uriel).
-        self.nixosModules.cognee-memory
+        self.nixosModules.cogneeMemory
         self.nixosModules.nerd-fonts
 
         # Server role

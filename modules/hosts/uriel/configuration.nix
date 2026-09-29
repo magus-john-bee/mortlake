@@ -37,7 +37,7 @@
         self.nixosModules.cognee
         # cognee clients: hermes plugin + pi/prime-agent extension (server
         # + MCP proxy come from cognee above).
-        self.nixosModules.cognee-memory
+        self.nixosModules.cogneeMemory
         self.nixosModules.herdr
         self.nixosModules.taskdog
         self.nixosModules.silverbullet
