@@ -178,7 +178,7 @@ _: {
           # LD_LIBRARY_PATH: pip-native wheels (tokenizers etc.) need host
           # libstdc++/zlib — nix-ld doesn't apply inside systemd services
           # (skills/mortlake/nix-ld-systemd-gotcha).
-          services.cognee-venv = {
+          cognee-venv = {
             description = "Cognee venv builder (uv)";
             after = [
               "network-online.target"
@@ -208,7 +208,7 @@ _: {
           };
 
           # Cognee API server. Requires the venv (built above).
-          services.cognee = {
+          cognee = {
             description = "Cognee — shared agent memory (cognee.otwell.dev)";
             requires = [ "cognee-venv.service" ];
             after = [
@@ -288,7 +288,7 @@ _: {
           #  - MCP_ALLOWED_HOSTS: FastMCP Host/Origin guard. nginx proxies
           #    with Host: cognee.otwell.dev (recommendedProxySettings), which
           #    the loopback auto-guard would reject — 421/403.
-          services.cognee-mcp = {
+          cognee-mcp = {
             description = "Cognee MCP proxy (API mode → cognee.service)";
             after = [
               "network-online.target"
