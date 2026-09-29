@@ -113,6 +113,14 @@
         pkgs.nodejs
       ];
 
+      # Cognee endpoint, agent-visible on every host. The API key is issued
+      # by the server post-deploy and lands in sops as `cognee-api-key`
+      # (renders at /run/secrets/cognee-api-key on every host). Clients
+      # (official Hermes plugin, pi extension — see PR 3) read both.
+      environment.sessionVariables = {
+        COGNEE_URL = "https://cognee.otwell.dev";
+      };
+
       # llm-agents.nix binary cache
       nix.settings = {
         extra-substituters = [ "https://cache.numtide.com" ];
