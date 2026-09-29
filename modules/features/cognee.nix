@@ -41,12 +41,22 @@ _: {
       domain = "cognee.otwell.dev";
       # 8000 is taskdog's loopback port on uriel; cognee takes 8010.
       port = 8010;
+      # cognee-mcp proxy (API mode → 8010). 8011 is the hermes plugin's
+      # LOCAL-mode port (never bound here — remote mode — but reserved to
+      # avoid confusion); proxy takes 8012.
+      mcpPort = 8012;
       # Same directory through the preservation bind mount's source path —
       # writable even before the mount exists (first boot / early switch).
       persistentStateDir = "/persistent/var/lib/cognee";
       p = config.sops.placeholder;
 
       cogneeSpec = "cognee[api]==1.6.1";
+
+      # Pinned by digest (mutable :main tag — digest pin gives rollback and
+      # auditability; image bundles cognee 1.5.4 for the proxy's client,
+      # which speaks the same v1 API as our 1.6.1 server — verified live
+      # 09-29: initialize/tools/list/remember/recall all work).
+      cogneeMcpImage = "docker.io/cognee/cognee-mcp@sha256:4e3245d7b5fdb3fbe5f4d3ea8f7b518e320fbf1b37461118add6c9a0c9f713fd";
 
       # GC-safety: the venv's python symlinks into /nix/store. If that
       # interpreter is ever garbage-collected the venv is dead — detect and
@@ -74,6 +84,15 @@ _: {
           owner = "john";
           sopsFile = ./secrets.yaml;
           restartUnits = [ "cognee.service" ];
+        };
+        # Bearer token gating the public /mcp nginx location (the MCP
+        # proxy's own api-token authenticates IT to cognee; this gate is
+        # for the outside world). pi-cognee sends no auth headers, so the
+        # token rides as ?token= — both channels validated by the nginx map.
+        "cognee-mcp-token" = {
+          owner = "john";
+          sopsFile = ./secrets.yaml;
+          restartUnits = [ "nginx.service" ];
         };
       };
 
@@ -167,7 +186,6 @@ _: {
           ];
           wants = [ "network-online.target" ];
           wantedBy = [ "multi-user.target" ];
-
           environment = {
             HOME = "/home/john";
             # Bind loopback only; nginx is the public edge.
@@ -215,6 +233,67 @@ _: {
             LockPersonality = true;
           };
         };
+
+        # ── cognee-mcp proxy (API mode) ─────────────────────────────────
+        # Translates MCP (pi-cognee extension, MCP mode) to the cognee
+        # REST API. Container, not a venv: the pip package drags
+        # cognee[docs,neo4j,postgres-binary] (~3GB) that API mode never
+        # runs. Rootful podman — rootless storage lives on the tmpfs root
+        # (~/.local/share/containers, 962M total; the 2.77G image needs
+        # the preserved /var/lib/containers).
+        #
+        # Flags verified live 09-29 (tag main @ 4e3245d):
+        #  - TRANSPORT_MODE=http + HTTP_PORT → --transport http --host
+        #    0.0.0.0 --port $HTTP_PORT via the image entrypoint. We pass
+        #    explicit args instead AND override entrypoint — the wrapper
+        #    rewrites localhost/127.0.0.1 in API_URL to a docker-bridge
+        #    address (host.docker.internal etc.), which is wrong here:
+        #    cognee.service binds 127.0.0.1 only and we run --network=host.
+        #  - COGNEE_BASE_URL/COGNEE_API_KEY are the flag-less env path
+        #    (mcp-local-setup.md) — no URL rewriting.
+        #  - COGNEE_API_AUTH_SCHEME=x-api-key: REQUIRED — default bearer
+        #    gets 401 from our server (X-Api-Key auth). Live-diagnosed.
+        #  - MCP_ALLOWED_HOSTS: FastMCP Host/Origin guard. nginx proxies
+        #    with Host: cognee.otwell.dev (recommendedProxySettings), which
+        #    the loopback auto-guard would reject — 421/403.
+        services.cognee-mcp = {
+          description = "Cognee MCP proxy (API mode → cognee.service)";
+          after = [
+            "network-online.target"
+            "cognee.service"
+          ];
+          wants = [ "network-online.target" ];
+          requires = [ "cognee.service" ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "simple";
+            # Pull then run. Image is digest-pinned; podman pull is a
+            # no-op when present (fast restarts).
+            ExecStartPre = [
+              "${pkgs.podman}/bin/podman pull -q ${cogneeMcpImage}"
+              "${pkgs.podman}/bin/podman rm -f cognee-mcp >/dev/null 2>&1 || true"
+            ];
+            ExecStart = pkgs.writeShellScript "cognee-mcp-run" ''
+              exec ${pkgs.podman}/bin/podman run --rm \
+                --name cognee-mcp \
+                --network host \
+                --entrypoint cognee-mcp \
+                -e COGNEE_BASE_URL=http://127.0.0.1:${toString port} \
+                -e COGNEE_API_KEY="$(cat ${config.sops.secrets."cognee-api-key".path})" \
+                -e COGNEE_API_AUTH_SCHEME=x-api-key \
+                -e MCP_ALLOWED_HOSTS=${domain}:* \
+                ${cogneeMcpImage} \
+                --transport http --host 127.0.0.1 --port ${toString mcpPort}
+            '';
+            # Clean stop: podman stop (10s grace) then --rm reaps it.
+            ExecStop = "${pkgs.podman}/bin/podman stop -t 10 cognee-mcp || true";
+            # Restart policy: cognee.service bouncing pulls the proxy up too.
+            Restart = "on-failure";
+            RestartSec = "10";
+            TimeoutStartSec = "300";
+            TimeoutStopSec = "60";
+          };
+        };
       };
 
       # All cognee state (SQLite + LanceDB + Kuzu + venv) persists under
@@ -242,6 +321,60 @@ _: {
             proxy_send_timeout 600s;
           '';
         };
+        # MCP endpoint for pi-cognee (and any MCP client). Token-gated:
+        # pi-cognee sends no auth headers, so the token rides as ?token=
+        # (Authorization: Bearer also accepted — map checks both). The
+        # token lives in sops (cognee-mcp-token); the map file is
+        # sops-rendered so the token never enters the nix store.
+        locations."/mcp" = {
+          proxyPass = "http://127.0.0.1:${toString mcpPort}";
+          proxyWebsockets = true;
+          extraConfig = ''
+            # MCP streamable-http: long-lived POST+SSE responses + pings.
+            proxy_read_timeout 600s;
+            proxy_send_timeout 600s;
+            proxy_buffering off;
+            # Host must reach the proxy intact (FastMCP DNS-rebinding
+            # guard validates it — MCP_ALLOWED_HOSTS on the container).
+            proxy_set_header Host ${domain};
+            # Gate: 401 unless ?token= or Authorization matches.
+            if ($mcp_token_ok = "0") { return 401; }
+          '';
+        };
       };
+
+      # Token map: $mcp_token_ok = "1" when ?token= or Authorization:
+      # Bearer matches the sops secret, "0" otherwise. sops-rendered file
+      # included at the http{} level — the token never enters the nix
+      # store. sops-nix renders templates before nginx starts (systemd
+      # dependency via sops-nix.service), so `nginx -t` at switch sees it.
+      sops.templates."cognee-mcp-nginx-map" = {
+        content = ''
+          map $arg_token $mcp_arg_ok {
+              default "0";
+              ${p.cognee-mcp-token} "1";
+          }
+          map $http_authorization $mcp_hdr_ok {
+              default "0";
+              "Bearer ${p.cognee-mcp-token}" "1";
+          }
+          map "$mcp_arg_ok$mcp_hdr_ok" $mcp_token_ok {
+              default "0";
+              "01" "1";
+              "10" "1";
+              "11" "1";
+          }
+        '';
+        owner = "root";
+        group = "nginx";
+        mode = "0640";
+        restartUnits = [ "nginx.service" ];
+      };
+
+      # Include into the http{} block (appendHttpConfig = types.lines).
+      # Map directives must live at http{} level, before server{} blocks.
+      services.nginx.appendHttpConfig = ''
+        include ${config.sops.templates."cognee-mcp-nginx-map".path};
+      '';
     };
 }

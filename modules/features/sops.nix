@@ -39,6 +39,10 @@
             "gh-oauth-token" = john;
             "gh-gist-token" = john;
             "cognee-api-key" = john;
+            # MCP endpoint gate token (nginx /mcp on cognee.otwell.dev);
+            # rendered on every host — the pi-cognee extension on
+            # jehoel/raphael embeds it in mcpUrl at activation.
+            "cognee-mcp-token" = john;
           };
       };
     };
