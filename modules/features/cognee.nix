@@ -90,10 +90,11 @@ _: {
           LLM_ENDPOINT=https://api.z.ai/api/coding/paas/v4
           LLM_MODEL=openai/glm-5.3
           LLM_TEMPERATURE=0
-          # Embeddings: local fastembed (ONNX CPU). Without an explicit
-          # provider, cognee reuses LLM_API_KEY for OpenAI embeddings and
-          # 401s against the GLM key.
+          # Embeddings: local fastembed (ONNX CPU). Without explicit
+          # provider+model, cognee defaults to OpenAI embeddings reusing
+          # LLM_API_KEY (401 against the GLM key) — pin both.
           EMBEDDING_PROVIDER=fastembed
+          EMBEDDING_MODEL=BAAI/bge-small-en-v1.5
           # Storage roots (SQLite + LanceDB + Kuzu live under these).
           SYSTEM_ROOT_DIRECTORY=${persistentStateDir}/system
           DATA_ROOT_DIRECTORY=${persistentStateDir}/data
