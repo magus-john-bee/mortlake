@@ -48,10 +48,12 @@
         self.nixosModules.taskdog
       ];
 
-      services.intellishell.enable = true;
+      services = {
+        intellishell.enable = true;
 
-      # Taskdog client — server lives on uriel (taskdog.otwell.dev).
-      services.taskdog.client.enable = true;
+        # Taskdog client — server lives on uriel (taskdog.otwell.dev).
+        taskdog.client.enable = true;
+      };
 
       networking = {
         hostName = "jehoel";
