@@ -70,17 +70,17 @@ Datasets are cheap; cross-dataset recall is the default.
 
 ## Handoff
 
-Agent integrations: **DONE 09-29, PR #29 (promote/cognee-agent-integration)
-awaiting review**. hermes plugin (remote mode, vendored wheel → nix pkg
+Agent integrations: **DONE 09-29; PR #29 (promote/cognee-agent-integration)
+MERGED 09-30**. hermes plugin (remote mode, vendored wheel → nix pkg
 cognee-hermes-plugin, plugins/cognee symlink, provider flip in hermes.nix);
 cognee-mcp proxy (podman digest-pinned cognee/cognee-mcp, network=host,
 entrypoint override, port 8012); pi-cognee ext on all hosts
 (cognee-memory.nix activation: npm seed + settings merge + MCP-mode config).
+Plan + live-verification log: docs/cognee-agent-integration-todo.md.
 Live-wire gotchas paid for: proxy needs COGNEE_API_AUTH_SCHEME=x-api-key
 (bearer 401s); image entrypoint rewrites localhost URLs → override
 entrypoint + --network host; pi-cognee sends no auth headers → nginx token
 gate via $arg_token map in appendHttpConfig (no `includes` option exists).
-
 Deploy discipline learned live: on jehoel, `git fetch && git reset
 --hard origin/main` before EVERY deploy — a piped `git pull | tail`
 masked fetch failures twice and deployed a stale tree. deploy-rs's
