@@ -5,7 +5,12 @@
 # Packaged in numtide/llm-agents.nix (buildRustPackage + vendored Zig deps
 # for libghostty-vt). Binary cache at cache.numtide.com (configured in pi.nix).
 #
-# Per-user integrations are installed after first boot:
+# No ~/.config/herdr persistence: herdr works without a config.toml (none
+# exists on any host) — if one is ever needed, declare it in mortlake and
+# symlink it in, same as browser.nix does for nyxt. Session logs also live
+# in ~/.config/herdr; they are deliberately ephemeral (tmpfs, reboot-wiped).
+# Agent integrations land in each agent's own config dir (e.g.
+# ~/.pi/agent/extensions/), persisted where the agent module says so:
 #   herdr integration install pi      (lifecycle hooks)
 #   herdr integration install hermes  (lifecycle hooks)
 { inputs, ... }:
@@ -19,8 +24,8 @@
     {
       environment.systemPackages = [ herdr ];
 
+      # Session/workspace state survives reboots; config does not (see header).
       preservation.preserveAt."/persistent".users.john.directories = [
-        ".config/herdr"
         ".local/share/herdr"
       ];
     };
