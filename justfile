@@ -90,6 +90,11 @@ sync-feynman-skills:
     target="skills/feynman"
     rm -rf "$target"
     curl -fsSL https://feynman.is/install-skills | bash -s -- --dir "$PWD/$target"
+    # Rewrite .fdignore (wiped by the rm -rf above): pi treats standalone .md
+    # files under ~/.agents/skills subdirectories as skills; feyman's prompts/
+    # are CLI prompt templates and AGENTS/CONTRIBUTING are repo docs — exclude
+    # them from pi's skill discovery. Keep in sync with skills/feynman/.fdignore.
+    printf '%s\n' 'prompts/' 'AGENTS.md' 'CONTRIBUTING.md' > "$target/.fdignore"
     count=$(find "$target" -name 'SKILL.md' | wc -l)
     echo "Synced $count feynman skills to $target"
 

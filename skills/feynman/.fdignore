@@ -1,0 +1,10 @@
+# pi collects standalone .md files found in subdirectories of ~/.agents/skills
+# (the Agent Skills location) as skills, naming them after the parent directory.
+# These feyman vendor files are CLI prompt templates and repo docs, not pi
+# skills — exclude them from discovery. pi reads .fdignore during collection;
+# .ignore/.gitignore are avoided so rg and git keep seeing these files.
+# NOTE: this file is wiped by `just sync-feynman-skills` (rm -rf) and rewritten
+# by the same recipe — edit it in the justfile, not only here.
+prompts/
+AGENTS.md
+CONTRIBUTING.md
