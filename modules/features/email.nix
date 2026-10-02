@@ -26,6 +26,12 @@ _: {
       services.protonmail-bridge = {
         enable = true;
         # Credential store for headless Bridge (see bootstrap step 1).
+        # pass holds ONE thing: Bridge's vault key — a machine/infra
+        # secret that must answer non-interactively at boot (greetd
+        # auto-login; nobody types a password). NOT a password manager
+        # competing with keepass: user passwords live in kp-vault.
+        # KeePassXC-as-Secret-Service was considered and rejected — its
+        # boot-time unlock dependency would kill headless email reads.
         # gnupg goes in systemPackages, not just the service path: pass
         # shells out to gpg, and the user needs `pass init` in their own
         # shell during bootstrap.
