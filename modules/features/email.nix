@@ -39,8 +39,15 @@ _: {
       };
 
       environment = {
+        # Wrapper instead of plain pkgs.himalaya + HIMALAYA_CONFIG env var:
+        # himalaya v2.0.0 DROPPED HIMALAYA_CONFIG (upstream restored it only
+        # after 2.0.0), so the env var silently found no config and bare
+        # `himalaya` fell into its first-run wizard. The wrapper pins
+        # --config explicitly and is version-proof.
         systemPackages = [
-          pkgs.himalaya
+          (pkgs.writeShellScriptBin "himalaya" ''
+            exec ${pkgs.himalaya}/bin/himalaya --config /etc/himalaya/config.toml "$@"
+          '')
           pkgs.pass
           pkgs.gnupg
         ];
@@ -50,10 +57,6 @@ _: {
         # material) — config.toml points here instead of chasing
         # Bridge's lazily-exported state-dir copy.
         etc."himalaya/bridge-cert.pem".source = ./himalaya/bridge-cert.pem;
-        # First-class env var (v1.1.0+, documented in upstream
-        # config.sample.toml) — beats a symlink: no tmpfiles, no
-        # ~/.config/himalaya at all.
-        sessionVariables.HIMALAYA_CONFIG = "/etc/himalaya/config.toml";
       };
 
       # Bridge mailbox password (Bridge-generated, NOT the Proton
