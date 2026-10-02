@@ -55,14 +55,16 @@ _: {
               };
 
               # Keepass vault — dedicated folder, NOT inside st: small
-              # sync surface, and the phone subscribes to ONLY the vault.
+              # sync surface, and the phone subscribes to ONLY this
+              # folder. Named kp-vault, not vault, to avoid confusion
+              # with ~/vault (plaintext notes/writing).
               # Usage discipline (merge-on-conflict, single-writer,
               # key-file-out-of-band) documented in keepass.nix.
               # TODO(raphael): add "raphael" to devices once its ID lands
               # (see devices TODO above) — and it arrives automatically on
               # raphael via syncthing-follow.
-              "vault" = {
-                path = "/var/lib/syncthing/vault";
+              "kp-vault" = {
+                path = "/var/lib/syncthing/kp-vault";
                 devices = [ "pixel9" ];
                 # Staggered versioning = the KeePassXC-recommended sync
                 # safety net (old versions on a decaying schedule:
@@ -89,7 +91,7 @@ _: {
           "d /var/lib/syncthing/st 0755 john users"
           # 0700: keepass vault — only john (syncthing + KeePassXC run as
           # john) needs access. Usage side: keepass.nix.
-          "d /var/lib/syncthing/vault 0700 john users"
+          "d /var/lib/syncthing/kp-vault 0700 john users"
         ];
 
         # syncthing-init (the module's config merger) needs the sops-rendered
