@@ -30,7 +30,8 @@
         self.nixosModules.niri
         self.nixosModules.greetd
         self.nixosModules.ghostty
-        self.nixosModules.browser
+        self.nixosModules.chromium
+        self.nixosModules.nyxt
         self.nixosModules.syncthing-follow
         # AI tooling
         self.nixosModules.pi
