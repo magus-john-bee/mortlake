@@ -26,11 +26,18 @@ _: {
       services.protonmail-bridge = {
         enable = true;
         # Credential store for headless Bridge (see bootstrap step 1).
+        # gnupg goes in systemPackages, not just the service path: pass
+        # shells out to gpg, and the user needs `pass init` in their own
+        # shell during bootstrap.
         path = [ pkgs.pass ];
       };
 
       environment = {
-        systemPackages = [ pkgs.himalaya ];
+        systemPackages = [
+          pkgs.himalaya
+          pkgs.pass
+          pkgs.gnupg
+        ];
         # Real TOML file, referenced not inlined (house format rule).
         etc."himalaya/config.toml".source = ./himalaya/config.toml;
         # First-class env var (v1.1.0+, documented in upstream
