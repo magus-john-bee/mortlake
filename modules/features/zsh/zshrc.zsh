@@ -3,12 +3,8 @@ zvm_after_init() {
 
   eval "$(@atuin@ init zsh --disable-up-arrow)"
 
-  # IntelliShell setup
+  # IntelliShell setup (config symlink: tmpfiles in intellishell.nix)
   export GIST_TOKEN="$(cat /run/secrets/gh-gist-token 2>/dev/null || true)"
-  _is_cfg="${XDG_CONFIG_HOME:-$HOME/.config}/intelli-shell"
-  mkdir -p "$_is_cfg"
-  ln -sf /etc/intellishell/config.toml "$_is_cfg/config.toml"
-  unset _is_cfg
   eval "$(@intelli_shell@ init zsh)"
 
   source @zsh_fzf_tab@/share/fzf-tab/fzf-tab.plugin.zsh
