@@ -1,6 +1,6 @@
 ---
 name: third-door-job-hunt
-description: Use when planning or executing a job hunt via direct outreach (the "Third Door") — contacting hiring managers, peers, and founders directly while using portals only as low-effort parallel channels. Covers target selection, contact discovery, email strategy, follow-up cadence, and web-to-research/AI career pivots. Core rule: effort scales with visibility — never spend tailored work where only a filter reads it. Message-drafting mechanics defer to career-ops contacto mode.
+description: 'Use when planning or executing a job hunt via direct outreach (the "Third Door") — contacting hiring managers, peers, and founders directly while using portals only as low-effort parallel channels. Covers target selection, contact discovery, email strategy, follow-up cadence, and web-to-research/AI career pivots. Core rule: effort scales with visibility — never spend tailored work where only a filter reads it. Message-drafting mechanics defer to career-ops contacto mode.'
 tags: [career, job-hunt, outreach, third-door]
 version: 1.0.0
 license: MIT
