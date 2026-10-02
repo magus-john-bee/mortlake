@@ -41,6 +41,7 @@
         self.nixosModules.chromium
         self.nixosModules.nyxt
         self.nixosModules.keepass
+        self.nixosModules.email
         self.nixosModules.sound
         self.nixosModules.printing
 

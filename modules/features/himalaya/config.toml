@@ -1,0 +1,25 @@
+# Himalaya v2 config — read-only account over Proton Bridge.
+#
+# THE BOUNDARY: there is NO smtp block in this file, by design. Every
+# himalaya send path fails without one; no SMTP credential exists to
+# exfiltrate or repoint. Drafts still work — they APPEND into the
+# Drafts folder over IMAP and sync to all Proton apps; the user hits
+# send. draft-yes, send-no.
+#
+# Delete is NOT blocked (accepted risk 2026-10-02): a delete from any
+# mailbox is a move to Trash (recoverable; labels stripped by Proton,
+# not restored on recover). Permadelete = deleting from Trash itself,
+# a deliberate two-step.
+[accounts.proton]
+default = true
+email = "john.otwell@proton.me"
+downloads-dir = "/tmp/himalaya"
+
+# Bridge IMAP: loopback, implicit TLS. The cert is Bridge's self-signed
+# CA — pinned explicitly via tls.cert (path is inside the persisted
+# Bridge state dir; follows the cert across Bridge reinstalls).
+imap.server = "127.0.0.1:1143"
+imap.tls.cert = "/home/john/.local/share/protonmail/bridge/cert.pem"
+
+imap.sasl.plain.username = "john.otwell@proton.me"
+imap.sasl.plain.password.command = "cat /run/secrets/proton-bridge-password"
