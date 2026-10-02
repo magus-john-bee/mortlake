@@ -34,12 +34,14 @@ _: {
           settings = {
             devices = {
               # Device IDs are public keys — not secrets.
-              # Hub-and-spoke: spokes (pixel8, …) only know jehoel; the st
-              # folder is shared with all registered peers below, and peers
+              # Hub-and-spoke: spokes (pixel8, pixel9, raphael) only know
+              # jehoel; folders are shared with registered peers, and peers
               # are not introducers, so they never sync with each other.
-              # TODO: fill in real device IDs for raphael and raziel.
+              # TODO(raphael): get raphael's syncthing device ID
+              # (`syncthing --device-id` or GUI: Actions > Show ID), then
+              # uncomment + add "raphael" to the st devices and the vault
+              # peers list in keepass.nix:
               # "raphael".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
-              # "raziel".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
               "pixel8".id = "7YWROAI-Z66BW2L-UE2DPVL-WOEMEBH-FNRKHPQ-NVDXRHR-EQOXICC-CDRLLAF";
               "pixel9".id = "XIDYDPP-XN7F4A4-WFWS7CU-HU3SUDX-VWHAKUN-XQ2VSYR-TM3OOPH-UFHJXQH";
             };
@@ -50,6 +52,29 @@ _: {
                   "pixel8"
                   "pixel9"
                 ];
+              };
+
+              # Keepass vault — dedicated folder, NOT inside st: small
+              # sync surface, and the phone subscribes to ONLY this
+              # folder. Named kp-vault, not vault, to avoid confusion
+              # with ~/vault (plaintext notes/writing).
+              # Usage discipline (merge-on-conflict, single-writer,
+              # key-file-out-of-band) documented in keepass.nix.
+              # TODO(raphael): add "raphael" to devices once its ID lands
+              # (see devices TODO above) — and it arrives automatically on
+              # raphael via syncthing-follow.
+              "kp-vault" = {
+                path = "/var/lib/syncthing/kp-vault";
+                devices = [ "pixel9" ];
+                # Staggered versioning = the KeePassXC-recommended sync
+                # safety net (old versions on a decaying schedule:
+                # ~per-minute recent, thinning to per-week old; maxAge
+                # 365d). Recovers from bad overwrites/deletions that sync
+                # would otherwise propagate everywhere.
+                versioning = {
+                  type = "staggered";
+                  params.maxAge = "31536000";
+                };
               };
             };
             gui = {
@@ -64,6 +89,9 @@ _: {
         tmpfiles.rules = [
           "d /var/lib/syncthing 0755 john users"
           "d /var/lib/syncthing/st 0755 john users"
+          # 0700: keepass vault — only john (syncthing + KeePassXC run as
+          # john) needs access. Usage side: keepass.nix.
+          "d /var/lib/syncthing/kp-vault 0700 john users"
         ];
 
         # syncthing-init (the module's config merger) needs the sops-rendered

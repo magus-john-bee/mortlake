@@ -47,6 +47,8 @@ _: {
             "/var/lib/jellyfin"
             "/var/lib/transmission"
             "/var/lib/mealie"
+            # Syncthing hub: device identity/config AND the keepass vault
+            # (vault/ + its staggered-version history ride along).
             "/var/lib/syncthing"
           ];
           # Media and downloaded data are replaceable; configs, metadata,
