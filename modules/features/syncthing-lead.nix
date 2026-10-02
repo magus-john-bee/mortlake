@@ -51,6 +51,32 @@ _: {
                   "pixel9"
                 ];
               };
+
+              # Keepass vault — dedicated folder, NOT inside st: small sync
+              # surface, and the phone can subscribe to ONLY the vault.
+              # KeePassXC (desktops) + Keepass2Android (phone) treat the
+              # .kdbx as a plain file; sync conflicts resolve via
+              # Database > Merge from Database (UUID merge) on the
+              # .sync-conflict-* copies Syncthing leaves. Discipline that
+              # matters: don't keep entries open in edit mode on two
+              # devices at once (keepassxc#10225 — silent clobber, no
+              # conflict file is produced in that case).
+              # Backups: /var/lib/syncthing is in jehoel's restic paths —
+              # covers the vault AND its version history; the desktop
+              # KeePassXC also keeps entry-level history inside the kdbx.
+              "vault" = {
+                path = "/var/lib/syncthing/vault";
+                devices = [ "pixel9" ];
+                # Staggered versioning = the KeePassXC-recommended sync
+                # safety net (old versions kept on a decaying schedule:
+                # ~per-minute recent, thinning to per-week old; default
+                # maxAge 365d). Recovers from bad overwrites/deletions
+                # that sync would otherwise propagate everywhere.
+                versioning = {
+                  type = "staggered";
+                  params.maxAge = "31536000";
+                };
+              };
             };
             gui = {
               user = "john.otwell";
@@ -64,6 +90,9 @@ _: {
         tmpfiles.rules = [
           "d /var/lib/syncthing 0755 john users"
           "d /var/lib/syncthing/st 0755 john users"
+          # 0700: password vault — only john (syncthing + KeePassXC run as
+          # john) needs access.
+          "d /var/lib/syncthing/vault 0700 john users"
         ];
 
         # syncthing-init (the module's config merger) needs the sops-rendered
