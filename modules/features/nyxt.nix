@@ -17,19 +17,16 @@ _: {
         etc."nyxt/config.lisp".source = ./nyxt/config.lisp;
       };
 
-      # Symlink Nyxt config into ~/.config/nyxt/ for the john user
-      # (Nyxt reads from $XDG_CONFIG_HOME/nyxt/config.lisp)
-      systemd.user.services.nyxt-config-link = {
-        script = ''
-          mkdir -p /home/john/.config/nyxt
-          ln -sf /etc/nyxt/config.lisp /home/john/.config/nyxt/config.lisp
-        '';
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        wantedBy = [ "default.target" ];
-      };
+      # Declarative config, deployed via tmpfiles (house pattern — same
+      # mechanism as dev-dirs/syncthing): L+ creates/repairs the symlink
+      # at every activation AND boot, before the user session starts (no
+      # race with an autostarted nyxt). Target is the stable /etc path —
+      # activation repoints /etc/nyxt/config.lisp across generations, so
+      # the symlink itself never goes stale.
+      systemd.tmpfiles.rules = [
+        "d /home/john/.config/nyxt 0755 john users - -"
+        "L+ /home/john/.config/nyxt/config.lisp - - - - /etc/nyxt/config.lisp"
+      ];
 
       preservation.preserveAt."/persistent".users.john.directories = [ ".local/share/nyxt" ];
     };
