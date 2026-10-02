@@ -1,169 +1,74 @@
-{
-  self,
-  inputs,
-  lib,
-  ...
-}:
-let
-  # Shared wrapper definition — eliminates duplication between atuin (sync) and safe-atuin (local).
-  # The only differences are auto_sync, sync_frequency, sync.records, and the login service.
-  mkAtuinWrapper =
-    sync:
-    { pkgs }:
-    inputs.wrapper-modules.lib.wrapPackage (
-      { config, ... }:
-      let
-        fmt = pkgs.formats.toml { };
-      in
-      {
-        options.settings = lib.mkOption {
-          inherit (fmt) type;
-          default = { };
-        };
-
-        config = {
-          inherit pkgs;
-          package = pkgs.atuin;
-
-          settings = {
-            auto_sync = sync;
-            search_mode = "fuzzy";
-            filter_mode = "global";
-            style = "compact";
-            keymap_mode = "vim-insert";
-            theme.name = "nord";
-            sync.records = sync;
-          }
-          // (lib.optionalAttrs sync { sync_frequency = "2m"; });
-
-          env.ATUIN_CONFIG_DIR = dirOf config.constructFiles.configDir.path;
-
-          constructFiles.configDir = {
-            content = builtins.toJSON config.settings;
-            relPath = "atuin/config.toml";
-            builder = ''mkdir -p "$(dirname "$2")" && ${pkgs.remarshal}/bin/json2toml "$1" "$2"'';
-          };
-
-          constructFiles.theme = {
-            content = builtins.toJSON {
-              colors = {
-                AlertError = "#bf616a";
-                AlertInfo = "#b48ead";
-                AlertWarn = "#ebcb8b";
-                Annotation = "#88c0d0";
-                Base = "#8fbcbb";
-                Guidance = "#81a1c1";
-                Important = "#5e81ac";
-                Title = "#eceff4";
-              };
-              theme = {
-                name = "nord";
-                parent = "default";
-              };
-            };
-            relPath = "atuin/themes/nord.toml";
-            builder = ''mkdir -p "$(dirname "$2")" && ${pkgs.remarshal}/bin/json2toml "$1" "$2"'';
-          };
-        };
-      }
-    );
-in
-{
-  perSystem =
-    { pkgs, ... }:
-    {
-      packages.atuin = mkAtuinWrapper true { inherit pkgs; };
-      packages.safe-atuin = mkAtuinWrapper false { inherit pkgs; };
-    };
-
-  # Synced atuin — needs sops secrets + login service
+# Atuin — shell history sync, via the upstream NixOS module.
+#
+# One atuin: no wrapped package, no custom theme (marine is builtin in
+# atuin 18.21, the nixpkgs pin), no login service. The encryption key
+# is a sops secret pointed at by key_path; the session token lives in
+# meta.db inside the persisted data dir. `atuin login` is therefore a
+# ONE-TIME manual step per host (session tokens don't expire), as john,
+# after activation (prompts for the password via stdin — atuin's
+# documented-preferred form):
+#
+#   atuin login -u <username> -k "$(cat /run/secrets/atuin-key)"
+#   atuin sync
+#
+# Uriel does not import this module: it cannot decrypt supersecrets.yaml
+# (see .sops.yaml key_groups) and is being decommissioned. It still gets
+# the plain pkgs.atuin binary via zsh.nix systemPackages.
+_: {
   flake.nixosModules.atuin =
+    { config, ... }:
     {
-      pkgs,
-      lib,
-      config,
-      ...
-    }:
-    let
-      inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) atuin;
-    in
-    {
-      sops.secrets = {
-        "atuin-username" = {
-          owner = "john";
-          sopsFile = ./supersecrets.yaml;
-        };
-        "atuin-password" = {
-          owner = "john";
-          sopsFile = ./supersecrets.yaml;
-        };
-        "atuin-key" = {
-          owner = "john";
-          sopsFile = ./supersecrets.yaml;
+      programs.atuin = {
+        enable = true;
+
+        # House shell is zsh; the init snippet is evaluated once in
+        # zsh/zshrc.zsh INSIDE zvm_after_init — atuin's keybinds must be
+        # installed after zsh-vi-mode's or zvm clobbers them. The module's
+        # own zsh hook would double-init (it lands in /etc/zshrc, which
+        # runs before ZDOTDIR's .zshrc). The module DOES set
+        # ATUIN_CONFIG_DIR=/etc/atuin globally — which is what makes the
+        # plain pkgs.atuin binary (eval'd by zshrc.zsh at a store path, no
+        # wrapper env) read the settings below.
+        enableZshIntegration = false;
+
+        # Sync runs via the shell hook (auto_sync + sync_frequency, checked
+        # per command); the daemon socket unit would exist but never be
+        # used — atuin's own [daemon] enabled defaults to false.
+        daemon.enable = false;
+
+        settings = {
+          auto_sync = true;
+          sync_frequency = "2m";
+          search_mode = "fuzzy";
+          filter_mode = "global";
+          style = "compact";
+          keymap_mode = "vim-insert";
+          # Builtin theme — no theme file, no programs.atuin.themes entry.
+          theme.name = "marine";
+          sync.records = true;
+          # Encryption key from sops: declarative and survives /persistent
+          # loss, unlike a key file inside the data dir.
+          key_path = config.sops.secrets."atuin-key".path;
         };
       };
 
-      environment.systemPackages = [ atuin ];
-
-      programs.bash.blesh.enable = true;
-
-      programs.bash.interactiveShellInit = ''
-        eval "$(${lib.getExe atuin} init bash)"
-      '';
-
-      systemd.services.atuin-login = {
-        description = "Atuin non-interactive login";
-        after = [
-          "sops-nix.service"
-          "network-online.target"
-        ];
-        wants = [
-          "sops-nix.service"
-          "network-online.target"
-        ];
-        unitConfig = {
-          # network-online.target does NOT guarantee DNS readiness — the
-          # resolver can lag it by a minute+ on boot. Keep retrying instead
-          # of losing history sync for the entire boot session.
-          StartLimitIntervalSec = 600;
-          StartLimitBurst = 30;
-        };
-        serviceConfig = {
-          Type = "oneshot";
-          User = "john";
-          ExecStart = toString (
-            pkgs.writeShellScript "atuin-login" ''
-              ${lib.getExe atuin} login \
-                -u "$(cat ${config.sops.secrets.atuin-username.path})" \
-                -p "$(cat ${config.sops.secrets.atuin-password.path})" \
-                -k "$(cat ${config.sops.secrets.atuin-key.path})"
-              # Repopulate the tmpfs history db at boot rather than waiting
-              # for the first interactive shell's auto-sync.
-              ${lib.getExe atuin} sync
-            ''
-          );
-          RemainAfterExit = true;
-          Restart = "on-failure";
-          RestartSec = 15;
-        };
-        wantedBy = [ "multi-user.target" ];
+      # The only sops secret atuin needs long-term: the encryption key,
+      # pointed at by key_path above. Username/password are NOT stored —
+      # the one-time manual login (above) prompts for the password via
+      # stdin. Re-login is rare: new host, or the session token is
+      # revoked (the token itself lives in the persisted meta.db).
+      sops.secrets."atuin-key" = {
+        owner = "john";
+        sopsFile = ./supersecrets.yaml;
       };
-    };
 
-  # Local-only atuin — no sync, no login service
-  flake.nixosModules.safe-atuin =
-    { pkgs, lib, ... }:
-    let
-      inherit (self.packages.${pkgs.stdenv.hostPlatform.system}) safe-atuin;
-    in
-    {
-      environment.systemPackages = [ safe-atuin ];
-
-      programs.bash = {
-        blesh.enable = true;
-        interactiveShellInit = ''
-          eval "$(${lib.getExe safe-atuin} init bash)"
-        '';
-      };
+      # The reason the old atuin-login service existed: without this,
+      # tmpfs root wipes meta.db (session) + history.db every boot and
+      # a service had to re-login and re-sync the world. Persist the
+      # data dir instead; restic already snapshots this exact path on
+      # jehoel/raphael (restic.nix).
+      preservation.preserveAt."/persistent".users.john.directories = [
+        ".local/share/atuin"
+      ];
     };
 }

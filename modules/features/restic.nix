@@ -2,11 +2,16 @@
 # re-init as fatal). For a new host's bucket:
 #   sudo restic-<host> init
 # The wrapper sources the sops env template automatically.
+#
+# Uriel (was thoth) — being decommissioned; its restic config + B2 keys
+# were removed 2026-10-02 when the sops keys were dropped. It no longer
+# imports this module. Raphael has no backup provisioned (corpus-era
+# puck-* sops keys deleted 2026-10-02); when it needs restic, create a
+# bucket + raphael-* keys and add a hostConfig entry.
 _: {
   flake.nixosModules.restic =
     {
       config,
-      lib,
       pkgs,
       ...
     }:
@@ -21,50 +26,6 @@ _: {
       };
 
       hostConfig = {
-        # Uriel (was thoth) — Hetzner VPS. New bucket uriel-restic
-        # (2026-09-28); old thoth-restic is being deleted.
-        uriel = {
-          name = "uriel";
-          repository = "s3:s3.us-east-005.backblazeb2.com/uriel-restic";
-          passwordSecret = "uriel-restic-password";
-          envTemplate = "uriel-restic-b2-env";
-          paths = [
-            # SSH host keys (the sops-nix age key source — lose these and
-            # secrets.yaml/supersecrets.yaml are undecryptable) + machine-id
-            "/persistent/etc"
-            "/home/john/.ssh"
-            "/home/john/src"
-            "/home/john/vault"
-            # taskdog server (uriel is THE server) — SQLite DB; hourly
-            # snapshots under backups/ excluded as redundant
-            "/home/john/.local/share/taskdog"
-            "/home/john/.local/share/atuin"
-            # Hermes state: state.db (sessions/history), skills, vault
-            # logbook copy, .ssh. Caches excluded below. vault/logbook
-            # overlaps /home/john/vault — restic dedup makes that free.
-            "/var/lib/hermes"
-            # Syncthing device identity + SilverBullet server auth
-            "/var/lib/syncthing"
-            "/var/lib/silverbullet"
-            # Cognee agent memory: SQLite/LanceDB/Kuzu under one tree.
-            # File stores must be quiesced for a consistent snapshot —
-            # backupPrepare/CleanupCommand below stop/start the API server
-            # around the restic run (|| true so a missing cognee.module
-            # never fails the backup).
-            "/var/lib/cognee"
-          ];
-          exclude = [
-            "*.tmp"
-            "/home/john/.local/share/taskdog/backups"
-            "/var/lib/hermes/.npm"
-            "/var/lib/hermes/.cache"
-            "/var/lib/hermes/.local"
-            "/var/lib/hermes/.hermes/logs"
-            "/var/lib/hermes/.hermes/lsp"
-            "/var/lib/hermes/.hermes/cache"
-          ];
-        };
-
         # Jehoel — server + desktop.
         # Paths previously self-registered by service modules via
         # mortlake.restic.paths; now listed here directly.
@@ -99,82 +60,24 @@ _: {
             "/var/lib/transmission/.incomplete"
           ];
         };
-
-        # Raphael (was puck) — Framework 12 laptop
-        raphael = {
-          name = "raphael";
-          repository = "s3:s3.us-east-005.backblazeb2.com/puck-restic";
-          passwordSecret = "raphael-restic-password";
-          envTemplate = "raphael-restic-b2-env";
-          paths = [ ];
-          exclude = [ "*.tmp" ];
-        };
       };
 
       cfg = hostConfig.${hostName} or (throw "restic: no backup config for host '${hostName}'");
-
-      isUriel = hostName == "uriel";
-      isJehoel = hostName == "jehoel";
-      isRaphael = hostName == "raphael";
     in
     {
       config = {
-        sops.secrets = lib.mkMerge [
-          (lib.mkIf isUriel {
-            "uriel-restic-password" = {
-              owner = "john";
-              sopsFile = ./secrets.yaml;
-            };
-            "uriel-b2-access-key-id" = {
-              owner = "john";
-              sopsFile = ./secrets.yaml;
-            };
-            "uriel-b2-secret-access-key" = {
-              owner = "john";
-              sopsFile = ./secrets.yaml;
-            };
-          })
-          (lib.mkIf isJehoel {
+        sops = {
+          secrets = {
             "jehoel-restic-password" = supersecrets;
             "jehoel-b2-access-key-id" = supersecrets;
             "jehoel-b2-secret-access-key" = supersecrets;
-          })
-          (lib.mkIf isRaphael {
-            "raphael-restic-password" = supersecrets;
-            "raphael-b2-access-key-id" = supersecrets;
-            "raphael-b2-secret-access-key" = supersecrets;
-          })
-        ];
-
-        sops.templates = lib.mkMerge [
-          (lib.mkIf isUriel {
-            "uriel-restic-b2-env" = {
-              content = ''
-                AWS_ACCESS_KEY_ID=${p.uriel-b2-access-key-id}
-                AWS_SECRET_ACCESS_KEY=${p.uriel-b2-secret-access-key}
-              '';
-              owner = "john";
-            };
-          })
-          (lib.mkIf isJehoel {
-            "jehoel-restic-b2-env" = {
-              content = ''
-                AWS_ACCESS_KEY_ID=${p.jehoel-b2-access-key-id}
-                AWS_SECRET_ACCESS_KEY=${p.jehoel-b2-secret-access-key}
-              '';
-              owner = "john";
-            };
-          })
-          (lib.mkIf isRaphael {
-            "raphael-restic-b2-env" = {
-              content = ''
-                AWS_ACCESS_KEY_ID=${p.raphael-b2-access-key-id}
-                AWS_SECRET_ACCESS_KEY=${p.raphael-b2-secret-access-key}
-              '';
-              owner = "john";
-            };
-          })
-        ];
+          };
+          templates."jehoel-restic-b2-env".content = ''
+            AWS_ACCESS_KEY_ID=${p.jehoel-b2-access-key-id}
+            AWS_SECRET_ACCESS_KEY=${p.jehoel-b2-secret-access-key}
+          '';
+          templates."jehoel-restic-b2-env".owner = "john";
+        };
 
         services.restic.backups.${cfg.name} = {
           inherit (cfg) repository;
@@ -183,13 +86,6 @@ _: {
 
           inherit (cfg) paths;
           inherit (cfg) exclude;
-
-          # Cognee's stores are live files (SQLite WAL, LanceDB, Kuzu WAL).
-          # Quiesce around the snapshot: stop the API server first, snapshot
-          # the quiesced tree, then bring it back. || true guards hosts
-          # without the cognee module.
-          backupPrepareCommand = lib.optionalString isUriel "systemctl stop cognee.service || true";
-          backupCleanupCommand = lib.optionalString isUriel "systemctl start cognee.service || true";
 
           initialize = false;
 

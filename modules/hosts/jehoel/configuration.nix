@@ -22,8 +22,6 @@
         self.nixosModules.zellij
         self.nixosModules.dev-dirs
         self.nixosModules.restic
-        # Shared agent memory client (pi/prime-agent; server on uriel).
-        self.nixosModules.cogneeMemory
         self.nixosModules.nerd-fonts
 
         # Server role
@@ -54,12 +52,6 @@
 
         # Taskdog client — server lives on uriel (taskdog.otwell.dev).
         taskdog.client.enable = true;
-
-        # Shared agent memory client (pi/prime-agent → cognee.otwell.dev).
-        cognee-memory = {
-          enable = true;
-          pi.enable = true;
-        };
       };
 
       networking = {

@@ -23,26 +23,17 @@
             };
           in
           {
-            "elevenlabs-api-key" = john;
             "exa-api-key" = john;
             "fal-api-key" = john;
             "glm-api-key" = john;
             "groq-api-key" = john;
-            "deepseek-api-key" = john;
             "mistral-api-key" = john;
             "openrouter-api-key" = john;
-            "hf-token" = john;
             "discord-bot-token" = john;
             "discord-allowed-users" = john;
             "discord-home-channel" = john;
-            "minimax-api-key" = john;
             "gh-oauth-token" = john;
             "gh-gist-token" = john;
-            "cognee-api-key" = john;
-            # MCP endpoint gate token (nginx /mcp on cognee.otwell.dev);
-            # rendered on every host — the pi-cognee extension on
-            # jehoel/raphael embeds it in mcpUrl at activation.
-            "cognee-mcp-token" = john;
           };
       };
     };
