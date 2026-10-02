@@ -34,8 +34,6 @@
         self.nixosModules.syncthing-follow
         # AI tooling
         self.nixosModules.pi
-        # Shared agent memory client (pi/prime-agent; server on uriel).
-        self.nixosModules.cogneeMemory
         self.nixosModules.herdr
         self.nixosModules.taskdog
       ];
@@ -44,12 +42,6 @@
 
         # Taskdog client — server lives on uriel (taskdog.otwell.dev).
         taskdog.client.enable = true;
-
-        # Shared agent memory client (pi/prime-agent → cognee.otwell.dev).
-        cognee-memory = {
-          enable = true;
-          pi.enable = true;
-        };
       };
 
       networking = {

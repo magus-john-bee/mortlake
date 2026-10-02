@@ -18,7 +18,6 @@
         self.nixosModules.git
         self.nixosModules.gh
         self.nixosModules.zsh
-        self.nixosModules.safe-atuin
         self.nixosModules.helix
         self.nixosModules.zellij
         self.nixosModules.dev-dirs
@@ -26,18 +25,9 @@
         # syncthing-follow.nix. Device identity persists via
         # preservation-common (/var/lib/syncthing).
         self.nixosModules.syncthing-follow
-        # Uriel restic → B2 bucket uriel-restic (s3 API). Repo init is
-        # manual: `sudo restic-uriel init` after deploy (restic 0.17+
-        # treats re-init as fatal, hence initialize = false).
-        self.nixosModules.restic
         self.nixosModules.intellishell
         # AI tooling
         self.nixosModules.pi
-        # Shared agent memory (cognee.otwell.dev) — server runs here.
-        self.nixosModules.cognee
-        # cognee clients: hermes plugin + pi/prime-agent extension (server
-        # + MCP proxy come from cognee above).
-        self.nixosModules.cogneeMemory
         self.nixosModules.herdr
         self.nixosModules.taskdog
         self.nixosModules.silverbullet
@@ -55,14 +45,6 @@
         taskdog = {
           server.enable = true;
           client.enable = true;
-        };
-
-        # Shared agent memory clients on uriel: hermes plugin (provider
-        # flip from agentmemory) + pi/prime-agent MCP-mode extension.
-        cognee-memory = {
-          enable = true;
-          hermes.enable = true;
-          pi.enable = true;
         };
 
         # deletion.otwell.dev — eBay challenge/deletion endpoint behind

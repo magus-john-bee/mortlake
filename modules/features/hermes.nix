@@ -10,7 +10,6 @@
     let
       inherit (pkgs.stdenv.hostPlatform) system;
       p = config.sops.placeholder;
-      cogneeMemory = config.services.cognee-memory;
 
       enabled-toolsets = [
         "search"
@@ -33,15 +32,12 @@
 
       sops.templates."hermes-env" = {
         content = ''
-          ELEVENLABS_API_KEY=${p.elevenlabs-api-key}
           EXA_API_KEY=${p.exa-api-key}
           FAL_KEY=${p.fal-api-key}
           GLM_API_KEY=${p.glm-api-key}
           GROQ_API_KEY=${p.groq-api-key}
-          DEEPSEEK_API_KEY=${p.deepseek-api-key}
           MISTRAL_API_KEY=${p.mistral-api-key}
           OPENROUTER_API_KEY=${p.openrouter-api-key}
-          HF_TOKEN=${p.hf-token}
           LOGSEQ_PATH=/home/john/vault/logbook
           GLM_BASE_URL=https://api.z.ai/api/coding/paas/v4
           DISCORD_BOT_TOKEN=${p.discord-bot-token}
@@ -60,15 +56,8 @@
         createUser = false;
         package = inputs.hermes-agent.packages.${system}.default;
         addToSystemPackages = true;
-        # hermes-env (below) + cognee-client-env (bottom of this module,
-        # mkIf-gated on services.cognee-memory.hermes.enable — appended
-        # via lib.mkMerge so both render in any order).
-        environmentFiles = lib.mkMerge [
-          [ config.sops.templates."hermes-env".path ]
-          (lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable) [
-            config.sops.templates."cognee-client-env".path
-          ])
-        ];
+        # hermes-env template (sops secrets rendered below)
+        environmentFiles = [ config.sops.templates."hermes-env".path ];
         extraDependencyGroups = [
           "exa"
           "messaging"
@@ -169,14 +158,6 @@
           };
 
           documents."SOUL.md" = builtins.readFile ./hermes/SOUL.md;
-
-          # Cognee shared memory (remote mode): provider flip from the dead
-          # agentmemory plugin (store path GC'd; see cognee-memory.nix for
-          # the plugin dir — the env template + environmentFiles wiring
-          # lives HERE because services.hermes-agent options only exist on
-          # hosts importing this module). Deep-merges over live config.yaml;
-          # nix keys win.
-          memory.provider = lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable) "cognee";
         };
 
         # Trimmed MCP servers — removed mempalace, codegraph, procontext, ouroboros, agentmemory
@@ -230,23 +211,9 @@
         };
       };
 
-      # Cognee client env (remote mode): COGNEE_BASE_URL selects the thin
-      # HTTP client, COGNEE_API_KEY authenticates (X-Api-Key; REQUIRED for
-      # remote URLs — the plugin refuses to start without it), dataset
-      # shared across all agents. Appended to the service env files.
-      sops.templates."cognee-client-env" = lib.mkIf (cogneeMemory.enable && cogneeMemory.hermes.enable) {
-        content = ''
-          COGNEE_BASE_URL=https://cognee.otwell.dev
-          COGNEE_API_KEY=${p.cognee-api-key}
-          COGNEE_PLUGIN_DATASET=${cogneeMemory.hermes.dataset}
-          COGNEE_IMPROVE_ON_END=true
-        '';
-        owner = "john";
-      };
-
-      # NOTE: cognee-client-env is appended to environmentFiles via the
-      # lib.mkMerge at the services.hermes-agent block above — no second
-      # assignment here (duplicate attr = eval error).
+      # NOTE: cognee memory wiring removed 2026-10-02 — server decommissioned
+      # (cognee.nix/cognee-memory.nix deleted; secrets dropped from sops).
+      # Hermes runs the built-in MEMORY.md/USER.md provider; icm lands separately.
 
       environment.systemPackages = [
         pkgs.ffmpeg
