@@ -32,6 +32,7 @@
         self.nixosModules.ghostty
         self.nixosModules.chromium
         self.nixosModules.nyxt
+        self.nixosModules.keepass
         self.nixosModules.syncthing-follow
         # AI tooling
         self.nixosModules.pi

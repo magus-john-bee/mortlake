@@ -34,12 +34,14 @@ _: {
           settings = {
             devices = {
               # Device IDs are public keys — not secrets.
-              # Hub-and-spoke: spokes (pixel8, …) only know jehoel; the st
-              # folder is shared with all registered peers below, and peers
+              # Hub-and-spoke: spokes (pixel8, pixel9, raphael) only know
+              # jehoel; folders are shared with registered peers, and peers
               # are not introducers, so they never sync with each other.
-              # TODO: fill in real device IDs for raphael and raziel.
+              # TODO(raphael): get raphael's syncthing device ID
+              # (`syncthing --device-id` or GUI: Actions > Show ID), then
+              # uncomment + add "raphael" to the st devices and the vault
+              # peers list in keepass.nix:
               # "raphael".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
-              # "raziel".id = "XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX-XXXXXXX";
               "pixel8".id = "7YWROAI-Z66BW2L-UE2DPVL-WOEMEBH-FNRKHPQ-NVDXRHR-EQOXICC-CDRLLAF";
               "pixel9".id = "XIDYDPP-XN7F4A4-WFWS7CU-HU3SUDX-VWHAKUN-XQ2VSYR-TM3OOPH-UFHJXQH";
             };
@@ -52,26 +54,21 @@ _: {
                 ];
               };
 
-              # Keepass vault — dedicated folder, NOT inside st: small sync
-              # surface, and the phone can subscribe to ONLY the vault.
-              # KeePassXC (desktops) + Keepass2Android (phone) treat the
-              # .kdbx as a plain file; sync conflicts resolve via
-              # Database > Merge from Database (UUID merge) on the
-              # .sync-conflict-* copies Syncthing leaves. Discipline that
-              # matters: don't keep entries open in edit mode on two
-              # devices at once (keepassxc#10225 — silent clobber, no
-              # conflict file is produced in that case).
-              # Backups: /var/lib/syncthing is in jehoel's restic paths —
-              # covers the vault AND its version history; the desktop
-              # KeePassXC also keeps entry-level history inside the kdbx.
+              # Keepass vault — dedicated folder, NOT inside st: small
+              # sync surface, and the phone subscribes to ONLY the vault.
+              # Usage discipline (merge-on-conflict, single-writer,
+              # key-file-out-of-band) documented in keepass.nix.
+              # TODO(raphael): add "raphael" to devices once its ID lands
+              # (see devices TODO above) — and it arrives automatically on
+              # raphael via syncthing-follow.
               "vault" = {
                 path = "/var/lib/syncthing/vault";
                 devices = [ "pixel9" ];
                 # Staggered versioning = the KeePassXC-recommended sync
-                # safety net (old versions kept on a decaying schedule:
-                # ~per-minute recent, thinning to per-week old; default
-                # maxAge 365d). Recovers from bad overwrites/deletions
-                # that sync would otherwise propagate everywhere.
+                # safety net (old versions on a decaying schedule:
+                # ~per-minute recent, thinning to per-week old; maxAge
+                # 365d). Recovers from bad overwrites/deletions that sync
+                # would otherwise propagate everywhere.
                 versioning = {
                   type = "staggered";
                   params.maxAge = "31536000";
@@ -90,8 +87,8 @@ _: {
         tmpfiles.rules = [
           "d /var/lib/syncthing 0755 john users"
           "d /var/lib/syncthing/st 0755 john users"
-          # 0700: password vault — only john (syncthing + KeePassXC run as
-          # john) needs access.
+          # 0700: keepass vault — only john (syncthing + KeePassXC run as
+          # john) needs access. Usage side: keepass.nix.
           "d /var/lib/syncthing/vault 0700 john users"
         ];
 
