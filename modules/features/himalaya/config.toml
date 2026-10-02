@@ -30,3 +30,13 @@ imap.tls.cert = "/etc/himalaya/bridge-cert.pem"
 
 imap.sasl.plain.username = "john.otwell@proton.me"
 imap.sasl.plain.password.command = "cat /run/secrets/proton-bridge-password"
+
+# v2 requires an explicit inbox alias for `envelope list`. NOTE: Bridge
+# presents mailboxes in Proper Case ("Inbox", not RFC "INBOX") — the
+# alias must match what `himalaya mailbox list` shows, or the lookup
+# falls through and v2 hard-errors with "Mailbox is required".
+[accounts.proton.mailbox.alias]
+inbox = "Inbox"
+drafts = "Drafts"
+sent = "Sent"
+trash = "Trash"
