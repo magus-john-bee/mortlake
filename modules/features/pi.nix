@@ -34,9 +34,6 @@
 #      158 languages, sub-ms queries, SQLite-backed.
 #   2. neuledge/context — local-first library docs (.db files, SQLite FTS5).
 #      npm: @neuledge/context. Not in nixpkgs or llm-agents.nix.
-#   3. cognee — semantic memory + synthesis, backed by Postgres.
-#      Shared across all agents (Pi + Hermes). Python, needs Postgres.
-#      Not in nixpkgs. Host: Uriel or Jehoel (TBD).
 { inputs, ... }:
 {
   flake.nixosModules.pi =
@@ -112,14 +109,6 @@
         # coincidence.
         pkgs.nodejs
       ];
-
-      # Cognee endpoint, agent-visible on every host. The API key is issued
-      # by the server post-deploy and lands in sops as `cognee-api-key`
-      # (renders at /run/secrets/cognee-api-key on every host). Clients
-      # (official Hermes plugin, pi extension — see PR 3) read both.
-      environment.sessionVariables = {
-        COGNEE_URL = "https://cognee.otwell.dev";
-      };
 
       # llm-agents.nix binary cache
       nix.settings = {
