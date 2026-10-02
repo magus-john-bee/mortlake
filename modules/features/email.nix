@@ -46,6 +46,10 @@ _: {
         ];
         # Real TOML file, referenced not inlined (house format rule).
         etc."himalaya/config.toml".source = ./himalaya/config.toml;
+        # Bridge's self-signed loopback cert, pinned in-repo (public
+        # material) — config.toml points here instead of chasing
+        # Bridge's lazily-exported state-dir copy.
+        etc."himalaya/bridge-cert.pem".source = ./himalaya/bridge-cert.pem;
         # First-class env var (v1.1.0+, documented in upstream
         # config.sample.toml) — beats a symlink: no tmpfiles, no
         # ~/.config/himalaya at all.

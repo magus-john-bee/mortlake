@@ -20,10 +20,13 @@ downloads-dir = "/tmp/himalaya"
 # TLS, which Bridge does not speak on this port by default).
 imap.server = "imap://127.0.0.1:1143"
 
-# Bridge's self-signed CA. Path per Bridge v3 layout; VERIFY at
-# bootstrap after first Bridge run:
-#   find ~/.config/protonmail ~/.local/share/protonmail -name 'cert.pem'
-imap.tls.cert = "/home/john/.config/protonmail/bridge-v3/cert.pem"
+# Bridge's self-signed TLS cert — PINNED IN-REPO, not read from
+# Bridge's state dir (Bridge doesn't reliably export cert.pem to disk
+# before first account login). This is a public loopback cert (nothing
+# secret); pinning the file makes the trust explicit and deterministic.
+# Rotated only if Bridge regenerates its cert (reinstall) — then
+# re-export: STARTTLS handshake → save PEM → replace this file.
+imap.tls.cert = "/etc/himalaya/bridge-cert.pem"
 
 imap.sasl.plain.username = "john.otwell@proton.me"
 imap.sasl.plain.password.command = "cat /run/secrets/proton-bridge-password"
