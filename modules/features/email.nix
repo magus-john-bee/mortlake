@@ -47,11 +47,13 @@ _: {
         sopsFile = ./supersecrets.yaml;
       };
 
-      # Persistence: Bridge state (account session + its TLS CA cert,
-      # which the himalaya config pins) and the pass/gpg material that
-      # unlocks Bridge at boot.
+      # Persistence: the whole protonmail namespace (Bridge keeps config
+      # in ~/.config/protonmail/bridge-v3, data in ~/.local/share/
+      # protonmail/bridge-v3 — incl. the TLS CA the himalaya config
+      # pins), plus the pass/gpg material that unlocks Bridge at boot.
       preservation.preserveAt."/persistent".users.john.directories = [
-        ".local/share/protonmail/bridge"
+        ".config/protonmail"
+        ".local/share/protonmail"
         ".password-store"
         ".gnupg"
       ];

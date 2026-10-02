@@ -15,11 +15,15 @@ default = true
 email = "john.otwell@proton.me"
 downloads-dir = "/tmp/himalaya"
 
-# Bridge IMAP: loopback, implicit TLS. The cert is Bridge's self-signed
-# CA — pinned explicitly via tls.cert (path is inside the persisted
-# Bridge state dir; follows the cert across Bridge reinstalls).
-imap.server = "127.0.0.1:1143"
-imap.tls.cert = "/home/john/.local/share/protonmail/bridge/cert.pem"
+# Bridge IMAP: loopback, STARTTLS (Bridge's default mode on 1143 —
+# imap:// scheme so himalaya upgrades rather than expecting implicit
+# TLS, which Bridge does not speak on this port by default).
+imap.server = "imap://127.0.0.1:1143"
+
+# Bridge's self-signed CA. Path per Bridge v3 layout; VERIFY at
+# bootstrap after first Bridge run:
+#   find ~/.config/protonmail ~/.local/share/protonmail -name 'cert.pem'
+imap.tls.cert = "/home/john/.config/protonmail/bridge-v3/cert.pem"
 
 imap.sasl.plain.username = "john.otwell@proton.me"
 imap.sasl.plain.password.command = "cat /run/secrets/proton-bridge-password"
