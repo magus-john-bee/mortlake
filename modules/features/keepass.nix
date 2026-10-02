@@ -2,10 +2,11 @@
 #
 # The vault's SYNC lives in the syncthing modules, not here — sync
 # topology belongs with topology:
-#   - syncthing-lead.nix (jehoel, hub): folder "vault", shared with
+#   - syncthing-lead.nix (jehoel, hub): folder "kp-vault", shared with
 #     pixel9 (+ raphael once its device ID lands — TODO there)
 #   - syncthing-follow.nix (raphael): spoke side of the same folder
-# Vault path on every peer: /var/lib/syncthing/vault/*.kdbx
+# Vault path on every peer: /var/lib/syncthing/kp-vault/*.kdbx
+# (kp-vault, not vault — ~/vault is the plaintext notes/writing tree)
 #
 # Operating discipline (the part that actually matters):
 # - The .kdbx is a plain encrypted file riding normal file sync — safe
