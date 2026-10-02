@@ -19,8 +19,7 @@
 #   3. sops --set '["proton-bridge-password"] "<mailbox password>"' \
 #        modules/features/supersecrets.yaml   (placeholder until then)
 #   4. rebuild; verify: himalaya envelope list
-_:
-{
+_: {
   flake.nixosModules.email =
     { pkgs, ... }:
     {
@@ -34,13 +33,11 @@ _:
         systemPackages = [ pkgs.himalaya ];
         # Real TOML file, referenced not inlined (house format rule).
         etc."himalaya/config.toml".source = ./himalaya/config.toml;
+        # First-class env var (v1.1.0+, documented in upstream
+        # config.sample.toml) — beats a symlink: no tmpfiles, no
+        # ~/.config/himalaya at all.
+        sessionVariables.HIMALAYA_CONFIG = "/etc/himalaya/config.toml";
       };
-
-      # Config symlink via tmpfiles L+ (house pattern — nyxt, intelli-shell).
-      systemd.tmpfiles.rules = [
-        "d /home/john/.config/himalaya 0755 john users - -"
-        "L+ /home/john/.config/himalaya/config.toml - - - - /etc/himalaya/config.toml"
-      ];
 
       # Bridge mailbox password (Bridge-generated, NOT the Proton
       # account password). Placeholder in supersecrets.yaml until the
