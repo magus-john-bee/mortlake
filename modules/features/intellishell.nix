@@ -33,6 +33,14 @@ _: {
         systemPackages = [ pkgs.intelli-shell ];
       };
 
+      # Config symlink via tmpfiles L+ (was: mkdir+ln in zshrc on every
+      # shell start). Lives here, not in zshrc — hosts without this
+      # module never get a dangling link.
+      systemd.tmpfiles.rules = [
+        "d /home/john/.config/intelli-shell 0755 john users - -"
+        "L+ /home/john/.config/intelli-shell/config.toml - - - - /etc/intellishell/config.toml"
+      ];
+
       # tmpfs root: the bookmarks db must survive reboots.
       preservation.preserveAt."/persistent" = {
         users.john.directories = [ ".local/share/intelli-shell" ];
