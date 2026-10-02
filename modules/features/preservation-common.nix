@@ -17,7 +17,11 @@
 
         preserveAt."/persistent" = {
           directories = [
-            # intermediate files can eat RAM
+            # Disk-backed, not persisted for its own sake: / is tmpfs (50%
+            # RAM), so an unpersisted /tmp would put every build scratch dir
+            # and transcode intermediate in RAM. Boot survival is a side
+            # effect; growth stays bounded by systemd's upstream tmpfiles age
+            # rule for /tmp (10d, enforced by the daily clean timer).
             {
               directory = "/tmp";
               user = "john";

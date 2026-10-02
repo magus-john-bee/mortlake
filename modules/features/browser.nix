@@ -37,13 +37,14 @@ _: {
         wantedBy = [ "default.target" ];
       };
 
-      # Persist browser data across reboots (tmpfs-root hosts)
+      # Persist browser *state* only (profiles, logins, history, sessions).
+      # ~/.config/nyxt is NOT persisted: its only content is the config.lisp
+      # symlink installed declaratively above (nyxt-config-link recreates it
+      # every boot). Browser caches need no entry — preservation-common
+      # persists ~/.cache wholesale.
       preservation.preserveAt."/persistent".users.john.directories = [
         ".config/chromium"
-        ".cache/chromium"
-        ".config/nyxt"
         ".local/share/nyxt"
-        ".cache/nyxt"
       ];
 
       # Declarative Chromium extensions via enterprise policy
