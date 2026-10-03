@@ -41,6 +41,7 @@
         self.nixosModules.chromium
         self.nixosModules.nyxt
         self.nixosModules.keepass
+        self.nixosModules.email
         self.nixosModules.sound
         self.nixosModules.printing
 
@@ -48,12 +49,20 @@
         self.nixosModules.pi
         self.nixosModules.herdr
         self.nixosModules.taskdog
+        self.nixosModules.silverbullet
       ];
 
       services = {
 
-        # Taskdog client — server lives on uriel (taskdog.otwell.dev).
-        taskdog.client.enable = true;
+        # Taskdog: server local; public URL activates at cutover
+        # (taskdog.otwell.dev nginx vhost is commented out in taskdog.nix).
+        # SilverBullet likewise runs loopback-only (sb.otwell.dev vhost
+        # commented in silverbullet.nix) — ports 3000/8000 stay
+        # loopback-only until cutover.
+        taskdog = {
+          client.enable = true;
+          server.enable = true;
+        };
       };
 
       networking = {

@@ -7,6 +7,15 @@
         enable = true;
         package = self.packages.${pkgs.stdenv.hostPlatform.system}.myNiri;
       };
+
+      # nixpkgs' niri module mkDefaults gnome-keyring on ("recommended by
+      # upstream" for desktop secret storage). We run NO secret service:
+      # passwords live in keepass (kp-vault), Bridge's keychain is pass,
+      # chromium is --password-store=basic. A live org.freedesktop.secrets
+      # would (a) pop keyring-unlock modals at Bridge CLI logins and
+      # (b) become Bridge's PREFERRED keychain — reintroducing the
+      # boot-time unlock dependency the email module designs out.
+      services.gnome.gnome-keyring.enable = false;
     };
 
   perSystem =
