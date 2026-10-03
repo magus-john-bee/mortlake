@@ -1,7 +1,8 @@
 # SilverBullet — self-hosted PKM web app (https://silverbullet.md).
 #
-# Topology: uriel-only service bound to 127.0.0.1:3000, fronted by
-# nginx + ACME at sb.otwell.dev (same vhost pattern as taskdog/mealie).
+# Topology: loopback service on 127.0.0.1:3000 (jehoel mirrors it ahead of
+# the uriel→jehoel migration; uriel keeps serving sb.otwell.dev until
+# teardown — the nginx vhost below is commented out pending cutover).
 # Auth: SB_USER basic auth (silverbullet-password) plus SB_AUTH_TOKEN
 # for HTTP API / programmatic access (silverbullet-auth-token), both
 # sops-rendered from secrets.yaml.
@@ -12,7 +13,6 @@
 # account; no automation). The service runs as john so it can read and
 # write the home-dir space natively.
 let
-  domain = "sb.otwell.dev";
   port = 3000;
   spaceDir = "/home/john/vault/sb";
 in
@@ -20,7 +20,7 @@ _: {
   flake.nixosModules.silverbullet =
     {
       config,
-      lib,
+      # lib, # CUTOVER(jehoel): restore alongside the nginx vhost below
       ...
     }:
     let
@@ -65,17 +65,20 @@ _: {
       # syncthing-lead/atuin order against sops-nix).
       systemd.services.silverbullet.after = [ "sops-nix.service" ];
 
-      # Public HTTPS entry — WebSocket (/.command, live sync) rides the
-      # same location.
-      services.nginx.virtualHosts."${domain}" = lib.mkIf config.services.nginx.enable {
-        forceSSL = true;
-        enableACME = true;
-        locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
-        locations."/" = {
-          proxyPass = "http://127.0.0.1:${toString port}";
-          proxyWebsockets = true;
-        };
-      };
+      # CUTOVER(jehoel): uncomment + add sb.otwell.dev to dd-client domains
+      # when flipping DNS off uriel (also restore `lib` in the module
+      # arguments above). Until then the service is loopback-only
+      # (127.0.0.1:3000) — no nginx vhost, no ACME cert, no public URL.
+      #
+      # services.nginx.virtualHosts."sb.otwell.dev" = lib.mkIf config.services.nginx.enable {
+      #   forceSSL = true;
+      #   enableACME = true;
+      #   locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
+      #   locations."/" = {
+      #     proxyPass = "http://127.0.0.1:3000";
+      #     proxyWebsockets = true;
+      #   };
+      # };
 
       # No preservation entry needed: the space lives at /home/john/vault/sb,
       # already covered by the vault bind mount (see john.nix / dev-dirs.nix).
