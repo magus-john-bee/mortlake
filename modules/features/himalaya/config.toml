@@ -13,7 +13,12 @@
 [accounts.proton]
 default = true
 email = "john.otwell@proton.me"
-downloads-dir = "/tmp/himalaya"
+# Attachments land here. Deliberately under ~/data (NOT /tmp): /tmp's
+# preservation slot is the performance-oriented on-disk one that
+# systemd-tmpfiles still ages out, and nothing under it is restic-backed.
+# ~/data is both preserved and in restic's jehoel paths — downloads get
+# persistence + offsite backup with no extra declarations.
+downloads-dir = "/home/john/data/himalaya"
 
 # Bridge IMAP: loopback, STARTTLS (Bridge's default mode on 1143 —
 # imap:// scheme so himalaya upgrades rather than expecting implicit
