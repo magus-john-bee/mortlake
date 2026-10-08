@@ -139,17 +139,21 @@
             chown -h john:users /home/john/.config/taskdog/server.toml
           '';
 
-          # Public HTTPS entry — same vhost pattern as mealie/jellyfin-public.
-          # WebSocket (/ws, TUI live updates) rides the same location.
-          services.nginx.virtualHosts."${domain}" = lib.mkIf config.services.nginx.enable {
-            forceSSL = true;
-            enableACME = true;
-            locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
-            locations."/" = {
-              proxyPass = "http://127.0.0.1:8000";
-              proxyWebsockets = true;
-            };
-          };
+          # CUTOVER(jehoel): uncomment + add taskdog.otwell.dev to dd-client
+          # domains when flipping DNS off uriel. Until then the server is
+          # loopback-only (127.0.0.1:8000) — no nginx vhost, no ACME cert,
+          # no public URL. WebSocket (/ws, TUI live updates) rides the same
+          # location as plain HTTP when re-enabled.
+          #
+          # services.nginx.virtualHosts."${domain}" = lib.mkIf config.services.nginx.enable {
+          #   forceSSL = true;
+          #   enableACME = true;
+          #   locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
+          #   locations."/" = {
+          #     proxyPass = "http://127.0.0.1:8000";
+          #     proxyWebsockets = true;
+          #   };
+          # };
 
           systemd = {
             user = {
