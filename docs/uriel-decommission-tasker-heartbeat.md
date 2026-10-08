@@ -83,6 +83,12 @@ see.
 
 ### Cutover log (2026-10-08) — gotchas hit, for next time
 
+- **Interactive CLI runs the setup wizard on the new host** until the shell
+  has `HERMES_HOME=/var/lib/hermes/.hermes`. The module exports it via
+  sessionVariables, but terminals opened BEFORE the rebuild don't have it —
+  the CLI falls back to `~/.hermes` (empty → wizard → junk skeleton).
+  Fix: new terminal, or export it manually; delete any `/home/john/.hermes`
+  the wizard created. The gateway is never affected (unit pins the env).
 - ACME raced the DNS flip: first issuance validated against uriel's IP
   (404) and left self-signed placeholders. Fix: after DNS moves, restart
   `acme-order-renew-<domain>.service`, then `systemctl reload nginx`.
