@@ -226,6 +226,19 @@
           pkgs.binutils
           pkgs.nodejs
         ];
+        # pm's lockfile pins ffmpeg+ripgrep as required tools, but a sealed
+        # nix artifact delegates its tool store to the user-writable
+        # $HERMES_HOME/tools (node/npm/python/uv land there at first boot).
+        # When a flake bump re-pins a tool version, drift makes the gateway
+        # print "install out of sync" until the store catches up. Self-heal
+        # at service start: doctor exits 1 on drift, install --tools-only
+        # writes only the writable store (never the nix store).
+        preStart = ''
+          if ! ${config.services.hermes-agent.package}/bin/hermes pm doctor >/dev/null 2>&1; then
+            echo "hermes-agent: pm tool store drifted from lockfile; healing ffmpeg/ripgrep/…"
+            ${config.services.hermes-agent.package}/bin/hermes pm install --tools-only >/dev/null 2>&1 || true
+          fi
+        '';
         serviceConfig = {
           NoNewPrivileges = lib.mkForce false;
         };
