@@ -17,7 +17,6 @@
         "terminal"
         "skills"
         "cronjob"
-        "messaging"
         "file"
         "tts"
         "todo"
