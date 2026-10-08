@@ -67,7 +67,10 @@ see.
 - [ ] Stand up silverbullet, taskdog, ebay-deletion vhosts on jehoel (nginx +
       ACME per-vhost; same pattern as jellyfin/transmission)
 - [ ] Flip DNS for sb/taskdog/ebay-deletion to jehoel
-- [ ] Verify Syncthing converges the vault (space /home/john/vault/sb)
+- [ ] One-time rsync of the vault (logbook + sb) uriel → jehoel — NOT
+      Syncthing: the vault is restic+git by design (see
+      sb/security-surface.md), and jehoel's copies are stale one-shot
+      snapshots from Oct 3 (sb 23/25 files, logbook 1.4G vs 1.9G)
 - [ ] Migrate Hermes state: hermes-state-sync skill, uriel → jehoel (.hermes
       dir; cron jobs ride along — trash Tue 8AM etc.)
 - [ ] Verify cron jobs fire on jehoel schedule
