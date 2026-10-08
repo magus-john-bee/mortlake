@@ -44,6 +44,10 @@ _: {
             "/home/john/.ssh"
             # Shell history DB
             "/home/john/.local/share/atuin"
+            # Hermes gateway state (cutover 2026-10-08): state.db, sessions,
+            # skills, cron jobs, scripts, watcher-state. The pm tool store
+            # (tools/), caches, and logs are replaceable and excluded below.
+            "/var/lib/hermes"
             "/var/lib/jellyfin"
             "/var/lib/transmission"
             "/var/lib/mealie"
@@ -56,6 +60,10 @@ _: {
           # fast-resume state are small and included.
           exclude = [
             "*.tmp"
+            "/var/lib/hermes/.hermes/tools"
+            "/var/lib/hermes/.hermes/cache"
+            "/var/lib/hermes/.hermes/logs"
+            "/var/lib/hermes/.hermes/installs"
             "/var/lib/jellyfin/library"
             "/var/lib/jellyfin/transcodes"
             "/var/lib/transmission/Downloads"
