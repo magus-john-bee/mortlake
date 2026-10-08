@@ -20,7 +20,7 @@ _: {
   flake.nixosModules.silverbullet =
     {
       config,
-      # lib, # CUTOVER(jehoel): restore alongside the nginx vhost below
+      lib,
       ...
     }:
     let
@@ -70,15 +70,15 @@ _: {
       # arguments above). Until then the service is loopback-only
       # (127.0.0.1:3000) — no nginx vhost, no ACME cert, no public URL.
       #
-      # services.nginx.virtualHosts."sb.otwell.dev" = lib.mkIf config.services.nginx.enable {
-      #   forceSSL = true;
-      #   enableACME = true;
-      #   locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
-      #   locations."/" = {
-      #     proxyPass = "http://127.0.0.1:3000";
-      #     proxyWebsockets = true;
-      #   };
-      # };
+      services.nginx.virtualHosts."sb.otwell.dev" = lib.mkIf config.services.nginx.enable {
+        forceSSL = true;
+        enableACME = true;
+        locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:3000";
+          proxyWebsockets = true;
+        };
+      };
 
       # No preservation entry needed: the space lives at /home/john/vault/sb,
       # already covered by the vault bind mount (see john.nix / dev-dirs.nix).

@@ -50,6 +50,15 @@
         self.nixosModules.herdr
         self.nixosModules.taskdog
         self.nixosModules.silverbullet
+
+        # Uriel cutover staging (docs/uriel-decommission-tasker-heartbeat.md):
+        # hermes module imported now so secrets/env/packages render early,
+        # but the service stays OFF — both instances share one Discord bot
+        # token and two live gateways flap. eBay deletion endpoint ditto:
+        # its ACME vhost can't issue while deletion.otwell.dev still
+        # resolves to uriel.
+        self.nixosModules.hermes
+        self.nixosModules.ebayDeletion
       ];
 
       services = {
@@ -63,6 +72,16 @@
           client.enable = true;
           server.enable = true;
         };
+
+        # CUTOVER(uriel→jehoel): flip both at the migration sitting.
+        # hermes-agent: only after hermes-state-sync lands /var/lib/hermes
+        # AND uriel's hermes-agent is stopped (shared Discord token, see
+        # import comment). ebayDeletion: only once DNS resolves here, else
+        # the ACME HTTP-01 challenge hits uriel's nginx and issuance loops.
+        # The sb/taskdog vhost uncommenting + dd-client domain additions
+        # belong to the same cutover commit.
+        hermes-agent.enable = true;
+        ebayDeletion.enable = true;
       };
 
       networking = {
@@ -107,6 +126,9 @@
           "/var/lib/bluetooth"
           "/var/lib/acme"
           "/var/lib/nginx"
+          # Hermes state (sessions, cron jobs, skills, memory) — pre-staged
+          # for the cutover; hermes-state-sync fills it at migration time.
+          "/var/lib/hermes"
           "/etc/NetworkManager/system-connections"
         ];
 

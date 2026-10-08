@@ -30,6 +30,17 @@
     {
       imports = [ inputs.hermes-agent.nixosModules.default ];
 
+      # The hermes env consumes the 'hermes' taskdog API key; declare it
+      # here so this module evaluates on any host. (sops.placeholder
+      # requires a matching sops.secrets declaration; previously the
+      # taskdog SERVER block supplied it — turning uriel's server off
+      # broke uriel's eval. Values identical to taskdog.nix's secretOpts,
+      # so double declarations on server hosts merge cleanly.)
+      sops.secrets."taskdog-api-key-hermes" = {
+        owner = "john";
+        sopsFile = ./secrets.yaml;
+      };
+
       sops.templates."hermes-env" = {
         content = ''
           EXA_API_KEY=${p.exa-api-key}
@@ -197,6 +208,15 @@
           };
         };
       };
+
+      # /var/lib/hermes must exist and be owned by the service user before
+      # the gateway starts. Preservation creates the bind-mount point
+      # root-owned on first provisioning (tmpfs-root), which crashes the
+      # Discord adapter with EACCES on .local/ (bitten at the 2026-10-08
+      # cutover — fixed imperatively then; this makes it permanent).
+      systemd.tmpfiles.rules = [
+        "d /var/lib/hermes 0755 ${config.services.hermes-agent.user} ${config.services.hermes-agent.group} -"
+      ];
 
       systemd.services.hermes-agent = {
         environment = {
