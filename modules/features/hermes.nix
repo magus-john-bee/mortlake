@@ -198,6 +198,15 @@
         };
       };
 
+      # /var/lib/hermes must exist and be owned by the service user before
+      # the gateway starts. Preservation creates the bind-mount point
+      # root-owned on first provisioning (tmpfs-root), which crashes the
+      # Discord adapter with EACCES on .local/ (bitten at the 2026-10-08
+      # cutover — fixed imperatively then; this makes it permanent).
+      systemd.tmpfiles.rules = [
+        "d /var/lib/hermes 0755 ${config.services.hermes-agent.user} ${config.services.hermes-agent.group} -"
+      ];
+
       systemd.services.hermes-agent = {
         environment = {
           LD_LIBRARY_PATH = "${pkgs.libopus.outPath}/lib:${pkgs.stdenv.cc.cc.lib}/lib";

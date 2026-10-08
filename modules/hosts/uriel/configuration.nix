@@ -39,17 +39,24 @@
 
       services = {
 
-        # Taskdog: uriel is THE server; local CLI also talks to it via
-        # https (through nginx) so the local client exercises the same
-        # path as remote hosts.
+        # Taskdog: server moved to jehoel (2026-10-08 cutover); client
+        # stays so the local CLI keeps working against the central
+        # server over the public URL.
         taskdog = {
-          server.enable = true;
+          server.enable = false;
           client.enable = true;
         };
 
         # deletion.otwell.dev — eBay challenge/deletion endpoint behind
         # nginx + ACME (DNS record must exist at the registrar first).
         ebayDeletion.enable = true;
+
+        # Hermes moved to jehoel (2026-10-08 cutover). Both instances
+        # share ONE Discord bot token — this stays off for the rest of
+        # uriel's life. Caveat: a bare REBOOT of the current generation
+        # still starts the old unit (enabled there); rebuild with this
+        # commit or decommission before rebooting.
+        hermes-agent.enable = lib.mkForce false;
       };
 
       boot = {

@@ -64,17 +64,31 @@ see.
 
 ## Migration checklist (uriel → jehoel), pre-cancel
 
-- [ ] Stand up silverbullet, taskdog, ebay-deletion vhosts on jehoel (nginx +
-      ACME per-vhost; same pattern as jellyfin/transmission)
-- [ ] Flip DNS for sb/taskdog/ebay-deletion to jehoel
-- [ ] One-time rsync of the vault (logbook + sb) uriel → jehoel — NOT
+- [x] Stand up silverbullet, taskdog, ebay-deletion vhosts on jehoel (nginx +
+      ACME per-vhost; same pattern as jellyfin/transmission) — done 2026-10-08
+- [x] Flip DNS for sb/taskdog/ebay-deletion to jehoel (ddclient picked them
+      up automatically after the cutover rebuild)
+- [x] One-time rsync of the vault (logbook + sb) uriel → jehoel — NOT
       Syncthing: the vault is restic+git by design (see
       sb/security-surface.md), and jehoel's copies are stale one-shot
       snapshots from Oct 3 (sb 23/25 files, logbook 1.4G vs 1.9G)
-- [ ] Migrate Hermes state: hermes-state-sync skill, uriel → jehoel (.hermes
+- [x] Migrate Hermes state: hermes-state-sync skill, uriel → jehoel (.hermes
       dir; cron jobs ride along — trash Tue 8AM etc.)
-- [ ] Verify cron jobs fire on jehoel schedule
+- [ ] Verify cron jobs fire on jehoel schedule (first proof: trash job,
+      Tue 2026-10-13 8AM)
 - [ ] Remove uriel host key from jehoel john.nix authorized keys (mortlake)
 - [ ] Point the heartbeat at jehoel vhosts (above), run it for a week BEFORE
       canceling uriel — overlap proves the alert path end-to-end
 - [ ] Cancel uriel billing
+
+### Cutover log (2026-10-08) — gotchas hit, for next time
+
+- ACME raced the DNS flip: first issuance validated against uriel's IP
+  (404) and left self-signed placeholders. Fix: after DNS moves, restart
+  `acme-order-renew-<domain>.service`, then `systemctl reload nginx`.
+- Preservation created /var/lib/hermes root-owned → hermes-agent crashed
+  (EACCES on .local/). Fixed imperatively, then declaratively via tmpfiles
+  rule in hermes.nix.
+- Order that worked: stop uriel hermes-agent → rebuild jehoel (starts bot
+  on jehoel with migrated state) → ddclient flips DNS → ACME retry +
+  nginx reload. uriel's hermes/taskdog-server quiesced in config after.
