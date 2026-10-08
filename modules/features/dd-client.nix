@@ -52,6 +52,9 @@ in
           "jehoel.${baseDomain}"
           "syncthing.${baseDomain}"
           "jellyfin.${baseDomain}"
+          "sb.${baseDomain}"
+          "taskdog.${baseDomain}"
+          "deletion.${baseDomain}"
         ];
         secretsFile = config.sops.templates."porkbun-ddclient.conf".path;
       };

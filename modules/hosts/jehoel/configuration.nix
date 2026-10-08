@@ -80,8 +80,8 @@
         # the ACME HTTP-01 challenge hits uriel's nginx and issuance loops.
         # The sb/taskdog vhost uncommenting + dd-client domain additions
         # belong to the same cutover commit.
-        hermes-agent.enable = lib.mkForce false;
-        ebayDeletion.enable = false;
+        hermes-agent.enable = true;
+        ebayDeletion.enable = true;
       };
 
       networking = {

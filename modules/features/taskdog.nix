@@ -145,15 +145,15 @@
           # no public URL. WebSocket (/ws, TUI live updates) rides the same
           # location as plain HTTP when re-enabled.
           #
-          # services.nginx.virtualHosts."${domain}" = lib.mkIf config.services.nginx.enable {
-          #   forceSSL = true;
-          #   enableACME = true;
-          #   locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
-          #   locations."/" = {
-          #     proxyPass = "http://127.0.0.1:8000";
-          #     proxyWebsockets = true;
-          #   };
-          # };
+          services.nginx.virtualHosts."${domain}" = lib.mkIf config.services.nginx.enable {
+            forceSSL = true;
+            enableACME = true;
+            locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:8000";
+              proxyWebsockets = true;
+            };
+          };
 
           systemd = {
             user = {
