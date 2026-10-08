@@ -30,6 +30,17 @@
     {
       imports = [ inputs.hermes-agent.nixosModules.default ];
 
+      # The hermes env consumes the 'hermes' taskdog API key; declare it
+      # here so this module evaluates on any host. (sops.placeholder
+      # requires a matching sops.secrets declaration; previously the
+      # taskdog SERVER block supplied it — turning uriel's server off
+      # broke uriel's eval. Values identical to taskdog.nix's secretOpts,
+      # so double declarations on server hosts merge cleanly.)
+      sops.secrets."taskdog-api-key-hermes" = {
+        owner = "john";
+        sopsFile = ./secrets.yaml;
+      };
+
       sops.templates."hermes-env" = {
         content = ''
           EXA_API_KEY=${p.exa-api-key}
