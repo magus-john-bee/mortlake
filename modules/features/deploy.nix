@@ -37,20 +37,6 @@ in
         };
       };
 
-      uriel = {
-        hostname = "uriel";
-        # sshUser must be a non-root user — PermitRootLogin is "no" on all
-        # hosts (network.nix). john has NOPASSWD:ALL, so deploy-rs uses
-        # sudo to switch as root.
-        sshUser = "john";
-        user = "root";
-
-        profiles.system = {
-          user = "root";
-          path = deployLib.activate.nixos self.nixosConfigurations.uriel;
-        };
-      };
-
       raphael = {
         hostname = "raphael";
         sshUser = "john";
