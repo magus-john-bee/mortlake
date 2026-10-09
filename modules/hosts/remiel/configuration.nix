@@ -53,9 +53,13 @@
         extraOptions = ''
           experimental-features = nix-command flakes
         '';
-        substituters = [ "https://cache.otwell.dev" ];
+        substituters = [
+          "https://cache.otwell.dev"
+          "https://cache.numtide.com"
+        ];
         trustedPublicKeys = [
           "cache.otwell.dev:1uNVs/iKY7NnLUcSoS++Zl2+iWl9qw1VuC0Fa5Lkt4I="
+          "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
         ];
       };
 

@@ -19,7 +19,7 @@
 # nix-qol.nix skips it when services.nix-serve.enable is true. Its store
 # already backs the cache, so querying itself is pure overhead and a local
 # nginx/ACME hiccup would become a nix failure mode on the build host.
-# Other substituters (cache.numtide.com via pi.nix) are unaffected.
+# Other substituters (cache.numtide.com via nix-qol.nix) are unaffected.
 let
   cacheDomain = "cache.otwell.dev";
 in

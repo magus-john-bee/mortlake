@@ -1,19 +1,15 @@
 # profiles/haniel.yaml — Stock Pixel with Google Play Services (vanilla Android)
-
 profile:
   name: "Haniel"
-  device: ""  # fill in serial if you have multiple devices connected
-
+  device: "" # fill in serial if you have multiple devices connected
 system:
   dark_mode: true
   disable_analytics: true
-
 obtainium:
   - id: dev.imranr.obtainium
     url: https://github.com/ImranR98/Obtainium
     name: Obtainium
     bootstrap: true
-
   # Standard apps sourced directly from developers
   - id: org.thoughtcrime.securesms
     url: https://github.com/signalapp/Signal-Android
@@ -21,7 +17,6 @@ obtainium:
   - id: com.zaneschepke.wireguardroid
     url: https://github.com/wireguard/wireguard-android
     name: WireGuard
-
 fdroid:
   - id: com.aurora.store
     name: Aurora Store
@@ -33,14 +28,12 @@ fdroid:
     name: Mullvad VPN
   - id: org.kde.kdeconnect_tp
     name: KDE Connect
-
 # Play Services available — Aurora Store can install most Play apps.
 aurora:
-  # - id: com.google.android.apps.maps
-  #   name: Google Maps
-  # - id: com.spotify.music
-  #   name: Spotify
-
+# - id: com.google.android.apps.maps
+#   name: Google Maps
+# - id: com.spotify.music
+#   name: Spotify
 nix-on-droid:
   enabled: true
   flake_url: "github:jbotwell/mortlake#haniel"
