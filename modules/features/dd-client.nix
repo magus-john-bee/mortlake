@@ -1,9 +1,9 @@
 # DDNS client — Porkbun. Only active subdomains.
 let
   baseDomain = "otwell.dev";
-  supersecrets = {
+  secrets-opts = {
     owner = "john";
-    sopsFile = ./supersecrets.yaml;
+    sopsFile = ./secrets.yaml;
   };
 in
 {
@@ -14,8 +14,8 @@ in
     in
     {
       sops.secrets = {
-        "porkbun-api-key" = supersecrets;
-        "porkbun-secret-api-key" = supersecrets;
+        "porkbun-api-key" = secrets-opts;
+        "porkbun-secret-api-key" = secrets-opts;
       };
 
       # ddclient's porkbun protocol authenticates with apikey/secretapikey.

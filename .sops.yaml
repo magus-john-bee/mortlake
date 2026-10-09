@@ -4,11 +4,6 @@ keys:
   - &jehoel age1xvwcxn65xjrr9u37hy2mc2hkhvprnl6exuhtlyayg9d5083mt5ksrm4w9y
 
 creation_rules:
-  - path_regex: ^modules/features/supersecrets\.yaml$
-    key_groups:
-      - age:
-          - *jehoel
-          - *raphael
   - path_regex: ^modules/features/secrets\.yaml$
     key_groups:
       - age:

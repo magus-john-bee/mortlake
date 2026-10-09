@@ -11,7 +11,8 @@
 #   atuin login -u <username> -k "$(cat /run/secrets/atuin-key)"
 #   atuin sync
 #
-# Uriel does not import this module: it cannot decrypt supersecrets.yaml
+# (Historical: uriel could not decrypt the old supersecrets.yaml; the
+# 2026-10-08 merge into secrets.yaml made that split moot.)
 # (see .sops.yaml key_groups) and is being decommissioned. It still gets
 # the plain pkgs.atuin binary via zsh.nix systemPackages.
 _: {
@@ -59,7 +60,7 @@ _: {
       # revoked (the token itself lives in the persisted meta.db).
       sops.secrets."atuin-key" = {
         owner = "john";
-        sopsFile = ./supersecrets.yaml;
+        sopsFile = ./secrets.yaml;
       };
 
       # The reason the old atuin-login service existed: without this,

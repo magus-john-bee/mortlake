@@ -21,7 +21,7 @@
       p = config.sops.placeholder;
       # jehoel builds/pulls from private uriel-mortlake repos and pushes to the
       # public magus-john-bee repo — hosts.yml carries both identities (PATs in
-      # supersecrets.yaml), magus-john-bee active (the human at the terminal).
+      # secrets.yaml), magus-john-bee active (the human at the terminal).
       # Git per-remote auth is disambiguated by username hints baked into the
       # clone's remote URLs (stamped below), not by the active account.
       # Other hosts keep the read-only jbotwell identity (secrets.yaml).
@@ -80,10 +80,10 @@
 
           sops.secrets = lib.mkIf isJehoel {
             "uriel-gh-pat-for-jehoel" = {
-              sopsFile = ./supersecrets.yaml;
+              sopsFile = ./secrets.yaml;
             };
             "magus-gh-pat-for-jehoel" = {
-              sopsFile = ./supersecrets.yaml;
+              sopsFile = ./secrets.yaml;
             };
           };
 

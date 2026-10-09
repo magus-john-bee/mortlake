@@ -71,7 +71,7 @@ just lint                                # nix fmt + statix + deadnix + schema
 
 All machines use SSH-derived age keys for sops. The age key is derived from the SSH host key at `/persistent/etc/ssh/ssh_host_ed25519_key`.
 
-Secrets live in `modules/features/secrets.yaml` and `modules/features/supersecrets.yaml` — sops-encrypted, safe to commit.
+Secrets live in `modules/features/secrets.yaml` — sops-encrypted, safe to commit. (supersecrets.yaml was merged into it 2026-10-08; the split is obsolete.)
 
 ### Adding a new machine
 
