@@ -76,7 +76,9 @@ see.
       dir; cron jobs ride along — trash Tue 8AM etc.)
 - [ ] Verify cron jobs fire on jehoel schedule (first proof: trash job,
       Tue 2026-10-13 8AM)
-- [ ] Remove uriel host key from jehoel john.nix authorized keys (mortlake)
+- [x] Remove uriel host key from jehoel john.nix authorized keys (mortlake)
+      — done 2026-10-08, PR (root@thoth key; module is shared so it drops
+      uriel's access fleet-wide, raphael included)
 - [ ] Point the heartbeat at jehoel vhosts (above), run it for a week BEFORE
       canceling uriel — overlap proves the alert path end-to-end
 - [ ] Cancel uriel billing
