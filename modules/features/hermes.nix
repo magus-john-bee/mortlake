@@ -29,15 +29,24 @@
     {
       imports = [ inputs.hermes-agent.nixosModules.default ];
 
-      # The hermes env consumes the 'hermes' taskdog API key; declare it
-      # here so this module evaluates on any host. (sops.placeholder
-      # requires a matching sops.secrets declaration; previously the
-      # taskdog SERVER block supplied it — turning uriel's server off
-      # broke uriel's eval. Values identical to taskdog.nix's secretOpts,
-      # so double declarations on server hosts merge cleanly.)
-      sops.secrets."taskdog-api-key-hermes" = {
-        owner = "john";
-        sopsFile = ./secrets.yaml;
+      # Secrets consumed by the hermes-env template below. Declared here
+      # unconditionally so this module evaluates on any host: sops.placeholder
+      # requires a matching sops.secrets declaration, and the supplying modules
+      # (gh.nix, taskdog.nix) gate theirs on jehoel / the taskdog server.
+      # Values identical to those, so double declarations merge cleanly.
+      sops.secrets = {
+        # uriel-gh-pat-for-jehoel -> GH_TOKEN: default gh identity for agent
+        # sessions (see template).
+        "uriel-gh-pat-for-jehoel" = {
+          owner = "john";
+          sopsFile = ./secrets.yaml;
+        };
+        # taskdog: previously the taskdog SERVER block supplied it — turning
+        # uriel's server off broke uriel's eval.
+        "taskdog-api-key-hermes" = {
+          owner = "john";
+          sopsFile = ./secrets.yaml;
+        };
       };
 
       sops.templates."hermes-env" = {
@@ -53,6 +62,12 @@
           DISCORD_BOT_TOKEN=${p.discord-bot-token}
           DISCORD_ALLOWED_USERS=${p.discord-allowed-users}
           DISCORD_HOME_CHANNEL=${p.discord-home-channel}
+          # Default gh identity for Hermes service sessions: uriel-mortlake.
+          # GH_TOKEN overrides gh's active account (/etc/gh keeps magus-john-bee
+          # active for john's interactive shells); the credRouter still serves
+          # --user lookups for both identities from hosts.yml. Proven by test
+          # 2026-10-09: GH_TOKEN=<uriel PAT> gh api user -> uriel-mortlake.
+          GH_TOKEN=${p.uriel-gh-pat-for-jehoel}
           TASKDOG_API_BASE_URL=https://taskdog.otwell.dev
           TASKDOG_API_KEY=${p.taskdog-api-key-hermes}
         '';
