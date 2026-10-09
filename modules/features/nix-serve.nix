@@ -8,7 +8,7 @@
 #   nix-store --generate-binary-cache-key cache.otwell.dev \
 #     /tmp/cache-private-key.pem /tmp/cache-public-key.pem
 #
-# The private key lives in supersecrets.yaml under "nix-serve-private-key".
+# The private key lives in secrets.yaml under "nix-serve-private-key".
 #
 # Alternatives if nix-serve proves insufficient:
 #   - nix-serve-ng: drop-in Haskell replacement, faster
@@ -33,10 +33,10 @@ in
       };
 
       # Private signing key — rendered from sops at activation time.
-      # Stored in supersecrets.yaml (encrypted for jehoel, raphael — cache host
+      # Stored in secrets.yaml (encrypted for jehoel, raphael, uriel — cache host
       # and build host only; clients only need the PUBLIC key in nix.conf).
       sops.secrets."nix-serve-private-key" = {
-        sopsFile = ./supersecrets.yaml;
+        sopsFile = ./secrets.yaml;
       };
 
       # HTTPS reverse proxy via nginx + Let's Encrypt ACME.

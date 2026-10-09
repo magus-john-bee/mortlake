@@ -17,7 +17,7 @@
 #   2. protonmail-bridge --cli   # log in; note the MAILBOX password it
 #      shows (not the Proton account password)
 #   3. sops --set '["proton-bridge-password"] "<mailbox password>"' \
-#        modules/features/supersecrets.yaml   (placeholder until then)
+#        modules/features/secrets.yaml   (placeholder until then)
 #   4. rebuild; verify: himalaya envelope list
 _: {
   flake.nixosModules.email =
@@ -60,11 +60,11 @@ _: {
       };
 
       # Bridge mailbox password (Bridge-generated, NOT the Proton
-      # account password). Placeholder in supersecrets.yaml until the
+      # account password). Placeholder in secrets.yaml until the
       # bootstrap runs — himalaya auth just fails until rotated.
       sops.secrets."proton-bridge-password" = {
         owner = "john";
-        sopsFile = ./supersecrets.yaml;
+        sopsFile = ./secrets.yaml;
       };
 
       # Persistence: the whole protonmail namespace (Bridge keeps config

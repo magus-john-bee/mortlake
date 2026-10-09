@@ -2,12 +2,12 @@ _: {
   flake.nixosModules.the-aether =
     { config, ... }:
     let
-      supersecrets = {
-        sopsFile = ./supersecrets.yaml;
+      secrets-opts = {
+        sopsFile = ./secrets.yaml;
       };
     in
     {
-      sops.secrets."the-aether-pw" = supersecrets;
+      sops.secrets."the-aether-pw" = secrets-opts;
 
       networking.networkmanager = {
         ensureProfiles = {

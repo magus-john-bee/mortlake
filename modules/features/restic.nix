@@ -20,9 +20,9 @@ _: {
       p = config.sops.placeholder;
       inherit (config.networking) hostName;
 
-      supersecrets = {
+      secrets-opts = {
         owner = "john";
-        sopsFile = ./supersecrets.yaml;
+        sopsFile = ./secrets.yaml;
       };
 
       hostConfig = {
@@ -35,7 +35,7 @@ _: {
           passwordSecret = "jehoel-restic-password";
           envTemplate = "jehoel-restic-b2-env";
           paths = [
-            # SSH host keys (sops-nix age key source for supersecrets.yaml)
+            # SSH host keys (sops-nix age key source for secrets.yaml)
             # + machine-id
             "/persistent/etc"
             "/home/john/data"
@@ -78,9 +78,9 @@ _: {
       config = {
         sops = {
           secrets = {
-            "jehoel-restic-password" = supersecrets;
-            "jehoel-b2-access-key-id" = supersecrets;
-            "jehoel-b2-secret-access-key" = supersecrets;
+            "jehoel-restic-password" = secrets-opts;
+            "jehoel-b2-access-key-id" = secrets-opts;
+            "jehoel-b2-secret-access-key" = secrets-opts;
           };
           templates."jehoel-restic-b2-env".content = ''
             AWS_ACCESS_KEY_ID=${p.jehoel-b2-access-key-id}

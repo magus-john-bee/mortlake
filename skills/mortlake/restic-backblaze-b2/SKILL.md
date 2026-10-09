@@ -79,7 +79,7 @@ the ad-hoc restic pattern above to test connectivity — `restic stats` or
 ## File Structure (consolidated)
 - `modules/features/restic.nix` — single module for all hosts, dispatches on `config.networking.hostName`
 - `modules/features/secrets.yaml` — thoth SOPS-encrypted credentials (thoth-restic-password, thoth-restic-b2-env)
-- `modules/features/supersecrets.yaml` — mab SOPS-encrypted credentials (mab-restic-password, mab-restic-b2-env)
+- `modules/features/secrets.yaml` — all SOPS-encrypted credentials (supersecrets.yaml merged into it 2026-10-08)
 
 ### Per-Host Dispatch Pattern
 The module uses an attrset keyed on hostname:
