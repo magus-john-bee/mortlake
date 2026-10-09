@@ -11,7 +11,7 @@ _: {
       # GUI password — sops secret
       sops.secrets."syncthing-gui-password" = {
         owner = "john";
-        sopsFile = ./supersecrets.yaml;
+        sopsFile = ./secrets.yaml;
       };
 
       services = {
