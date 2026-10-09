@@ -27,7 +27,6 @@
         # Server role
         self.nixosModules.nginx
         self.nixosModules.jellyfin
-        self.nixosModules.jellyfin-public
         self.nixosModules.transmission
         self.nixosModules.mealie
         self.nixosModules.syncthing-lead
