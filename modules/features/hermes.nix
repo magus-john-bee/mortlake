@@ -215,6 +215,14 @@
       # cutover — fixed imperatively then; this makes it permanent).
       systemd.tmpfiles.rules = [
         "d /var/lib/hermes 0755 ${config.services.hermes-agent.user} ${config.services.hermes-agent.group} -"
+        # XDG dirs the service user's CLIs create on first use (taskdog wants
+        # ~/.config/taskdog; other agents hit .local/.cache). Without the
+        # rule, preservation re-creates the parent root-owned after a wipe
+        # and every CLI in the gateway env dies with EACCES — silently kills
+        # cron jobs that shell out (trash task, 2026-10-08).
+        "d /var/lib/hermes/.config 0750 ${config.services.hermes-agent.user} ${config.services.hermes-agent.group} -"
+        "d /var/lib/hermes/.local 0770 ${config.services.hermes-agent.user} ${config.services.hermes-agent.group} -"
+        "d /var/lib/hermes/.cache 0770 ${config.services.hermes-agent.user} ${config.services.hermes-agent.group} -"
       ];
 
       systemd.services.hermes-agent = {
