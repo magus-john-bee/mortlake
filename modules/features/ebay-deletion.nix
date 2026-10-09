@@ -30,9 +30,18 @@ _: {
       domain = "deletion.otwell.dev";
       port = 8647;
 
-      script = pkgs.writers.writePython3 "ebay-deletion-endpoint" { } (
-        builtins.readFile ./ebay_deletion_endpoint.py
-      );
+      # flakeIgnore: the repo formatter is ruff (treefmt.nix); writePython3's
+      # build-time flake8 gate enforces stock PEP8, which disagrees with ruff
+      # on wrapped lines (E501 length, W503/E203 operator placement). Style
+      # is ruff's call here; flake8 still catches everything non-style.
+      script = pkgs.writers.writePython3 "ebay-deletion-endpoint" {
+        flakeIgnore = [
+          "E501"
+          "E203"
+          "W503"
+          "W504"
+        ];
+      } (builtins.readFile ./ebay_deletion_endpoint.py);
     in
     {
       options.services.ebayDeletion = {
