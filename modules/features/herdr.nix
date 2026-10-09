@@ -3,7 +3,8 @@
 # (idle/working/blocked) and provides session restore.
 #
 # Packaged in numtide/llm-agents.nix (buildRustPackage + vendored Zig deps
-# for libghostty-vt). Binary cache at cache.numtide.com (configured in pi.nix).
+# for libghostty-vt). Binary cache at cache.numtide.com (configured in
+# nix-qol.nix).
 #
 # No ~/.config/herdr persistence: herdr works without a config.toml (none
 # exists on any host) — if one is ever needed, declare it in mortlake and
