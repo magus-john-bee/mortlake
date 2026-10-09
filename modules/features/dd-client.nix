@@ -18,9 +18,6 @@ in
         "porkbun-secret-api-key" = secrets-opts;
       };
 
-      # ddclient's porkbun protocol authenticates with apikey/secretapikey.
-      # login/password are placeholder vars there ('unused' in 3.x, rejected
-      # outright in 4.x) — they were never sent to the API.
       sops.templates."porkbun-ddclient.conf" = {
         content = ''
           apikey=${p.porkbun-api-key}
@@ -34,11 +31,7 @@ in
         enable = true;
         protocol = "porkbun";
         interval = "5min";
-        # We are IPv4-only: nixpkgs' module defaults render usev6=webv6,
-        # webv6=ipify-ipv6, giving every domain a doomed AAAA pass each run
-        # ("no applicable existing records" noise that buries real failures).
-        # 'disabled' is the canonical ddclient 4.x spelling ('no' is a
-        # deprecated alias). usev4 keeps its webv4/ipify default.
+        # We are IPv4-only: the v6 default creates failure noise
         usev6 = "disabled";
         # After a failed update attempt, ddclient skips retries until
         # min-error-interval (default 5m) expires. With a 5m timer that gate

@@ -28,9 +28,7 @@ class Handler(BaseHTTPRequestHandler):
             self.send_error(404)
             return
         code = parse_qs(u.query).get("challenge_code", [""])[0]
-        digest = hashlib.sha256(
-            (code + token() + ENDPOINT_URL).encode()
-        ).hexdigest()
+        digest = hashlib.sha256((code + token() + ENDPOINT_URL).encode()).hexdigest()
         body = json.dumps({"challengeResponse": digest}).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -59,9 +57,7 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def log_message(self, fmt, *args):
-        sys.stderr.write(
-            "%s %s\n" % (self.log_date_time_string(), fmt % args)
-        )
+        sys.stderr.write("%s %s\n" % (self.log_date_time_string(), fmt % args))
 
 
 if __name__ == "__main__":

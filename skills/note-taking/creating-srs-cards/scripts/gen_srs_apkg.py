@@ -17,6 +17,7 @@ genanki installed.
 
 Usage: gen_srs_apkg.py PAGE.md OUTPUT.apkg [--deck "Top Deck Name"]
 """
+
 import hashlib
 import re
 import sys
@@ -35,25 +36,33 @@ hr { border: none; border-top: 1px solid #ddd; margin-top: 12px; }
 """
 
 BASIC_MODEL = genanki.Model(
-    BASIC_MODEL_ID, "srs-basic",
+    BASIC_MODEL_ID,
+    "srs-basic",
     fields=[{"name": "Question"}, {"name": "Answer"}, {"name": "Src"}],
-    templates=[{
-        "name": "Card 1",
-        "qfmt": "{{Question}}",
-        "afmt": '{{FrontSide}}<hr id="answer">{{Answer}}<div class="src">{{Src}}</div>',
-    }],
-    css=CSS)
+    templates=[
+        {
+            "name": "Card 1",
+            "qfmt": "{{Question}}",
+            "afmt": '{{FrontSide}}<hr id="answer">{{Answer}}<div class="src">{{Src}}</div>',
+        }
+    ],
+    css=CSS,
+)
 
 CLOZE_MODEL = genanki.Model(
-    CLOZE_MODEL_ID, "srs-cloze",
+    CLOZE_MODEL_ID,
+    "srs-cloze",
     model_type=genanki.Model.CLOZE,
     fields=[{"name": "Text"}, {"name": "Extra"}, {"name": "Src"}],
-    templates=[{
-        "name": "Cloze",
-        "qfmt": "{{cloze:Text}}",
-        "afmt": '{{cloze:Text}}<hr id="answer">{{Extra}}<div class="src">{{Src}}</div>',
-    }],
-    css=CSS)
+    templates=[
+        {
+            "name": "Cloze",
+            "qfmt": "{{cloze:Text}}",
+            "afmt": '{{cloze:Text}}<hr id="answer">{{Extra}}<div class="src">{{Src}}</div>',
+        }
+    ],
+    css=CSS,
+)
 
 
 def parse(page_path, top_deck):
@@ -128,18 +137,27 @@ def main():
     for subdeck, kind, c in cards:
         deck = decks.setdefault(
             subdeck,
-            genanki.Deck(deck_id=int(hashlib.sha1(subdeck.encode()).hexdigest()[:8], 16),
-                         name=subdeck))
+            genanki.Deck(
+                deck_id=int(hashlib.sha1(subdeck.encode()).hexdigest()[:8], 16),
+                name=subdeck,
+            ),
+        )
         guid_key = f"{subdeck}::{c['q']}"
         tags = [top_deck.replace(" ", "_")] + c["tags"]
         if kind == "Q":
             note = genanki.Note(
-                BASIC_MODEL, fields=[c["q"], c["a"], c["src"]],
-                guid=genanki.guid_for(guid_key), tags=tags)
+                BASIC_MODEL,
+                fields=[c["q"], c["a"], c["src"]],
+                guid=genanki.guid_for(guid_key),
+                tags=tags,
+            )
         else:
             note = genanki.Note(
-                CLOZE_MODEL, fields=[c["q"], c["a"], c["src"]],
-                guid=genanki.guid_for(guid_key), tags=tags)
+                CLOZE_MODEL,
+                fields=[c["q"], c["a"], c["src"]],
+                guid=genanki.guid_for(guid_key),
+                tags=tags,
+            )
         deck.add_note(note)
 
     genanki.Package(list(decks.values())).write_to_file(out_path)

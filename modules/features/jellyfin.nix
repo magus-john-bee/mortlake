@@ -1,6 +1,5 @@
 # Jellyfin media server. Public at https://jellyfin.otwell.dev via nginx +
-# ACME; auth is Jellyfin's own (no proxy-level auth). LAN direct access on
-# :8096 also stays open.
+# ACME; LAN direct access on :8096 also stays open.
 let
   baseDomain = "otwell.dev";
   jellyfinPort = 8096;
@@ -22,7 +21,6 @@ _: {
       locations."/.well-known/acme-challenge".root = "/var/lib/acme/acme-challenge";
     };
 
-    # Jellyfin state — owned by the service user/group declared above.
     preservation.preserveAt."/persistent".directories = [
       {
         directory = "/var/lib/jellyfin";

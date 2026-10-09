@@ -24,11 +24,11 @@ A-x = ["extend_to_line_bounds"]
 C-6 = ["increment"]
 X = ["extend_line_above"]
 C-y = [
-    ":sh rm -f /tmp/unique-file",
-    ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
-    ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
-    ":open %sh{cat /tmp/unique-file}",
-    ":redraw",
+  ":sh rm -f /tmp/unique-file",
+  ':insert-output yazi "%{buffer_name}" --chooser-file=/tmp/unique-file',
+  ':sh printf "\x1b[?1049h\x1b[?2004h" > /dev/tty',
+  ":open %sh{cat /tmp/unique-file}",
+  ":redraw",
 ]
 
 [keys.normal.z]
@@ -42,7 +42,7 @@ X = ["extend_line_above"]
 
 [keys.select.z]
 z = [
-    ":sh zellij action toggle-floating-panes",
-    ":pipe-to sh -c 'zellij action write-chars \"$(cat)\\n\"'",
-    "normal_mode",
+  ":sh zellij action toggle-floating-panes",
+  ":pipe-to sh -c 'zellij action write-chars \"$(cat)\\n\"'",
+  "normal_mode",
 ]

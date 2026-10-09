@@ -3,10 +3,7 @@ name = "my-ml-project"
 version = "0.1.0"
 description = "Add description here"
 requires-python = ">=3.12"
-dependencies = [
-    "mlflow",
-    "dvc",
-]
+dependencies = ["mlflow", "dvc"]
 
 # Add project-specific ML packages declaratively:
 #   uv add torch transformers peft trl datasets
