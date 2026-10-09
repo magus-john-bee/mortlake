@@ -15,15 +15,18 @@
             "flakes"
           ];
 
-          # Own binary cache — added everywhere except the cache host itself
-          # (services.nix-serve.enable). The cache host's store already backs
-          # the cache, so querying itself is pure overhead and couples its
-          # nix to local nginx/ACME health.
-          extra-substituters = lib.optionals (!config.services.nix-serve.enable) [
-            "https://cache.otwell.dev"
-          ];
+          # Substituters: own cache (everywhere except the cache host itself —
+          # its store already backs the cache, so querying itself is pure
+          # overhead and couples its nix to local nginx/ACME health) plus the
+          # numtide/llm-agents.nix cache (pi, prime-agent, herdr), declared
+          # here so any host consuming the input gets it, not just hosts
+          # that happen to import pi.nix.
+          extra-substituters =
+            (lib.optionals (!config.services.nix-serve.enable) [ "https://cache.otwell.dev" ])
+            ++ [ "https://cache.numtide.com" ];
           extra-trusted-public-keys = [
             "cache.otwell.dev:1uNVs/iKY7NnLUcSoS++Zl2+iWl9qw1VuC0Fa5Lkt4I="
+            "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
           ];
         };
 

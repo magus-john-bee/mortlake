@@ -1,0 +1,10 @@
+# herdr configuration — managed declaratively (mortlake modules/features/herdr.nix).
+#
+# Empty on purpose: herdr works without config and no settings are managed yet.
+# This file existing keeps the channel live — add settings here and they apply
+# on the next activation (herdr server reload-config picks them up live).
+#
+# NOTE: in-TUI settings edits (theme, sound, toast) and config-rewriting
+# subcommands (`herdr config reset-keys`) write to this file and will fail
+# against the read-only /etc path — set them here instead.
+# Full reference: herdr --default-config

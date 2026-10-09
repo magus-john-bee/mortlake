@@ -115,8 +115,6 @@
 
           fallback_model = {
             provider = "openrouter";
-            # V4.1 Flash (2026-09-10, CED arch) — retires V4-Pro; vision is
-            # native, so fallback and vision share one slug.
             model = "deepseek/deepseek-v4.1-flash";
           };
 
@@ -125,8 +123,6 @@
           };
 
           tts = {
-            # Voxtral (Mistral) — switched from ElevenLabs 2026-09-28.
-            # Key: mistral-api-key via hermes-env; SDK via the "mistral" extra.
             provider = "mistral";
             mistral = {
               model = "voxtral-mini-tts-2603";
@@ -145,7 +141,6 @@
           auxiliary = {
             vision = {
               provider = "openrouter";
-              # Native multimodal in V4.1 Flash — replaces retired vision-exp.
               model = "deepseek/deepseek-v4.1-flash";
             };
             flush_memories = {

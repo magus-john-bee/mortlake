@@ -110,13 +110,7 @@
         pkgs.nodejs
       ];
 
-      # llm-agents.nix binary cache
-      nix.settings = {
-        extra-substituters = [ "https://cache.numtide.com" ];
-        extra-trusted-public-keys = [
-          "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
-        ];
-      };
+      # llm-agents.nix binary cache lives in nix-qol.nix.
 
       preservation.preserveAt."/persistent".users.john.directories = [
         ".pi"

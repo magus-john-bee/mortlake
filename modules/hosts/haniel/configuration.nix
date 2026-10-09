@@ -64,10 +64,15 @@
         extraOptions = ''
           experimental-features = nix-command flakes
         '';
-        # Use the same binary cache as the mortlake NixOS hosts.
-        substituters = [ "https://cache.otwell.dev" ];
+        # Use the same binary caches as the mortlake NixOS hosts (nix-qol.nix).
+        # numtide serves aarch64 for the llm-agents.nix packages (pi, herdr).
+        substituters = [
+          "https://cache.otwell.dev"
+          "https://cache.numtide.com"
+        ];
         trustedPublicKeys = [
           "cache.otwell.dev:1uNVs/iKY7NnLUcSoS++Zl2+iWl9qw1VuC0Fa5Lkt4I="
+          "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
         ];
       };
 

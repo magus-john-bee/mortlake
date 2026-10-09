@@ -1,20 +1,3 @@
-# Atuin — shell history sync, via the upstream NixOS module.
-#
-# One atuin: no wrapped package, no custom theme (marine is builtin in
-# atuin 18.21, the nixpkgs pin), no login service. The encryption key
-# is a sops secret pointed at by key_path; the session token lives in
-# meta.db inside the persisted data dir. `atuin login` is therefore a
-# ONE-TIME manual step per host (session tokens don't expire), as john,
-# after activation (prompts for the password via stdin — atuin's
-# documented-preferred form):
-#
-#   atuin login -u <username> -k "$(cat /run/secrets/atuin-key)"
-#   atuin sync
-#
-# (Historical: uriel could not decrypt the old supersecrets.yaml; the
-# 2026-10-08 merge into secrets.yaml made that split moot.)
-# (see .sops.yaml key_groups) and is being decommissioned. It still gets
-# the plain pkgs.atuin binary via zsh.nix systemPackages.
 _: {
   flake.nixosModules.atuin =
     { config, ... }:
@@ -44,30 +27,19 @@ _: {
           filter_mode = "global";
           style = "compact";
           keymap_mode = "vim-insert";
-          # Builtin theme — no theme file, no programs.atuin.themes entry.
           theme.name = "marine";
           sync.records = true;
-          # Encryption key from sops: declarative and survives /persistent
-          # loss, unlike a key file inside the data dir.
           key_path = config.sops.secrets."atuin-key".path;
         };
       };
 
-      # The only sops secret atuin needs long-term: the encryption key,
-      # pointed at by key_path above. Username/password are NOT stored —
-      # the one-time manual login (above) prompts for the password via
-      # stdin. Re-login is rare: new host, or the session token is
-      # revoked (the token itself lives in the persisted meta.db).
+      # One sops secret; login is one-time manual per host (session token
+      # persists in meta.db): atuin login -u <user> -k "$(cat /run/secrets/atuin-key)"
       sops.secrets."atuin-key" = {
         owner = "john";
         sopsFile = ./secrets.yaml;
       };
 
-      # The reason the old atuin-login service existed: without this,
-      # tmpfs root wipes meta.db (session) + history.db every boot and
-      # a service had to re-login and re-sync the world. Persist the
-      # data dir instead; restic already snapshots this exact path on
-      # jehoel/raphael (restic.nix).
       preservation.preserveAt."/persistent".users.john.directories = [
         ".local/share/atuin"
       ];

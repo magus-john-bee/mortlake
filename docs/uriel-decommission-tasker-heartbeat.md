@@ -85,6 +85,14 @@ see.
 
 ### Cutover log (2026-10-08) — gotchas hit, for next time
 
+- **Interactive CLI runs the setup wizard on the new host** when the shell
+  lacks `HERMES_HOME=/var/lib/hermes/.hermes`. Subtlety: the module exports
+  it via sessionVariables, but terminals inherit the COMPOSITOR's
+  environment with `__NIXOS_SET_ENVIRONMENT_DONE=1` set — /etc/zshenv then
+  skips the updated set-environment, so even terminals opened AFTER the
+  rebuild miss the var until the graphical session restarts. Fix: log out/
+  in (or reboot), or export manually; delete any `/home/john/.hermes` the
+  wizard created. The gateway is never affected (unit pins the env).
 - ACME raced the DNS flip: first issuance validated against uriel's IP
   (404) and left self-signed placeholders. Fix: after DNS moves, restart
   `acme-order-renew-<domain>.service`, then `systemctl reload nginx`.

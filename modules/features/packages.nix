@@ -41,8 +41,12 @@
           nodejs
           pandoc
           python313
+          ripgrep
           uv
           yazi
+
+          # ── Media ──
+          ffmpeg
         ]
         ++ flakePackages;
     };
